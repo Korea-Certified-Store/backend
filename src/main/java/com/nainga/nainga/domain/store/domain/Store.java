@@ -2,6 +2,7 @@ package com.nainga.nainga.domain.store.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.locationtech.jts.geom.Point;
 
 @Entity
 @Getter
@@ -20,6 +21,6 @@ public class Store {
     private String formattedAddress;    //가게 전체 주소
     private String regularOpeningHours;    //영업 시간
     private String internationalPhoneNumber;    //국제 전화번호
-//    private String location;    //(위도, 경도) 좌표
+    private Point location;    //(위도, 경도) 좌표
 //    private String photos;    //가게 사진들
 }
