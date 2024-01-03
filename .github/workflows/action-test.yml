@@ -1,0 +1,56 @@
+name: action-test
+
+# 하기 내용에 해당하는 이벤트 발생 시 github action 동작
+on:
+  push:
+    branches:
+      - main
+      - develop
+      - release*
+
+  pull_request:
+      - main
+      - develop
+      - release*
+
+
+# 참고사항
+# push가 일어난 브랜치에 PR이 존재하면, push에 대한 이벤트와 PR에 대한 이벤트 모두 발생합니다.
+
+
+jobs:
+  test: # 테스트를 수행합니다.
+    runs-on: ubuntu-latest # 실행 환경 지정
+    steps:
+      - name: Checkout Repostiory
+      - uses: actions/checkout@v3 # github action 버전 지정(major version)
+      
+      - name: Set up JDK 17 # JAVA 버전 지정
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'corretto' # OpenJDK 배포사 corretto, temurin
+      
+      # github action 에서 Gradle dependency 캐시 사용
+      - name: Cache Gradle packages
+        uses: actions/cache@v3
+        with: # 캐시로 사용될 경로 설정
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }} # 캐시 키 설정
+          restore-keys: |
+            ${{ runner.os }}-gradle- # 복원 키 설정
+
+      - name: Grant execute permission for gradlew # 실행할 수 있게 권한주기
+        run: chmod +x gradlew
+
+      - name: Test with Gradle
+        run: ./gradlew test
+      
+      # 테스트 후 Result를 보기위해 Publish Unit Test Results step 추가
+      - name: Publish Unit Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        if: ${{ always() }}  # 테스트가 실패하여도 Report를 보기 위해 `always`로 설정
+        with:
+          files: build/test-results/**/*.xml
