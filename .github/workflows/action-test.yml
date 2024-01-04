@@ -53,7 +53,14 @@ jobs:
       
       # 테스트 후 Result를 보기위해 Publish Unit Test Results step 추가
       - name: Publish Unit Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v1
+        uses: EnricoMi/publish-unit-test-result-action@v2
         if: ${{ always() }}  # 테스트가 실패하여도 Report를 보기 위해 `always`로 설정
         with:
-          files: build/test-results/**/*.xml
+          files: build/test-results/test/TEST-*.xml
+
+      # 테스트 실패시 어디서 틀렸는지 알려줍니다.
+      - name: Add comments to a pull request
+        uses: mikepenz/action-junit-report@v3
+        if: ${{ always() }}
+        with:
+          report_paths: build/test-results/test/TEST-*.xml
