@@ -28,8 +28,11 @@ dependencies {
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	annotationProcessor 'org.projectlombok:lombok'
+
+	// 테스트 설정
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	implementation group: 'org.hibernate', name: 'hibernate-spatial', version: '6.4.1.Final'	//Geometry 사용을 위해 추가
+	testRuntimeOnly 'com.h2database:h2'
 }
 
 tasks.named('test') {
