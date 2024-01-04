@@ -1,4 +1,4 @@
-package com.nainga.nainga.domain.tag.domain;
+package com.nainga.nainga.domain.certification.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -8,9 +8,9 @@ import lombok.*;
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class Tag {
+public class Certification {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "tag_id")
+    @Column(name = "certification_id")
     private Long id;
     private String name;
 }
