@@ -9,7 +9,6 @@ public class NaingaApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(NaingaApplication.class, args);
-		MobeomDataParser.getAllMobeomStores();
 	}
 
 }

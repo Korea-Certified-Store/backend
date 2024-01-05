@@ -18,13 +18,14 @@ import java.util.Optional;
  */
 public class MobeomDataParser {
     //모범 음식점 엑셀 파일로부터 가게 이름과 주소지만을 파싱해서 모두 가져오는 메서드
-    public static List<StoreDataByParser> getAllMobeomStores() {
+    //테스트에서 번거롭게 Mocking 파일을 쓰지 않고 Test 파일 이름을 지정해줄 수 있도록 fileName을 파라미터에 지정
+    public static List<StoreDataByParser> getAllMobeomStores(String fileName) {
         List<StoreDataByParser> storeDataByParserList = new ArrayList<>();
 
         //프로젝트 폴더 내 resources/data 폴더에 접근하기 위해 절대 경로를 설정
         //Windows와 Linux의 경로 표기법이 \와 /로 다르므로 이를 모두 호환하기 위해 File.separator 사용
         String absolutePath = new File("").getAbsolutePath() + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "data" + File.separator + "mobeom" + File.separator;
-        String fileName = "mobeom_20240104.xlsx";   //데이터를 추출한 데이터셋 Excel 파일명
+//        fileName = "mobeom_20240104.xlsx";   //데이터를 추출한 데이터셋 Excel 파일명
 
         String filePath = absolutePath + fileName;
         String extension = FilenameUtils.getExtension(fileName);
