@@ -16,6 +16,7 @@ public class Store {
     //이를 보편적인 IDENTITY로 명시적으로 변환 시켜주기 위함. Table 전략을 사용하게 되면 Sequence를 모방하기 위해 seq 테이블이 별도로 추가 생성됨.
     @Column(name = "store_id")
     private Long id;
+    private String googlePlaceId;   //Google Map API에서 사용하는 place_id를 저장
     private String name;    //가게 이름
     private String primaryType;    //가게 업종
     private String formattedAddress;    //가게 전체 주소
