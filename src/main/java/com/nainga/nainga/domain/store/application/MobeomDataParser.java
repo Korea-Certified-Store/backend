@@ -42,7 +42,7 @@ public class MobeomDataParser {
 
             Sheet sheet = workbook.getSheetAt(0);   //데이터를 읽어들일 Excel 파일의 sheet number
 
-            for (int i = 1; i < sheet.getLastRowNum(); i++) {   //0번째 Row는 column title이라 제외하고 1번부터 마지막 Row까지 조회
+            for (int i = 1; i <= sheet.getLastRowNum(); i++) {   //0번째 Row는 column title이라 제외하고 1번부터 마지막 Row까지 조회
                 Row row = sheet.getRow(i);
 
                 Cell statusCell = row.getCell(9);   //영업중인지 폐업중인지를 나타내는 9번 컬럼에 대해 검사
@@ -54,6 +54,10 @@ public class MobeomDataParser {
                     if(statusCell.getStringCellValue().equals("폐업"))    //영업 상태가 폐업이면 skip
                         continue;
                 }
+
+                Cell unregisteredCell = row.getCell(13);    //모범 음식점 지정 취소가되면 해당 컬럼에 날짜가 기입된다. 따라서, 해당 Cell 값이 비어있어야 현재도 모범 음식점으로 지정된 곳이다.
+                if(!isCellEmpty(unregisteredCell))
+                    continue;
 
                 StoreDataByParser storeDataByParser = new StoreDataByParser();
 
