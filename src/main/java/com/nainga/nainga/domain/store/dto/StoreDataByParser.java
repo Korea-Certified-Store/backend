@@ -10,6 +10,9 @@ public class StoreDataByParser {
     String name;    //가게 이름
     String address;     //가게 주소
 
+    public StoreDataByParser() {
+    }
+
     public StoreDataByParser(String name, String address) {
         this.name = name;
         this.address = address;

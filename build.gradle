@@ -37,6 +37,9 @@ dependencies {
 	// Excel file을 순수 Java로 처리하기 위한 Apache POI import
 	implementation group: 'org.apache.poi', name: 'poi', version: '5.0.0'
 	implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.0.0'
+
+	// 확장자를 읽어들이기 위해 추가
+	implementation group: 'commons-io', name: 'commons-io', version: '2.4'
 }
 
 tasks.named('test') {
