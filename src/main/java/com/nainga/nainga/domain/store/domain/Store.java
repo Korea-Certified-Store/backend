@@ -20,9 +20,9 @@ public class Store {
     private Long id;
     private String googlePlaceId;   //Google Map API에서 사용하는 place_id를 저장
     private String displayName;    //가게 이름
-    private String primaryType;    //가게 업종
+    private String primaryTypeDisplayName;    //가게 업종
     private String formattedAddress;    //가게 전체 주소
-    private String internationalPhoneNumber;    //국제 전화번호
+    private String phoneNumber;    //전화번호
     @Column(columnDefinition = "GEOMETRY")
     private Point location;    //(위도, 경도) 좌표
     @ElementCollection

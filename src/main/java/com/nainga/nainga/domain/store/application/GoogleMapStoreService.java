@@ -38,7 +38,7 @@ public class GoogleMapStoreService {
     //그 후 얻어진 Google Map Place Id를 가지고 가게 상세 정보를 Google Map API로부터 가져와 Store DB에 저장합니다.
     @Transactional
     public void createAllMobeomStores() {
-        List<StoreDataByParser> allMobeomStores = MobeomDataParser.getAllMobeomStores("mobeom_test.xlsx");
+        List<StoreDataByParser> allMobeomStores = MobeomDataParser.getAllMobeomStores("mobeom_test1000.xlsx");
         for (StoreDataByParser storeDataByParser : allMobeomStores) {
             String googleMapPlacesId = getGoogleMapPlacesId(storeDataByParser.getName(), storeDataByParser.getAddress());
 
@@ -74,18 +74,21 @@ public class GoogleMapStoreService {
                     }
 
                     if (googleMapPlacesDetail.getAsJsonObject("primaryTypeDisplayName") != null && googleMapPlacesDetail.getAsJsonObject("primaryTypeDisplayName").get("text") != null) {
-                        primaryTypeDisplayName = googleMapPlacesDetail.getAsJsonObject("displayName").get("text").getAsString();
+                        primaryTypeDisplayName = googleMapPlacesDetail.getAsJsonObject("primaryTypeDisplayName").get("text").getAsString();
                     }
+
+                    if(phoneNumber == null && primaryTypeDisplayName == null)
+                        continue;
 
                     //얻어온 가게 상세 정보를 바탕으로 DB에 저장할 객체를 생성
                     Store store = Store.builder()
                             .googlePlaceId(googleMapPlacesDetail.get("id").getAsString())
-                            .internationalPhoneNumber(phoneNumber)
+                            .phoneNumber(phoneNumber)
                             .formattedAddress(googleMapPlacesDetail.get("formattedAddress").getAsString())
                             .location((Point) new WKTReader().read(String.format("POINT(%s %s)", googleMapPlacesDetail.getAsJsonObject("location").get("latitude").getAsString(), googleMapPlacesDetail.getAsJsonObject("location").get("longitude").getAsString())))
                             .regularOpeningHours(regularOpeningHoursList)
                             .displayName(googleMapPlacesDetail.getAsJsonObject("displayName").get("text").getAsString())
-                            .primaryType(primaryTypeDisplayName)
+                            .primaryTypeDisplayName(primaryTypeDisplayName)
                             .photos(photosList)
                             .build();
 
