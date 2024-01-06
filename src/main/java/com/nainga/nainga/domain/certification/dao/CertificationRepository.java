@@ -24,6 +24,13 @@ public class CertificationRepository {
         return result.stream().findAny();
     }
 
+    public Optional<Certification> findByName(String name) {
+        List<Certification> result = em.createQuery("select c from Certification c where c.name = :name", Certification.class)
+                .setParameter("name", name)
+                .getResultList();
+        return result.stream().findAny();
+    }
+
     public List<Certification> findAll() {
         return em.createQuery("select c from Certification c", Certification.class)
                 .getResultList();

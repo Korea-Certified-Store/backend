@@ -22,14 +22,4 @@ public class StoreCertification {
     @JoinColumn(name = "certification_id")
     private Certification certification;
 
-    /*
-    연관 관계 메서드
-     */
-    public StoreCertification createStoreCertification(Store store, Certification certification) {
-        return StoreCertification.builder()
-                .store(store)
-                .certification(certification)
-                .build();
-    }
-
 }

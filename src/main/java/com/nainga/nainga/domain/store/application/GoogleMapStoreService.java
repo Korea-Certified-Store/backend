@@ -1,9 +1,13 @@
 package com.nainga.nainga.domain.store.application;
 
 import com.google.gson.*;
+import com.nainga.nainga.domain.certification.dao.CertificationRepository;
+import com.nainga.nainga.domain.certification.domain.Certification;
 import com.nainga.nainga.domain.store.dao.StoreRepository;
 import com.nainga.nainga.domain.store.domain.Store;
 import com.nainga.nainga.domain.store.dto.StoreDataByParser;
+import com.nainga.nainga.domain.storecertification.dao.StoreCertificationRepository;
+import com.nainga.nainga.domain.storecertification.domain.StoreCertification;
 import lombok.RequiredArgsConstructor;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.io.ParseException;
@@ -27,6 +31,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class GoogleMapStoreService {
     private final StoreRepository storeRepository;
+    private final CertificationRepository certificationRepository;
+    private final StoreCertificationRepository storeCertificationRepository;
 
     //이 메서드는 Mobeom Excel dataset 파싱을 통해 가게 이름과 주소를 얻고, 이 정보를 바탕으로 Google Map Place Id를 가져옵니다.
     //그 후 얻어진 Google Map Place Id를 가지고 가게 상세 정보를 Google Map API로부터 가져와 Store DB에 저장합니다.
@@ -39,9 +45,9 @@ public class GoogleMapStoreService {
             if(googleMapPlacesId == null)   //가져온 Google Map Place Id가 null이라는 것은 가게가 하나로 특정되지 않아 사용할 수 없다는 것을 의미
                 continue;
 
-            Optional<Store> resultByGooglePlaceId = storeRepository.findByGooglePlaceId(googleMapPlacesId);
-            if (resultByGooglePlaceId.isEmpty()) {
-                JsonObject googleMapPlacesDetail = getGoogleMapPlacesDetail(googleMapPlacesId);
+            Optional<Store> resultByGooglePlaceId = storeRepository.findByGooglePlaceId(googleMapPlacesId); //Google Map API에서 가져온 place id와 동일한 정보가 디비에 있으면 중복 가게!
+            if (resultByGooglePlaceId.isEmpty()) {  //아직 DB에 존재하지 않는 가게인 경우!
+                JsonObject googleMapPlacesDetail = getGoogleMapPlacesDetail(googleMapPlacesId); //Google Map API를 통해 해당 가게의 상세 정보를 가져옴
                 if (googleMapPlacesDetail == null)   //Google Map Place Detail을 제대로 불러오지 못했을 경우에는 skip
                     continue;
 
@@ -52,7 +58,7 @@ public class GoogleMapStoreService {
                     String phoneNumber = null;
                     String primaryTypeDisplayName = null;
 
-
+                    //이 아래 4개의 if문들은 해당 값들이 없는 가게가 존재하기 때문에 예외처리 목적으로 작성
                     if (googleMapPlacesDetail.getAsJsonObject("regularOpeningHours") != null && googleMapPlacesDetail.getAsJsonObject("regularOpeningHours").getAsJsonArray("weekdayDescriptions") != null) {
                         googleMapPlacesDetail.getAsJsonObject("regularOpeningHours").getAsJsonArray("weekdayDescriptions").forEach(weekdayDescription -> regularOpeningHoursList.add(weekdayDescription.getAsString()));
                     }
@@ -71,6 +77,7 @@ public class GoogleMapStoreService {
                         primaryTypeDisplayName = googleMapPlacesDetail.getAsJsonObject("displayName").get("text").getAsString();
                     }
 
+                    //얻어온 가게 상세 정보를 바탕으로 DB에 저장할 객체를 생성
                     Store store = Store.builder()
                             .googlePlaceId(googleMapPlacesDetail.get("id").getAsString())
                             .internationalPhoneNumber(phoneNumber)
@@ -82,12 +89,57 @@ public class GoogleMapStoreService {
                             .photos(photosList)
                             .build();
 
-                    storeRepository.save(store);
+                    Optional<Certification> mobeom = certificationRepository.findByName("모범음식점");   //Certification 테이블에 이미 모범음식점 데이터가 있는지 조회
+                    if (mobeom.isPresent()) {   //만약 존재하는 경우면, Certification은 새로 만들어줄 필요가 없음
+                        StoreCertification storeCertification = StoreCertification.builder()
+                                .store(store)
+                                .certification(mobeom.get())
+                                .build();
+
+                        storeCertificationRepository.save(storeCertification);
+                        storeRepository.save(store);
+                    } else {    //만약 존재하지 않는 경우라면, Certification도 새로 만들어줘야 함
+                        Certification mobeomReal = Certification.builder()
+                                .name("모범음식점")
+                                .build();
+
+                        StoreCertification storeCertification = StoreCertification.builder()
+                                .store(store)
+                                .certification(mobeomReal)
+                                .build();
+
+                        certificationRepository.save(mobeomReal);
+                        storeCertificationRepository.save(storeCertification);
+                        storeRepository.save(store);
+                    }
+
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
-            } else {
+            } else {    //이미 중복된 Google Place Id가 있을 때! 즉, 동일한 가게가 있을 때는 Certification만 새로 맺어주면 된다.
+                Store store = resultByGooglePlaceId.get();  //위에서 조회한 중복된 가게
+                Optional<Certification> mobeom = certificationRepository.findByName("모범음식점");   //여기도 마찬가지로 Certification 테이블에 이미 모범음식점 데이터가 있는지 조회
 
+                if (mobeom.isPresent()) {   //만약에 존재한다면, Certification은 새로 만들어줄 필요가 없다
+                    StoreCertification storeCertification = StoreCertification.builder()
+                            .store(store)
+                            .certification(mobeom.get())
+                            .build();
+
+                    storeCertificationRepository.save(storeCertification);
+                } else {    //만약에 존재하지 않는다면, Certification도 새로 만들어줘야 한다.
+                    Certification mobeomReal = Certification.builder()
+                            .name("모범음식점")
+                            .build();
+
+                    StoreCertification storeCertification = StoreCertification.builder()
+                            .store(store)
+                            .certification(mobeomReal)
+                            .build();
+
+                    certificationRepository.save(mobeomReal);
+                    storeCertificationRepository.save(storeCertification);
+                }
             }
 
         }
