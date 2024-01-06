@@ -5,6 +5,9 @@ import com.nainga.nainga.domain.store.dao.StoreRepository;
 import com.nainga.nainga.domain.store.domain.Store;
 import com.nainga.nainga.domain.store.dto.StoreDataByParser;
 import lombok.RequiredArgsConstructor;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKTReader;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,7 +18,9 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
@@ -34,9 +39,56 @@ public class GoogleMapStoreService {
             if(googleMapPlacesId == null)   //가져온 Google Map Place Id가 null이라는 것은 가게가 하나로 특정되지 않아 사용할 수 없다는 것을 의미
                 continue;
 
-            JsonObject googleMapPlacesDetail = getGoogleMapPlacesDetail(googleMapPlacesId);
-            if(googleMapPlacesDetail == null)   //Google Map Place Detail을 제대로 불러오지 못했을 경우에는 skip
-                continue;
+            Optional<Store> resultByGooglePlaceId = storeRepository.findByGooglePlaceId(googleMapPlacesId);
+            if (resultByGooglePlaceId.isEmpty()) {
+                JsonObject googleMapPlacesDetail = getGoogleMapPlacesDetail(googleMapPlacesId);
+                if (googleMapPlacesDetail == null)   //Google Map Place Detail을 제대로 불러오지 못했을 경우에는 skip
+                    continue;
+
+                //WKTReader Parse exception에 대한 처리를 위한 try-catch문
+                try {
+                    ArrayList<String> regularOpeningHoursList = new ArrayList<String>();
+                    ArrayList<String> photosList = new ArrayList<>();
+                    String phoneNumber = null;
+                    String primaryTypeDisplayName = null;
+
+
+                    if (googleMapPlacesDetail.getAsJsonObject("regularOpeningHours") != null && googleMapPlacesDetail.getAsJsonObject("regularOpeningHours").getAsJsonArray("weekdayDescriptions") != null) {
+                        googleMapPlacesDetail.getAsJsonObject("regularOpeningHours").getAsJsonArray("weekdayDescriptions").forEach(weekdayDescription -> regularOpeningHoursList.add(weekdayDescription.getAsString()));
+                    }
+
+                    if (googleMapPlacesDetail.getAsJsonArray("photos") != null) {
+                        googleMapPlacesDetail.getAsJsonArray("photos").forEach(photo -> photosList.add(photo.getAsJsonObject().get("name").getAsString()));
+                    }
+
+                    if (googleMapPlacesDetail.get("internationalPhoneNumber") != null) {
+                        phoneNumber = googleMapPlacesDetail.get("internationalPhoneNumber").getAsString();
+                    } else if (googleMapPlacesDetail.get("nationalPhoneNumber") != null) {
+                        phoneNumber = googleMapPlacesDetail.get("nationalPhoneNumber").getAsString();
+                    }
+
+                    if (googleMapPlacesDetail.getAsJsonObject("primaryTypeDisplayName") != null && googleMapPlacesDetail.getAsJsonObject("primaryTypeDisplayName").get("text") != null) {
+                        primaryTypeDisplayName = googleMapPlacesDetail.getAsJsonObject("displayName").get("text").getAsString();
+                    }
+
+                    Store store = Store.builder()
+                            .googlePlaceId(googleMapPlacesDetail.get("id").getAsString())
+                            .internationalPhoneNumber(phoneNumber)
+                            .formattedAddress(googleMapPlacesDetail.get("formattedAddress").getAsString())
+                            .location((Point) new WKTReader().read(String.format("POINT(%s %s)", googleMapPlacesDetail.getAsJsonObject("location").get("latitude").getAsString(), googleMapPlacesDetail.getAsJsonObject("location").get("longitude").getAsString())))
+                            .regularOpeningHours(regularOpeningHoursList)
+                            .displayName(googleMapPlacesDetail.getAsJsonObject("displayName").get("text").getAsString())
+                            .primaryType(primaryTypeDisplayName)
+                            .photos(photosList)
+                            .build();
+
+                    storeRepository.save(store);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            } else {
+
+            }
 
         }
     }
@@ -45,6 +97,8 @@ public class GoogleMapStoreService {
     //주소나 이름이 잘못됐거나, 폐업을했거나하면 장소가 특정되지 않을 수 있습니다. 이땐, places.id가 반환되지 않습니다.
     //혹은 흔한 이름이고 해당 주소지 근방에 비슷한 이름들을 가진 가게가 많을 경우 여러 개의 places.id가 반환될 수 있습니다.
     //따라서, 모호함을 없애기 위해 저희 가게가 정말 잘 찾아진 경우, 즉 places.id가 딱 1개만 반환되었을 때만 DB에 반영합니다.
+    //이건 Google Map API에 텍스트 검색 (ID 전용) SKU를 호출하는 거라 호출 횟수 관계없이 호출 비용이 평생 무료이다.
+    //https://developers.google.com/maps/documentation/places/web-service/usage-and-billing?hl=ko
     public String getGoogleMapPlacesId(String name, String address) {
         String reqURL = "https://places.googleapis.com/v1/places:searchText";
         String textQuery = address + name;
@@ -103,6 +157,8 @@ public class GoogleMapStoreService {
         return null;    //검색된 가게가 1개일 때를 제외하고는 null을 리턴
     }
 
+    //아래 메서드는 SKU: Place Details (Advanced)를 트리거해서 api 콜 1개당 0.02달러씩 결제된다.
+    //https://developers.google.com/maps/documentation/places/web-service/usage-and-billing?hl=ko#advanced-placedetails
     public JsonObject getGoogleMapPlacesDetail(String googleMapPlacesId) {
         String reqURL = "https://places.googleapis.com/v1/places/" + googleMapPlacesId + "?languageCode=ko";
         String GoogleApiKey = System.getenv("GOOGLE_API_KEY");  //Secrets 보호를 위해 환경 변수 사용
@@ -115,7 +171,7 @@ public class GoogleMapStoreService {
             conn.setDoOutput(true);
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setRequestProperty("X-Goog-Api-Key", GoogleApiKey);
-            conn.setRequestProperty("X-Goog-FieldMask", "id,displayName,primaryTypeDisplayName,formattedAddress,regularOpeningHours.periods,location,internationalPhoneNumber,photos.name,photos.widthPx,photos.heightPx");
+            conn.setRequestProperty("X-Goog-FieldMask", "id,displayName,primaryTypeDisplayName,formattedAddress,regularOpeningHours.weekdayDescriptions,location,internationalPhoneNumber,photos.name,photos.widthPx,photos.heightPx");
 
             int responseCode = conn.getResponseCode();
 
