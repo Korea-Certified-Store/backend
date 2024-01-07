@@ -39,8 +39,8 @@ public class GoogleMapStoreService {
     //이 메서드는 Mobeom Excel dataset 파싱을 통해 가게 이름과 주소를 얻고, 이 정보를 바탕으로 Google Map Place Id를 가져옵니다.
     //그 후 얻어진 Google Map Place Id를 가지고 가게 상세 정보를 Google Map API로부터 가져와 Store DB에 저장합니다.
     @Transactional
-    public void createAllMobeomStores() {
-        List<StoreDataByParser> allMobeomStores = MobeomDataParser.getAllMobeomStores("mobeom_test300.xlsx");
+    public void createAllMobeomStores(String fileName) {
+        List<StoreDataByParser> allMobeomStores = MobeomDataParser.getAllMobeomStores(fileName);
         for (StoreDataByParser storeDataByParser : allMobeomStores) {
             String googleMapPlacesId = getGoogleMapPlacesId(storeDataByParser.getName(), storeDataByParser.getAddress());
 
@@ -167,8 +167,8 @@ public class GoogleMapStoreService {
     //파라미터로 몇 달러까지 API call을 허용할 것인지 정하고, 조회할 시작 위치를 지정합니다.
     //만약 도중에 남은 달러가 없어질 시점이 되면, 그때까지 남은 달러와 다음부터 탐색해야할 인덱스 번호를 리턴하며 만약 모두 조회된 경우에는 남은 달러와 -1을 리턴합니다.
     @Transactional
-    public CreateDividedMobeomStoresResponse createDividedMobeomStores(double dollars, int startIndex) {
-        List<StoreDataByParser> allMobeomStores = MobeomDataParser.getAllMobeomStores("mobeom_test.xlsx");
+    public CreateDividedMobeomStoresResponse createDividedMobeomStores(String fileName, double dollars, int startIndex) {
+        List<StoreDataByParser> allMobeomStores = MobeomDataParser.getAllMobeomStores(fileName);
         for (int i=startIndex; i< allMobeomStores.size(); ++i) {
 
 

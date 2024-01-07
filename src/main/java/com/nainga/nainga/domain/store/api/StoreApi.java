@@ -14,14 +14,15 @@ public class StoreApi {
     private final GoogleMapStoreService googleMapStoreService;
 
     @GetMapping("api/v1/store/mobeom")
-    public Result<String> createAllMobeomStores() {
-        googleMapStoreService.createAllMobeomStores();
+    public Result<String> createAllMobeomStores(@RequestParam(value = "fileName") String fileName) {
+        googleMapStoreService.createAllMobeomStores(fileName);
         return new Result<>(Result.CODE_SUCCESS, Result.MESSAGE_OK, null);
     }
 
     @GetMapping("api/v1/store/dividedMobeom")
-    public Result<CreateDividedMobeomStoresResponse> createDividedMobeomStores(@RequestParam(value = "dollars") double dollars, @RequestParam(value = "startIndex") int startIndex) {
-        CreateDividedMobeomStoresResponse response = googleMapStoreService.createDividedMobeomStores(dollars, startIndex);
+    public Result<CreateDividedMobeomStoresResponse> createDividedMobeomStores(@RequestParam(value = "fileName") String fileName, @RequestParam(value = "dollars") double dollars, @RequestParam(value = "startIndex") int startIndex) {
+        CreateDividedMobeomStoresResponse response = googleMapStoreService.createDividedMobeomStores(fileName, dollars, startIndex);
+        System.out.println("response = " + response);   //편하게 콘솔 로그에서 확인하기 위한 용도
         return new Result<>(Result.CODE_SUCCESS, Result.MESSAGE_OK, response);
     }
 }
