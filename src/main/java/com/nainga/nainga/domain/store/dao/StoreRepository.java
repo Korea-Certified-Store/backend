@@ -25,10 +25,22 @@ public class StoreRepository {
         return result.stream().findAny();
     }
 
+    public Optional<Store> findByDisplayName(String displayName) {
+        List<Store> result = em.createQuery("select s from Store s where s.displayName = :displayName", Store.class)
+                .setParameter("displayName", displayName)
+                .getResultList();
+        return result.stream().findAny();
+    }
+
     public Optional<Store> findByGooglePlaceId(String googlePlaceId) {
         List<Store> result = em.createQuery("select s from Store s where s.googlePlaceId = :googlePlaceId", Store.class)
                 .setParameter("googlePlaceId", googlePlaceId)
                 .getResultList();
         return result.stream().findAny();
+    }
+
+    public List<Store> findAll() {
+        return em.createQuery("select s from Store s", Store.class)
+                .getResultList();
     }
 }
