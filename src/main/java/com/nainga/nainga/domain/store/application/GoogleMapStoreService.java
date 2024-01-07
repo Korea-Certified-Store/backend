@@ -5,6 +5,7 @@ import com.nainga.nainga.domain.certification.dao.CertificationRepository;
 import com.nainga.nainga.domain.certification.domain.Certification;
 import com.nainga.nainga.domain.store.dao.StoreRepository;
 import com.nainga.nainga.domain.store.domain.Store;
+import com.nainga.nainga.domain.store.dto.CreateDividedMobeomStoresResponse;
 import com.nainga.nainga.domain.store.dto.StoreDataByParser;
 import com.nainga.nainga.domain.storecertification.dao.StoreCertificationRepository;
 import com.nainga.nainga.domain.storecertification.domain.StoreCertification;
@@ -155,6 +156,157 @@ public class GoogleMapStoreService {
         }
     }
 
+    //이 메서드는 createAllMobeomStore() 메서드를 개선하기 위해 구현된 메서드입니다.
+    //createAllMobeomStore()는 대용량 데이터를 한번에 모두 조회하는 반면에 아래 메서드는 API call 비용을 제한하여 해당 비용까지만 조회합니다.
+    //파라미터로 몇 달러까지 API call을 허용할 것인지 정하고, 조회할 시작 위치를 지정합니다.
+    //만약 도중에 남은 달러가 없어질 시점이 되면, 그때까지 남은 달러와 다음부터 탐색해야할 인덱스 번호를 리턴하며 만약 모두 조회된 경우에는 남은 달러와 -1을 리턴합니다.
+    @Transactional
+    public CreateDividedMobeomStoresResponse createDividedMobeomStores(double dollars, int startIndex) {
+        List<StoreDataByParser> allMobeomStores = MobeomDataParser.getAllMobeomStores("mobeom_test300.xlsx");
+        for (int i=startIndex; i< allMobeomStores.size(); ++i) {
+
+
+            String googleMapPlacesId = getGoogleMapPlacesId(allMobeomStores.get(i).getName(), allMobeomStores.get(i).getAddress());
+
+            if(googleMapPlacesId == null)   //가져온 Google Map Place Id가 null이라는 것은 가게가 하나로 특정되지 않아 사용할 수 없다는 것을 의미
+                continue;
+
+            Optional<Store> resultByGooglePlaceId = storeRepository.findByGooglePlaceId(googleMapPlacesId); //Google Map API에서 가져온 place id와 동일한 정보가 디비에 있으면 중복 가게!
+            if (resultByGooglePlaceId.isEmpty()) {  //아직 DB에 존재하지 않는 가게인 경우!
+                if (dollars - 0.02 < 0) {   //남은 달러와 비교하여 API 호출 비용이 없으면 그 상태에서 중단
+                    CreateDividedMobeomStoresResponse createDividedMobeomStoresResponse = new CreateDividedMobeomStoresResponse();
+                    createDividedMobeomStoresResponse.setDollars(dollars);
+                    createDividedMobeomStoresResponse.setNextIndex(i);
+                    return createDividedMobeomStoresResponse;
+                }
+                JsonObject googleMapPlacesDetail = getGoogleMapPlacesDetail(googleMapPlacesId); //Google Map API를 통해 해당 가게의 상세 정보를 가져옴, 0.02달러 소비
+
+                //여기선 API call이 진행된 시점이므로, 남은 달러에 반영
+                dollars -= 0.02;
+
+                if (googleMapPlacesDetail == null)   //Google Map Place Detail을 제대로 불러오지 못했을 경우에는 skip
+                    continue;
+
+                //WKTReader Parse exception에 대한 처리를 위한 try-catch문
+                try {
+                    ArrayList<String> regularOpeningHoursList = new ArrayList<String>();
+                    ArrayList<String> photosList = new ArrayList<>();
+                    String phoneNumber = null;
+                    String primaryTypeDisplayName = null;
+
+                    //이 아래 4개의 if문들은 해당 값들이 없는 가게가 존재하기 때문에 예외처리 목적으로 작성
+                    if (googleMapPlacesDetail.getAsJsonObject("regularOpeningHours") != null && googleMapPlacesDetail.getAsJsonObject("regularOpeningHours").getAsJsonArray("weekdayDescriptions") != null) {
+                        googleMapPlacesDetail.getAsJsonObject("regularOpeningHours").getAsJsonArray("weekdayDescriptions").forEach(weekdayDescription -> regularOpeningHoursList.add(weekdayDescription.getAsString()));
+                    }
+
+                    if (googleMapPlacesDetail.getAsJsonArray("photos") != null) {
+                        googleMapPlacesDetail.getAsJsonArray("photos").forEach(photo -> photosList.add(photo.getAsJsonObject().get("name").getAsString()));
+                    }
+
+                    if (googleMapPlacesDetail.get("internationalPhoneNumber") != null) {
+                        phoneNumber = googleMapPlacesDetail.get("internationalPhoneNumber").getAsString();
+                    } else if (googleMapPlacesDetail.get("nationalPhoneNumber") != null) {
+                        phoneNumber = googleMapPlacesDetail.get("nationalPhoneNumber").getAsString();
+                    }
+
+                    if (googleMapPlacesDetail.getAsJsonObject("primaryTypeDisplayName") != null && googleMapPlacesDetail.getAsJsonObject("primaryTypeDisplayName").get("text") != null) {
+                        primaryTypeDisplayName = googleMapPlacesDetail.getAsJsonObject("primaryTypeDisplayName").get("text").getAsString();
+                    }
+
+                    if(phoneNumber == null && primaryTypeDisplayName == null)
+                        continue;
+
+                    if (!photosList.isEmpty()) {
+                        if (dollars - 0.007 < 0) { //다음 API를 호출할 돈이 없으면 중단
+                            CreateDividedMobeomStoresResponse createDividedMobeomStoresResponse = new CreateDividedMobeomStoresResponse();
+                            createDividedMobeomStoresResponse.setDollars(dollars);
+                            createDividedMobeomStoresResponse.setNextIndex(i);
+                            return createDividedMobeomStoresResponse;
+                        }
+                        //돈이 충분히 있으면,
+                        String localFilePath = getGoogleMapPlacesImage(photosList.get(0));  //0.007달러 소비
+
+                        //소비한 비용 반영
+                        dollars -= 0.007;
+
+                        photosList.clear();
+                        photosList.add(localFilePath);
+                    }
+
+                    //얻어온 가게 상세 정보를 바탕으로 DB에 저장할 객체를 생성
+                    Store store = Store.builder()
+                            .googlePlaceId(googleMapPlacesDetail.get("id").getAsString())
+                            .phoneNumber(phoneNumber)
+                            .formattedAddress(googleMapPlacesDetail.get("formattedAddress").getAsString())
+                            .location((Point) new WKTReader().read(String.format("POINT(%s %s)", googleMapPlacesDetail.getAsJsonObject("location").get("latitude").getAsString(), googleMapPlacesDetail.getAsJsonObject("location").get("longitude").getAsString())))
+                            .regularOpeningHours(regularOpeningHoursList)
+                            .displayName(googleMapPlacesDetail.getAsJsonObject("displayName").get("text").getAsString())
+                            .primaryTypeDisplayName(primaryTypeDisplayName)
+                            .photos(photosList)
+                            .build();
+
+                    Optional<Certification> mobeom = certificationRepository.findByName("모범음식점");   //Certification 테이블에 이미 모범음식점 데이터가 있는지 조회
+                    if (mobeom.isPresent()) {   //만약 존재하는 경우면, Certification은 새로 만들어줄 필요가 없음
+                        StoreCertification storeCertification = StoreCertification.builder()
+                                .store(store)
+                                .certification(mobeom.get())
+                                .build();
+
+                        storeCertificationRepository.save(storeCertification);
+                        storeRepository.save(store);
+                    } else {    //만약 존재하지 않는 경우라면, Certification도 새로 만들어줘야 함
+                        Certification mobeomReal = Certification.builder()
+                                .name("모범음식점")
+                                .build();
+
+                        StoreCertification storeCertification = StoreCertification.builder()
+                                .store(store)
+                                .certification(mobeomReal)
+                                .build();
+
+                        certificationRepository.save(mobeomReal);
+                        storeCertificationRepository.save(storeCertification);
+                        storeRepository.save(store);
+                    }
+
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            } else {    //이미 중복된 Google Place Id가 있을 때! 즉, 동일한 가게가 있을 때는 Certification만 새로 맺어주면 된다.
+                Store store = resultByGooglePlaceId.get();  //위에서 조회한 중복된 가게
+                Optional<Certification> mobeom = certificationRepository.findByName("모범음식점");   //여기도 마찬가지로 Certification 테이블에 이미 모범음식점 데이터가 있는지 조회
+
+                if (mobeom.isPresent()) {   //만약에 존재한다면, Certification은 새로 만들어줄 필요가 없다
+                    StoreCertification storeCertification = StoreCertification.builder()
+                            .store(store)
+                            .certification(mobeom.get())
+                            .build();
+
+                    storeCertificationRepository.save(storeCertification);
+                } else {    //만약에 존재하지 않는다면, Certification도 새로 만들어줘야 한다.
+                    Certification mobeomReal = Certification.builder()
+                            .name("모범음식점")
+                            .build();
+
+                    StoreCertification storeCertification = StoreCertification.builder()
+                            .store(store)
+                            .certification(mobeomReal)
+                            .build();
+
+                    certificationRepository.save(mobeomReal);
+                    storeCertificationRepository.save(storeCertification);
+                }
+            }
+
+        }
+        //만약 모범 음식점 리스트 끝까지 잘 돌았다면,
+        CreateDividedMobeomStoresResponse createDividedMobeomStoresResponse = new CreateDividedMobeomStoresResponse();
+        createDividedMobeomStoresResponse.setDollars(dollars);
+        createDividedMobeomStoresResponse.setNextIndex(-1);
+        return createDividedMobeomStoresResponse;
+    }
+
+    //아래 메서드는 Google Map API 내 사진 요청 API를 트리거하여 API call
     public String getGoogleMapPlacesImage(String photosName) {
         String maxWidthPx = "400";
         String maxHeightPx = "400";
