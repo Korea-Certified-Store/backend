@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +33,8 @@ import java.util.UUID;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class GoogleMapStoreService {
+    @Value("${GOOGLE_API_KEY}")
+    String GoogleApiKey;
     private final StoreRepository storeRepository;
     private final CertificationRepository certificationRepository;
     private final StoreCertificationRepository storeCertificationRepository;
@@ -322,7 +325,7 @@ public class GoogleMapStoreService {
     public String getGoogleMapPlacesImage(String photosName) {
         String maxWidthPx = "400";
         String maxHeightPx = "400";
-        String GoogleApiKey = System.getenv("GOOGLE_API_KEY");
+
         String reqURL = "https://places.googleapis.com/v1/" + photosName + "/media?maxHeightPx=" + maxHeightPx + "&maxWidthPx=" + maxWidthPx + "&key=" + GoogleApiKey;
 
         String uuid = UUID.randomUUID().toString().replace("-", "");
@@ -358,7 +361,6 @@ public class GoogleMapStoreService {
     public String getGoogleMapPlacesId(String name, String address) {
         String reqURL = "https://places.googleapis.com/v1/places:searchText";
         String textQuery = address + name;
-        String GoogleApiKey = System.getenv("GOOGLE_API_KEY");  //Secrets 보호를 위해 환경 변수 사용
 
         try {
             URL url = new URL(reqURL);
@@ -417,7 +419,6 @@ public class GoogleMapStoreService {
     //https://developers.google.com/maps/documentation/places/web-service/usage-and-billing?hl=ko#advanced-placedetails
     public JsonObject getGoogleMapPlacesDetail(String googleMapPlacesId) {
         String reqURL = "https://places.googleapis.com/v1/places/" + googleMapPlacesId + "?languageCode=ko";
-        String GoogleApiKey = System.getenv("GOOGLE_API_KEY");  //Secrets 보호를 위해 환경 변수 사용
 
         try {
             URL url = new URL(reqURL);

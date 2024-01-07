@@ -12,7 +12,9 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        
+  profiles:
+    include: env
+
 logging:
   level:
     org.hibernate.SQL: debug
