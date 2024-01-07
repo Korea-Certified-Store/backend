@@ -50,7 +50,7 @@ jobs:
 
       - name: Test with Gradle
         run: ./gradlew test
-        env: GOOGLE_API_KEY:${{secrets.GOOGLE_API_KEY}} # GOOGLE API KEY 추가
+        env: GOOGLE_API_KEY:${{ secrets.GOOGLE_API_KEY }} # GOOGLE API KEY 추가
       
       # 테스트 후 Result를 보기위해 Publish Unit Test Results step 추가
       - name: Publish Unit Test Results
