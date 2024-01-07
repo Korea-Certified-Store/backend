@@ -15,16 +15,17 @@ import org.locationtech.jts.io.WKTReader;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Transactional(readOnly = true)
@@ -38,7 +39,7 @@ public class GoogleMapStoreService {
     //그 후 얻어진 Google Map Place Id를 가지고 가게 상세 정보를 Google Map API로부터 가져와 Store DB에 저장합니다.
     @Transactional
     public void createAllMobeomStores() {
-        List<StoreDataByParser> allMobeomStores = MobeomDataParser.getAllMobeomStores("mobeom_test1000.xlsx");
+        List<StoreDataByParser> allMobeomStores = MobeomDataParser.getAllMobeomStores("mobeom_test300.xlsx");
         for (StoreDataByParser storeDataByParser : allMobeomStores) {
             String googleMapPlacesId = getGoogleMapPlacesId(storeDataByParser.getName(), storeDataByParser.getAddress());
 
@@ -79,6 +80,12 @@ public class GoogleMapStoreService {
 
                     if(phoneNumber == null && primaryTypeDisplayName == null)
                         continue;
+
+                    if (!photosList.isEmpty()) {
+                        String localFilePath = getGoogleMapPlacesImage(photosList.get(0));
+                        photosList.clear();
+                        photosList.add(localFilePath);
+                    }
 
                     //얻어온 가게 상세 정보를 바탕으로 DB에 저장할 객체를 생성
                     Store store = Store.builder()
@@ -146,6 +153,36 @@ public class GoogleMapStoreService {
             }
 
         }
+    }
+
+    public String getGoogleMapPlacesImage(String photosName) {
+        String maxWidthPx = "400";
+        String maxHeightPx = "400";
+        String GoogleApiKey = System.getenv("GOOGLE_API_KEY");
+        String reqURL = "https://places.googleapis.com/v1/" + photosName + "/media?maxHeightPx=" + maxHeightPx + "&maxWidthPx=" + maxWidthPx + "&key=" + GoogleApiKey;
+
+        String uuid = UUID.randomUUID().toString().replace("-", "");
+        String fileExtension = ".jpg";
+        String randomFilename = uuid + fileExtension;
+        String directoryPath = new File("").getAbsolutePath() + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "images" + File.separator;
+        String localFilePath = directoryPath + randomFilename;
+
+        Path localPath = Path.of(localFilePath);
+
+        try {
+            URL url = new URL(reqURL);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            InputStream inputStream = conn.getInputStream();
+
+            Files.copy(inputStream, localPath, StandardCopyOption.REPLACE_EXISTING);
+
+            conn.disconnect();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return localFilePath;
     }
 
     //이 메서드는 Google Map API 내 "텍스트 검색(신규)"를 활용하여 텍스트 기반으로 검색하고 매칭되는 가게의 places.id를 가져옵니다.
