@@ -38,7 +38,7 @@ jobs:
         env:
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
           OCCUPY_SECRET_TEST_DIR: ./src/test/resources    # 레포지토리 내 빈 env.yml의 위치 (test)
-          OCCUPY_SECRET_DIR: ./application/src/main/resources  # 레포지토리 내 빈 env.yml의 위치 (main)
+          OCCUPY_SECRET_DIR: ./src/main/resources  # 레포지토리 내 빈 env.yml의 위치 (main)
           OCCUPY_SECRET_DIR_FILE_NAME: env.yml                 # 파일 이름
 
         # base64 디코딩하여 파일에 secrets 값 복사
