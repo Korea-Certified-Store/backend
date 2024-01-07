@@ -102,13 +102,17 @@ public class GoogleMapStoreService {
 
                     Optional<Certification> mobeom = certificationRepository.findByName("모범음식점");   //Certification 테이블에 이미 모범음식점 데이터가 있는지 조회
                     if (mobeom.isPresent()) {   //만약 존재하는 경우면, Certification은 새로 만들어줄 필요가 없음
-                        StoreCertification storeCertification = StoreCertification.builder()
-                                .store(store)
-                                .certification(mobeom.get())
-                                .build();
-
-                        storeCertificationRepository.save(storeCertification);
-                        storeRepository.save(store);
+                        Optional<StoreCertification> byStoreIdCertificationId = storeCertificationRepository.findByStoreIdCertificationId(store.getId(), mobeom.get().getId());
+                        if (byStoreIdCertificationId.isPresent()) {   //이미 해당 가게가 모범음식점으로 StoreCertification에 등록되어있는 경우
+                            storeRepository.save(store);
+                        } else {
+                            StoreCertification storeCertification = StoreCertification.builder()
+                                    .store(store)
+                                    .certification(mobeom.get())
+                                    .build();
+                            storeCertificationRepository.save(storeCertification);
+                            storeRepository.save(store);
+                        }
                     } else {    //만약 존재하지 않는 경우라면, Certification도 새로 만들어줘야 함
                         Certification mobeomReal = Certification.builder()
                                 .name("모범음식점")
@@ -132,12 +136,14 @@ public class GoogleMapStoreService {
                 Optional<Certification> mobeom = certificationRepository.findByName("모범음식점");   //여기도 마찬가지로 Certification 테이블에 이미 모범음식점 데이터가 있는지 조회
 
                 if (mobeom.isPresent()) {   //만약에 존재한다면, Certification은 새로 만들어줄 필요가 없다
-                    StoreCertification storeCertification = StoreCertification.builder()
-                            .store(store)
-                            .certification(mobeom.get())
-                            .build();
-
-                    storeCertificationRepository.save(storeCertification);
+                    Optional<StoreCertification> byStoreIdCertificationId = storeCertificationRepository.findByStoreIdCertificationId(store.getId(), mobeom.get().getId());
+                    if (!byStoreIdCertificationId.isPresent()) {
+                        StoreCertification storeCertification = StoreCertification.builder()
+                                .store(store)
+                                .certification(mobeom.get())
+                                .build();
+                        storeCertificationRepository.save(storeCertification);
+                    }
                 } else {    //만약에 존재하지 않는다면, Certification도 새로 만들어줘야 한다.
                     Certification mobeomReal = Certification.builder()
                             .name("모범음식점")
@@ -162,7 +168,7 @@ public class GoogleMapStoreService {
     //만약 도중에 남은 달러가 없어질 시점이 되면, 그때까지 남은 달러와 다음부터 탐색해야할 인덱스 번호를 리턴하며 만약 모두 조회된 경우에는 남은 달러와 -1을 리턴합니다.
     @Transactional
     public CreateDividedMobeomStoresResponse createDividedMobeomStores(double dollars, int startIndex) {
-        List<StoreDataByParser> allMobeomStores = MobeomDataParser.getAllMobeomStores("mobeom_test300.xlsx");
+        List<StoreDataByParser> allMobeomStores = MobeomDataParser.getAllMobeomStores("mobeom_test.xlsx");
         for (int i=startIndex; i< allMobeomStores.size(); ++i) {
 
 
@@ -247,13 +253,17 @@ public class GoogleMapStoreService {
 
                     Optional<Certification> mobeom = certificationRepository.findByName("모범음식점");   //Certification 테이블에 이미 모범음식점 데이터가 있는지 조회
                     if (mobeom.isPresent()) {   //만약 존재하는 경우면, Certification은 새로 만들어줄 필요가 없음
-                        StoreCertification storeCertification = StoreCertification.builder()
-                                .store(store)
-                                .certification(mobeom.get())
-                                .build();
-
-                        storeCertificationRepository.save(storeCertification);
-                        storeRepository.save(store);
+                        Optional<StoreCertification> byStoreIdCertificationId = storeCertificationRepository.findByStoreIdCertificationId(store.getId(), mobeom.get().getId());
+                        if (byStoreIdCertificationId.isPresent()) {   //이미 해당 가게가 모범음식점으로 StoreCertification에 등록되어있는 경우
+                            storeRepository.save(store);
+                        } else {
+                            StoreCertification storeCertification = StoreCertification.builder()
+                                    .store(store)
+                                    .certification(mobeom.get())
+                                    .build();
+                            storeCertificationRepository.save(storeCertification);
+                            storeRepository.save(store);
+                        }
                     } else {    //만약 존재하지 않는 경우라면, Certification도 새로 만들어줘야 함
                         Certification mobeomReal = Certification.builder()
                                 .name("모범음식점")
@@ -277,12 +287,14 @@ public class GoogleMapStoreService {
                 Optional<Certification> mobeom = certificationRepository.findByName("모범음식점");   //여기도 마찬가지로 Certification 테이블에 이미 모범음식점 데이터가 있는지 조회
 
                 if (mobeom.isPresent()) {   //만약에 존재한다면, Certification은 새로 만들어줄 필요가 없다
-                    StoreCertification storeCertification = StoreCertification.builder()
-                            .store(store)
-                            .certification(mobeom.get())
-                            .build();
-
-                    storeCertificationRepository.save(storeCertification);
+                    Optional<StoreCertification> byStoreIdCertificationId = storeCertificationRepository.findByStoreIdCertificationId(store.getId(), mobeom.get().getId());
+                    if (!byStoreIdCertificationId.isPresent()) {
+                        StoreCertification storeCertification = StoreCertification.builder()
+                                .store(store)
+                                .certification(mobeom.get())
+                                .build();
+                        storeCertificationRepository.save(storeCertification);
+                    }
                 } else {    //만약에 존재하지 않는다면, Certification도 새로 만들어줘야 한다.
                     Certification mobeomReal = Certification.builder()
                             .name("모범음식점")
