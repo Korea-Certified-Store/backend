@@ -33,6 +33,16 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	implementation group: 'org.hibernate', name: 'hibernate-spatial', version: '6.4.1.Final'	//Geometry 사용을 위해 추가
 	testRuntimeOnly 'com.h2database:h2'
+
+	// Excel file을 순수 Java로 처리하기 위한 Apache POI import
+	implementation group: 'org.apache.poi', name: 'poi', version: '5.0.0'
+	implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.0.0'
+
+	// 확장자를 읽어들이기 위해 추가
+	implementation group: 'commons-io', name: 'commons-io', version: '2.4'
+
+	// JsonParser를 사용하기 위해 추가
+	dependencies { implementation 'com.google.code.gson:gson:2.8.8' }
 }
 
 tasks.named('test') {

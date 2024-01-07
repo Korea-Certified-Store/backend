@@ -1,5 +1,7 @@
 package com.nainga.nainga;
 
+import com.nainga.nainga.domain.store.application.GoogleMapStoreService;
+import com.nainga.nainga.domain.store.application.MobeomDataParser;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
