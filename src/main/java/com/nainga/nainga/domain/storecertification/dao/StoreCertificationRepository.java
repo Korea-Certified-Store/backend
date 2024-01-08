@@ -28,4 +28,12 @@ public class StoreCertificationRepository {
         return em.createQuery("select sc from StoreCertification sc", StoreCertification.class)
                 .getResultList();
     }
+
+    public Optional<StoreCertification> findByStoreIdCertificationId(Long storeId, Long certificationId) {
+        List<StoreCertification> result = em.createQuery("select sc from StoreCertification sc where sc.store.id = :storeId and sc.certification.id = :certificationId", StoreCertification.class)
+                .setParameter("storeId", storeId)
+                .setParameter("certificationId", certificationId)
+                .getResultList();
+        return result.stream().findAny();
+    }
 }
