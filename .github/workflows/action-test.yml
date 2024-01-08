@@ -21,6 +21,9 @@ on:
 # 단위 테스트 결과를 발행하기 위해 쓰기 권한을 주어야 합니다.
 permissions: write-all
 
+env:
+  GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+
 jobs:
   test: # 테스트를 수행합니다.
     runs-on: ubuntu-latest # 실행 환경 지정
@@ -33,10 +36,6 @@ jobs:
         with:
           java-version: '17'
           distribution: 'corretto' # OpenJDK 배포사 corretto, temurin
-
-      - name: Copy secrets to application
-        env:
-          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
 
       # github action 에서 Gradle dependency 캐시 사용
       - name: Cache Gradle packages
