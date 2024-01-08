@@ -21,21 +21,30 @@ on:
 # 단위 테스트 결과를 발행하기 위해 쓰기 권한을 주어야 합니다.
 permissions: write-all
 
-env:
-  GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
-
 jobs:
   test: # 테스트를 수행합니다.
     runs-on: ubuntu-latest # 실행 환경 지정
     steps:
       - name: Checkout Repostiory
         uses: actions/checkout@v3 # github action 버전 지정(major version)
-      
+
       - name: Set up JDK 17 # JAVA 버전 지정
         uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'corretto' # OpenJDK 배포사 corretto, temurin
+
+      - name: Copy secrets to application
+        env:
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          OCCUPY_SECRET_TEST_DIR: ./src/test/resources    # 레포지토리 내 빈 env.yml의 위치 (test)
+          OCCUPY_SECRET_DIR: ./src/main/resources  # 레포지토리 내 빈 env.yml의 위치 (main)
+          OCCUPY_SECRET_DIR_FILE_NAME: env.yml                 # 파일 이름
+
+        # secrets 값 복사
+        run: |
+          echo "GOOGLE_API_KEY: $GOOGLE_API_KEY" >> $OCCUPY_SECRET_DIR/$OCCUPY_SECRET_DIR_FILE_NAME &&
+          echo "GOOGLE_API_KEY: $GOOGLE_API_KEY" >> $OCCUPY_SECRET_TEST_DIR/$OCCUPY_SECRET_DIR_FILE_NAME
 
       # github action 에서 Gradle dependency 캐시 사용
       - name: Cache Gradle packages

@@ -34,7 +34,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class GoogleMapStoreService {
     @Value("${GOOGLE_API_KEY}")
-    String GoogleApiKey;
+    private String googleApiKey;
     private final StoreRepository storeRepository;
     private final CertificationRepository certificationRepository;
     private final StoreCertificationRepository storeCertificationRepository;
@@ -172,6 +172,7 @@ public class GoogleMapStoreService {
     @Transactional
     public CreateDividedMobeomStoresResponse createDividedMobeomStores(String fileName, double dollars, int startIndex) {
         List<StoreDataByParser> allMobeomStores = MobeomDataParser.getAllMobeomStores(fileName);
+        System.out.println("googleAPI = " + googleApiKey);
         for (int i=startIndex; i< allMobeomStores.size(); ++i) {
 
 
@@ -326,7 +327,7 @@ public class GoogleMapStoreService {
         String maxWidthPx = "400";
         String maxHeightPx = "400";
 
-        String reqURL = "https://places.googleapis.com/v1/" + photosName + "/media?maxHeightPx=" + maxHeightPx + "&maxWidthPx=" + maxWidthPx + "&key=" + GoogleApiKey;
+        String reqURL = "https://places.googleapis.com/v1/" + photosName + "/media?maxHeightPx=" + maxHeightPx + "&maxWidthPx=" + maxWidthPx + "&key=" + googleApiKey;
 
         String uuid = UUID.randomUUID().toString().replace("-", "");
         String fileExtension = ".jpg";
@@ -369,7 +370,7 @@ public class GoogleMapStoreService {
             conn.setRequestMethod("POST");  //Google Map API의 정해진 헤더
             conn.setDoOutput(true);
             conn.setRequestProperty("Content-Type", "application/json");
-            conn.setRequestProperty("X-Goog-Api-Key", GoogleApiKey);
+            conn.setRequestProperty("X-Goog-Api-Key", googleApiKey);
             conn.setRequestProperty("X-Goog-FieldMask", "places.id");
 
             JsonObject jsonObject = new JsonObject();
@@ -427,7 +428,7 @@ public class GoogleMapStoreService {
             conn.setRequestMethod("GET");  //Google Map API의 정해진 헤더
             conn.setDoOutput(true);
             conn.setRequestProperty("Content-Type", "application/json");
-            conn.setRequestProperty("X-Goog-Api-Key", GoogleApiKey);
+            conn.setRequestProperty("X-Goog-Api-Key", googleApiKey);
             conn.setRequestProperty("X-Goog-FieldMask", "id,displayName,primaryTypeDisplayName,formattedAddress,regularOpeningHours.weekdayDescriptions,location,internationalPhoneNumber,photos.name,photos.widthPx,photos.heightPx");
 
             int responseCode = conn.getResponseCode();

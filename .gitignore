@@ -42,4 +42,4 @@ out/
 ###
 /src/main/resources/images/
 
-env.yaml
+env.yml
