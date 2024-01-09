@@ -47,5 +47,6 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
-	systemProperties project.properties.subMap(["disable.MySQL"])	//테스트 단까지 해당 system property를 전달해주기 위함
+//	systemProperties project.properties.subMap(["disable.MySQL"])	//테스트 단까지 해당 system property를 전달해주기 위함
+	systemProperty "mysql", System.getProperty("mysql")
 }
