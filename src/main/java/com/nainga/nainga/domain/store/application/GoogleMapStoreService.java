@@ -5,6 +5,9 @@ import com.nainga.nainga.domain.certification.dao.CertificationRepository;
 import com.nainga.nainga.domain.certification.domain.Certification;
 import com.nainga.nainga.domain.store.dao.StoreRepository;
 import com.nainga.nainga.domain.store.domain.Store;
+import com.nainga.nainga.domain.store.domain.StoreDay;
+import com.nainga.nainga.domain.store.domain.StoreOpenCloseDay;
+import com.nainga.nainga.domain.store.domain.StoreRegularOpeningHours;
 import com.nainga.nainga.domain.store.dto.CreateDividedMobeomStoresResponse;
 import com.nainga.nainga.domain.store.dto.StoreDataByParser;
 import com.nainga.nainga.domain.storecertification.dao.StoreCertificationRepository;
@@ -58,14 +61,37 @@ public class GoogleMapStoreService {
 
                 //WKTReader Parse exception에 대한 처리를 위한 try-catch문
                 try {
-                    ArrayList<String> regularOpeningHoursList = new ArrayList<String>();
-                    ArrayList<String> photosList = new ArrayList<>();
+                    List<JsonObject> openList = new ArrayList<JsonObject>();
+                    List<JsonObject> closeList = new ArrayList<JsonObject>();
+                    List<StoreRegularOpeningHours> regularOpeningHours = new ArrayList<StoreRegularOpeningHours>();
+                    List<String> photosList = new ArrayList<>();
                     String phoneNumber = null;
                     String primaryTypeDisplayName = null;
 
                     //이 아래 4개의 if문들은 해당 값들이 없는 가게가 존재하기 때문에 예외처리 목적으로 작성
-                    if (googleMapPlacesDetail.getAsJsonObject("regularOpeningHours") != null && googleMapPlacesDetail.getAsJsonObject("regularOpeningHours").getAsJsonArray("weekdayDescriptions") != null) {
-                        googleMapPlacesDetail.getAsJsonObject("regularOpeningHours").getAsJsonArray("weekdayDescriptions").forEach(weekdayDescription -> regularOpeningHoursList.add(weekdayDescription.getAsString()));
+                    if (googleMapPlacesDetail.getAsJsonObject("regularOpeningHours") != null && googleMapPlacesDetail.getAsJsonObject("regularOpeningHours").getAsJsonArray("periods") != null) {
+                        googleMapPlacesDetail.getAsJsonObject("regularOpeningHours").getAsJsonArray("periods").forEach(period -> {
+                            openList.add(period.getAsJsonObject().getAsJsonObject("open"));
+                            closeList.add(period.getAsJsonObject().getAsJsonObject("close"));
+                        });
+
+                        for (int i = 0; i < openList.size(); ++i) { //Google API에서 가져온 가게 Open, 가게 Close 시간 정보를 파싱하는 과정
+                            StoreRegularOpeningHours storeRegularOpeningHours = new StoreRegularOpeningHours();
+                            StoreOpenCloseDay storeOpenDay = new StoreOpenCloseDay();
+                            StoreOpenCloseDay storeCloseDay = new StoreOpenCloseDay();
+
+                            storeOpenDay.setDay(StoreDay.values()[openList.get(i).get("day").getAsInt()]);
+                            storeOpenDay.setHour(openList.get(i).get("hour").getAsInt());
+                            storeOpenDay.setMinute(openList.get(i).get("minute").getAsInt());
+
+                            storeCloseDay.setDay(StoreDay.values()[closeList.get(i).get("day").getAsInt()]);
+                            storeCloseDay.setHour(closeList.get(i).get("hour").getAsInt());
+                            storeCloseDay.setMinute(closeList.get(i).get("minute").getAsInt());
+
+                            storeRegularOpeningHours.setOpen(storeOpenDay);
+                            storeRegularOpeningHours.setClose(storeCloseDay);
+                            regularOpeningHours.add(storeRegularOpeningHours);
+                        }
                     }
 
                     if (googleMapPlacesDetail.getAsJsonArray("photos") != null) {
@@ -96,8 +122,8 @@ public class GoogleMapStoreService {
                             .googlePlaceId(googleMapPlacesDetail.get("id").getAsString())
                             .phoneNumber(phoneNumber)
                             .formattedAddress(googleMapPlacesDetail.get("formattedAddress").getAsString())
-                            .location((Point) new WKTReader().read(String.format("POINT(%s %s)", googleMapPlacesDetail.getAsJsonObject("location").get("latitude").getAsString(), googleMapPlacesDetail.getAsJsonObject("location").get("longitude").getAsString())))
-                            .regularOpeningHours(regularOpeningHoursList)
+                            .location((Point) new WKTReader().read(String.format("POINT(%s %s)", googleMapPlacesDetail.getAsJsonObject("location").get("longitude").getAsString(), googleMapPlacesDetail.getAsJsonObject("location").get("latitude").getAsString())))
+                            .regularOpeningHours(regularOpeningHours)
                             .displayName(googleMapPlacesDetail.getAsJsonObject("displayName").get("text").getAsString())
                             .primaryTypeDisplayName(primaryTypeDisplayName)
                             .photos(photosList)
@@ -172,7 +198,6 @@ public class GoogleMapStoreService {
     @Transactional
     public CreateDividedMobeomStoresResponse createDividedMobeomStores(String fileName, double dollars, int startIndex) {
         List<StoreDataByParser> allMobeomStores = MobeomDataParser.getAllMobeomStores(fileName);
-        System.out.println("googleAPI = " + googleApiKey);
         for (int i=startIndex; i< allMobeomStores.size(); ++i) {
 
 
@@ -199,14 +224,37 @@ public class GoogleMapStoreService {
 
                 //WKTReader Parse exception에 대한 처리를 위한 try-catch문
                 try {
-                    ArrayList<String> regularOpeningHoursList = new ArrayList<String>();
-                    ArrayList<String> photosList = new ArrayList<>();
+                    List<JsonObject> openList = new ArrayList<JsonObject>();
+                    List<JsonObject> closeList = new ArrayList<JsonObject>();
+                    List<StoreRegularOpeningHours> regularOpeningHours = new ArrayList<StoreRegularOpeningHours>();
+                    List<String> photosList = new ArrayList<>();
                     String phoneNumber = null;
                     String primaryTypeDisplayName = null;
 
                     //이 아래 4개의 if문들은 해당 값들이 없는 가게가 존재하기 때문에 예외처리 목적으로 작성
-                    if (googleMapPlacesDetail.getAsJsonObject("regularOpeningHours") != null && googleMapPlacesDetail.getAsJsonObject("regularOpeningHours").getAsJsonArray("weekdayDescriptions") != null) {
-                        googleMapPlacesDetail.getAsJsonObject("regularOpeningHours").getAsJsonArray("weekdayDescriptions").forEach(weekdayDescription -> regularOpeningHoursList.add(weekdayDescription.getAsString()));
+                    if (googleMapPlacesDetail.getAsJsonObject("regularOpeningHours") != null && googleMapPlacesDetail.getAsJsonObject("regularOpeningHours").getAsJsonArray("periods") != null) {
+                        googleMapPlacesDetail.getAsJsonObject("regularOpeningHours").getAsJsonArray("periods").forEach(period -> {
+                            openList.add(period.getAsJsonObject().getAsJsonObject("open"));
+                            closeList.add(period.getAsJsonObject().getAsJsonObject("close"));
+                        });
+
+                        for (int j = 0; j < openList.size(); ++j) { //Google API에서 가져온 가게 Open, 가게 Close 시간 정보를 파싱하는 과정
+                            StoreRegularOpeningHours storeRegularOpeningHours = new StoreRegularOpeningHours();
+                            StoreOpenCloseDay storeOpenDay = new StoreOpenCloseDay();
+                            StoreOpenCloseDay storeCloseDay = new StoreOpenCloseDay();
+
+                            storeOpenDay.setDay(StoreDay.values()[openList.get(j).get("day").getAsInt()]);
+                            storeOpenDay.setHour(openList.get(j).get("hour").getAsInt());
+                            storeOpenDay.setMinute(openList.get(j).get("minute").getAsInt());
+
+                            storeCloseDay.setDay(StoreDay.values()[closeList.get(j).get("day").getAsInt()]);
+                            storeCloseDay.setHour(closeList.get(j).get("hour").getAsInt());
+                            storeCloseDay.setMinute(closeList.get(j).get("minute").getAsInt());
+
+                            storeRegularOpeningHours.setOpen(storeOpenDay);
+                            storeRegularOpeningHours.setClose(storeCloseDay);
+                            regularOpeningHours.add(storeRegularOpeningHours);
+                        }
                     }
 
                     if (googleMapPlacesDetail.getAsJsonArray("photos") != null) {
@@ -248,8 +296,8 @@ public class GoogleMapStoreService {
                             .googlePlaceId(googleMapPlacesDetail.get("id").getAsString())
                             .phoneNumber(phoneNumber)
                             .formattedAddress(googleMapPlacesDetail.get("formattedAddress").getAsString())
-                            .location((Point) new WKTReader().read(String.format("POINT(%s %s)", googleMapPlacesDetail.getAsJsonObject("location").get("latitude").getAsString(), googleMapPlacesDetail.getAsJsonObject("location").get("longitude").getAsString())))
-                            .regularOpeningHours(regularOpeningHoursList)
+                            .location((Point) new WKTReader().read(String.format("POINT(%s %s)", googleMapPlacesDetail.getAsJsonObject("location").get("longitude").getAsString(), googleMapPlacesDetail.getAsJsonObject("location").get("latitude").getAsString())))
+                            .regularOpeningHours(regularOpeningHours)
                             .displayName(googleMapPlacesDetail.getAsJsonObject("displayName").get("text").getAsString())
                             .primaryTypeDisplayName(primaryTypeDisplayName)
                             .photos(photosList)
@@ -429,7 +477,7 @@ public class GoogleMapStoreService {
             conn.setDoOutput(true);
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setRequestProperty("X-Goog-Api-Key", googleApiKey);
-            conn.setRequestProperty("X-Goog-FieldMask", "id,displayName,primaryTypeDisplayName,formattedAddress,regularOpeningHours.weekdayDescriptions,location,internationalPhoneNumber,photos.name,photos.widthPx,photos.heightPx");
+            conn.setRequestProperty("X-Goog-FieldMask", "id,displayName,primaryTypeDisplayName,formattedAddress,regularOpeningHours.periods,location,internationalPhoneNumber,photos.name,photos.widthPx,photos.heightPx");
 
             int responseCode = conn.getResponseCode();
 

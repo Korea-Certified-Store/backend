@@ -1,7 +1,9 @@
 package com.nainga.nainga.domain.store.dao;
 
+import com.nainga.nainga.domain.store.domain.Location;
 import com.nainga.nainga.domain.store.domain.Store;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -42,5 +44,17 @@ public class StoreRepository {
     public List<Store> findAll() {
         return em.createQuery("select s from Store s", Store.class)
                 .getResultList();
+    }
+
+    //북서쪽 좌표와 남동쪽 좌표를 받아 그 두 좌표로 만들어지는 최소 사각형 내에 위치하는 가게들 리턴
+    public List<Store> findStoresByLocation(Location northWestLocation, Location southEastLocation) {
+        String pointFormat = String.format(
+                "'LINESTRING(%f %f, %f %f)'",   //POINT는 (경도, 위도) 순이다. 즉, (Logitude, Latitude)순
+                northWestLocation.getLongitude(), northWestLocation.getLatitude(), southEastLocation.getLongitude(), southEastLocation.getLatitude()
+        );
+
+        Query query = em.createNativeQuery("SELECT * " + "FROM store AS s " + "WHERE MBRCONTAINS(ST_LINESTRINGFROMTEXT(" + pointFormat + "), s.location)", Store.class);
+
+        return query.getResultList();
     }
 }

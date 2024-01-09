@@ -45,6 +45,11 @@ dependencies {
 	dependencies { implementation 'com.google.code.gson:gson:2.8.8' }
 }
 
+test {
+	systemProperties = System.properties
+}
+
 tasks.named('test') {
+//	systemProperty "mysql", System.getProperty("mysql")
 	useJUnitPlatform()
 }
