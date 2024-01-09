@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
-//@TestPropertySource(locations = "classpath:application-mysql.yml", properties = "spring.profiles.active=mysql")
+@TestPropertySource(locations = "classpath:application-mysql.yml", properties = "spring.profiles.active=mysql")
 //테스트용 DB로 사용하는 H2 DB에서는 아래 MBR쿼리를 실행시킬 수 없으므로, 아래 테스트는 mysql 전용 properties를 사용하도록 설정
 //하지만 이렇게하면, Github Actions 상에서 돌아가는 테스트의 경우 Local MySQL이 없으므로 테스트가 실패할 것이다.
 //따라서 아래 테스트를 Skip 할 수 있도록 disable.MySQL이라는 System property를 넘겨주어 Skip하도록 하였다.
