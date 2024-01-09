@@ -4,11 +4,11 @@ import lombok.Getter;
 
 @Getter
 public class Location {
-    private final double latitude;
     private final double longitude;
+    private final double latitude;
 
-    public Location(double latitude, double longitude) {
-        this.latitude = latitude;
+    public Location(double longitude, double latitude) {
         this.longitude = longitude;
+        this.latitude = latitude;
     }
 }

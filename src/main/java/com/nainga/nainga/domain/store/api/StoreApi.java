@@ -1,21 +1,23 @@
 package com.nainga.nainga.domain.store.api;
 
 import com.nainga.nainga.domain.store.application.GoogleMapStoreService;
+import com.nainga.nainga.domain.store.application.StoreService;
+import com.nainga.nainga.domain.store.domain.Store;
 import com.nainga.nainga.domain.store.dto.CreateDividedMobeomStoresResponse;
-import com.nainga.nainga.domain.store.dto.StoreByLocationRequest;
-import com.nainga.nainga.domain.store.dto.StoreByLocationResponse;
+import com.nainga.nainga.domain.store.dto.StoresByLocationRequest;
+import com.nainga.nainga.domain.store.dto.StoresByLocationResponse;
 import com.nainga.nainga.global.util.Result;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
 public class StoreApi {
     private final GoogleMapStoreService googleMapStoreService;
+    private final StoreService storeService;
 
     @GetMapping("api/v1/store/mobeom")
     public Result<String> createAllMobeomStores(@RequestParam(value = "fileName") String fileName) {
@@ -30,9 +32,14 @@ public class StoreApi {
         return new Result<>(Result.CODE_SUCCESS, Result.MESSAGE_OK, response);
     }
 
-    @GetMapping("api/v1/store/byLocation")
-    public Result<List<StoreByLocationResponse>> findStoreByLocation(StoreByLocationRequest storeByLocationRequest) {
-
+    //북서쪽, 남동쪽 좌표를 받아 두 좌표로 만들어지는 가장 작은 사각형 내 모든 가게 상세 정보를 반환
+    @PostMapping("api/v1/store/byLocation")
+    public Result<List<StoresByLocationResponse>> findStoresByLocation(@RequestBody StoresByLocationRequest storesByLocationRequest) {
+        List<Store> storesByLocation = storeService.findStoresByLocation(storesByLocationRequest.getNorthWestLocation(), storesByLocationRequest.getSouthEastLocation());
+        List<StoresByLocationResponse> storesByLocationResponse = storesByLocation.stream()
+                .map(StoresByLocationResponse::new)
+                .collect(Collectors.toList());
+        return new Result<>(Result.CODE_SUCCESS, Result.MESSAGE_OK, storesByLocationResponse);
     }
 
 

@@ -24,7 +24,7 @@ public class Store {
     private String formattedAddress;    //가게 전체 주소
     private String phoneNumber;    //전화번호
     @Column(columnDefinition = "GEOMETRY")
-    private Point location;    //(위도, 경도) 좌표
+    private Point location;    //(경도, 위도) 좌표
     @ElementCollection
     private List<StoreRegularOpeningHours> regularOpeningHours;   //영업 시간
     @ElementCollection
