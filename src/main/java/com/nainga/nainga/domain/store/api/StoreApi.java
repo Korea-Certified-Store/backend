@@ -2,11 +2,15 @@ package com.nainga.nainga.domain.store.api;
 
 import com.nainga.nainga.domain.store.application.GoogleMapStoreService;
 import com.nainga.nainga.domain.store.dto.CreateDividedMobeomStoresResponse;
+import com.nainga.nainga.domain.store.dto.StoreByLocationRequest;
+import com.nainga.nainga.domain.store.dto.StoreByLocationResponse;
 import com.nainga.nainga.global.util.Result;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,4 +29,11 @@ public class StoreApi {
         System.out.println("response = " + response);   //편하게 콘솔 로그에서 확인하기 위한 용도
         return new Result<>(Result.CODE_SUCCESS, Result.MESSAGE_OK, response);
     }
+
+    @GetMapping("api/v1/store/byLocation")
+    public Result<List<StoreByLocationResponse>> findStoreByLocation(StoreByLocationRequest storeByLocationRequest) {
+
+    }
+
+
 }
