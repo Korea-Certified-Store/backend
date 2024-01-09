@@ -1,0 +1,8 @@
+version: '3'
+
+services:
+  server:
+    container_name: kcs_server
+    build: . # springboot Dockerfile 경로
+    ports:
+      - 8080:8080
