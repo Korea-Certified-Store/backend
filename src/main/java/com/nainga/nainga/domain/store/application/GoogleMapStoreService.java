@@ -58,14 +58,15 @@ public class GoogleMapStoreService {
 
                 //WKTReader Parse exception에 대한 처리를 위한 try-catch문
                 try {
-                    ArrayList<String> regularOpeningHoursList = new ArrayList<String>();
+                    ArrayList<String> openList = new ArrayList<String>();
+                    ArrayList<String> closeList = new ArrayList<String>();
                     ArrayList<String> photosList = new ArrayList<>();
                     String phoneNumber = null;
                     String primaryTypeDisplayName = null;
 
                     //이 아래 4개의 if문들은 해당 값들이 없는 가게가 존재하기 때문에 예외처리 목적으로 작성
-                    if (googleMapPlacesDetail.getAsJsonObject("regularOpeningHours") != null && googleMapPlacesDetail.getAsJsonObject("regularOpeningHours").getAsJsonArray("weekdayDescriptions") != null) {
-                        googleMapPlacesDetail.getAsJsonObject("regularOpeningHours").getAsJsonArray("weekdayDescriptions").forEach(weekdayDescription -> regularOpeningHoursList.add(weekdayDescription.getAsString()));
+                    if (googleMapPlacesDetail.getAsJsonObject("regularOpeningHours") != null && googleMapPlacesDetail.getAsJsonObject("regularOpeningHours").getAsJsonArray("periods") != null) {
+                        googleMapPlacesDetail.getAsJsonObject("regularOpeningHours").getAsJsonArray("periods").forEach(period -> period.getAsJsonObject().getAsJsonObject("open"));
                     }
 
                     if (googleMapPlacesDetail.getAsJsonArray("photos") != null) {
