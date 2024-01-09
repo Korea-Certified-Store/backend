@@ -42,10 +42,7 @@ jobs:
 
         # secrets 값 복사
         run: |
-          echo "GOOGLE_API_KEY: $GOOGLE_API_KEY" >> $OCCUPY_SECRET_DIR/$OCCUPY_SECRET_DIR_FILE_NAME &&
-          echo "mysql: false" >> $OCCUPY_SECRET_DIR/$OCCUPY_SECRET_DIR_FILE_NAME &&
-          echo "org.gradle.jvmargs=-Dmysql=false" >> gradle.properties &&
-          echo $(cat gradle.properties)
+          echo "GOOGLE_API_KEY: $GOOGLE_API_KEY" >> $OCCUPY_SECRET_DIR/$OCCUPY_SECRET_DIR_FILE_NAME
 
       # github action 에서 Gradle dependency 캐시 사용
       - name: Cache Gradle packages
@@ -61,14 +58,8 @@ jobs:
       - name: Grant execute permission for gradlew # 실행할 수 있게 권한주기
         run: chmod +x gradlew
 
-      - name: build Gradle
-        env:
-          org.gradle.jvmargs: -Dmysql=false
-        run: ./gradlew build
-
       - name: Test with Gradle
-        env:
-          org.gradle.jvmargs: -Dmysql=false
+        shell: bash
         run: ./gradlew clean test -Dmysql=false  # Github Actions 상에서는 현재 Local MySQL 테스트가 불가능하기 때문에, 이를 Skip 시켜주는 System Property를 함께 전달
       
       # 테스트 후 Result를 보기위해 Publish Unit Test Results step 추가
