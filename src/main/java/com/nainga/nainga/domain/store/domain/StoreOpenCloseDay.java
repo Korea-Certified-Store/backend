@@ -1,9 +1,12 @@
 package com.nainga.nainga.domain.store.domain;
 
+import jakarta.persistence.Embeddable;
 import lombok.Data;
 
 @Data
 public class StoreOpenCloseDay {
-    private enum
+    private StoreDay day;
+    private int hour;
+    private int minute;
 
 }
