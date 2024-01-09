@@ -47,7 +47,6 @@ dependencies {
 
 tasks.named('test') {
 	systemProperty "mysql", System.getProperty("mysql")
-	System.getProperty("org.gradle.jvmargs")
 	useJUnitPlatform()
 //	systemProperties project.properties.subMap(["disable.MySQL"])	//테스트 단까지 해당 system property를 전달해주기 위함
 }
