@@ -21,6 +21,11 @@ repositories {
 	mavenCentral()
 }
 
+// spring 2.6 부터는 빌드시 plain.jar 이 생기는데 이를 만들지 않는 설정(docker image 가 잘못생성될 수 있음)
+jar {
+	enabled = false
+}
+
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
