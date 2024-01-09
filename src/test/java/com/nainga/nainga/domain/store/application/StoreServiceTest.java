@@ -33,7 +33,7 @@ class StoreServiceTest {
     StoreRepository storeRepository;
 
     @Test
-    @DisabledIfSystemProperty(named = "mysql", matches = "false")    //Github Actions Workflow 파일에서 해당 System property를 true로 넘겨주어 skip!
+    @DisabledIfSystemProperty(named = "mysql", matches = "false")    //Github Actions Workflow 파일에서 해당 System property를 false로 넘겨주어 skip!
     void findStoresByLocation() {
         //findStoresByLocatin()을 테스트하기 위해 DB에 있는 모든 가게를 조회해서 최소 최대 경도 위도값을 구하고 그 값들보다 바깥쪽 범위의 경도 위도를 통해 모든 가게가 찾아지는지 검증
 
