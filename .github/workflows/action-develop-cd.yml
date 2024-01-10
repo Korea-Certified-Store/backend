@@ -58,7 +58,7 @@ jobs:
           username: ubuntu
           host: ${{ secrets.KCS_HOST_DEV }}
           key: ${{ secrets.KCS_KEY_DEV }}
-          source: "./src/main/resources/backend-submodule/docker-compose-dev.yml"
+          source: "src/main/resources/backend-submodule/docker-compose-dev.yml"
           target: "/home/ubuntu/"
 
       # dockerfile을 통해 이미지를 빌드하고, 이를 docker repo로 push
