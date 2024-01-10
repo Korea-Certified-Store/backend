@@ -24,8 +24,8 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
         with:
+          token: ${{secrets.ACTION_TOKEN}}
           submodules: true
-          token: ${{ secrets.ACTION_TOKEN }} # private submodule 가져오기위해 사용
 
       # open jdk 17 버전 환경을 세팅
       - name: Set up JDK 17
