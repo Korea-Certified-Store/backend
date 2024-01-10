@@ -80,6 +80,7 @@ jobs:
           username: ubuntu 
           host: ${{ secrets.KCS_HOST_DEV }}
           key: ${{ secrets.KCS_KEY_DEV }}
+          envs: DOCKER_REPOSITORY
           script: |
             docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
             sudo docker pull ${{ secrets.DOCKER_REPOSITORY }}:latest
