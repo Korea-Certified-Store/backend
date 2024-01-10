@@ -4,6 +4,7 @@ spring:
       on-profile: local
     import:
       - classpath:backend-submodule/application-local.yml
+      - env.yml
 
 ---
 
@@ -13,6 +14,7 @@ spring:
       on-profile: dev
     import:
       - classpath:backend-submodule/application-dev.yml
+      - env.yml
 
 ---
 
@@ -22,3 +24,4 @@ spring:
       on-profile: prod
     import:
       - classpath:backend-submodule/application-prod.yml
+      - env.yml
