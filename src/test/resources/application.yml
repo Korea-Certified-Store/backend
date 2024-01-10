@@ -13,10 +13,9 @@ spring:
       hibernate:
         format_sql: true
   config:
-    import: env.yml
+    import:
+      - env.yml
 
 logging:
   level:
     org.hibernate.SQL: debug
-
-isMySQL: false

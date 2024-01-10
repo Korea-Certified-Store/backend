@@ -19,10 +19,11 @@ import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
-@TestPropertySource(locations = "classpath:application-mysql.yml", properties = "spring.profiles.active=mysql")
+@DisabledIfSystemProperty(named = "mysql", matches = "false")    //Github Actions Workflow 파일에서 해당 System property를 false로 넘겨주어 skip!
+@TestPropertySource(locations = "classpath:application-mysql.yml", properties = "spring.profiles.active=mysql") //해당 테스트 클레스에 대해서는 application-mysql.yml이 적용될 수 있도록 active와 path 설정
 //테스트용 DB로 사용하는 H2 DB에서는 아래 MBR쿼리를 실행시킬 수 없으므로, 아래 테스트는 mysql 전용 properties를 사용하도록 설정
 //하지만 이렇게하면, Github Actions 상에서 돌아가는 테스트의 경우 Local MySQL이 없으므로 테스트가 실패할 것이다.
-//따라서 아래 테스트를 Skip 할 수 있도록 disable.MySQL이라는 System property를 넘겨주어 Skip하도록 하였다.
+//따라서 아래 테스트를 Skip 할 수 있도록 mysql이라는 System property를 false로 넘겨주어 Skip하도록 하였다. 이건 내가 임의로 정한 proerty key와 value이다.
 class StoreServiceTest {
 
     @Autowired
@@ -33,7 +34,6 @@ class StoreServiceTest {
     StoreRepository storeRepository;
 
     @Test
-    @DisabledIfSystemProperty(named = "disable.MySQL", matches = "true")    //Github Actions Workflow 파일에서 해당 System property를 true로 넘겨주어 skip!
     void findStoresByLocation() {
         //findStoresByLocatin()을 테스트하기 위해 DB에 있는 모든 가게를 조회해서 최소 최대 경도 위도값을 구하고 그 값들보다 바깥쪽 범위의 경도 위도를 통해 모든 가게가 찾아지는지 검증
 
