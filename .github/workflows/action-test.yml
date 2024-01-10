@@ -59,7 +59,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Test with Gradle
-        run: ./gradlew test
+        run: ./gradlew test -Dmysql=false  # Github Actions 상에서는 현재 Local MySQL 테스트가 불가능하기 때문에, 이를 Skip 시켜주는 System Property를 함께 전달
       
       # 테스트 후 Result를 보기위해 Publish Unit Test Results step 추가
       - name: Publish Unit Test Results
