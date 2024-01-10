@@ -41,5 +41,7 @@ out/
 
 ###
 /src/main/resources/images/
-/src/main/resources/config/
+
+**/config/
+
 env.yml
