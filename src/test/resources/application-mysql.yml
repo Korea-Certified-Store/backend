@@ -14,10 +14,10 @@ spring:
         format_sql: true
         default_batch_fetch_size: 1000 # 배치 사이즈 글로벌 적용 (1+n) 문제 해결
   config:
-    import:
-      - env.yml
+    import: env.yml
 
 logging: #로그 레벨을 정하는 것
   level:
     org.hibernate.SQL: debug #JPA 하이버네이트가 생성하는 SQL이 다 보인다
     org.hibernate.type: trace
+
