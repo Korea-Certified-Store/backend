@@ -42,4 +42,8 @@ out/
 ###
 /src/main/resources/images/
 
+### 서브 모듈 ###
+/src/main/resources/backend-submodule/
+
+### 환경 변수 ###
 env.yml
