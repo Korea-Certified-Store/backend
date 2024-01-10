@@ -7,10 +7,10 @@ RUN java -Djarmode=layertools -jar application.jar extract
 
 FROM openjdk:17-alpine
 WORKDIR app
-COPY --from=builder application/dependencies/ ./
-COPY --from=builder application/spring-boot-loader/ ./
-COPY --from=builder application/snapshot-dependencies/ ./
-COPY --from=builder application/application/ ./
+COPY --from=builder app/dependencies/ ./
+COPY --from=builder app/spring-boot-loader/ ./
+COPY --from=builder app/snapshot-dependencies/ ./
+COPY --from=builder app/application/ ./
 
 ENV spring_profile=${SPRING_PROFILE}
 
