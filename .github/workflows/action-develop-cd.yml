@@ -82,7 +82,7 @@ jobs:
           key: ${{ secrets.KCS_KEY_DEV }}
           script: |
             docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_REPOSITORY }}
+            sudo docker pull {{ secrets.DOCKER_REPOSITORY }}:latest
             docker-compose -f docker-compose-dev.yml down
             docker rmi $(docker images -q)
             docker-compose -f docker-compose-dev.yml up -d
