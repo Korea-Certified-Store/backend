@@ -49,6 +49,11 @@ test {
 	systemProperties = System.properties
 }
 
+// spring 2.6 부터는 빌드시 plain.jar 이 생기는데 이를 만들지 않는 설정, 해당 jar 을 기반으로 이미지 생성하면 안되기때문
+jar {
+	enabled = false
+}
+
 tasks.named('test') {
 //	systemProperty "mysql", System.getProperty("mysql")
 	useJUnitPlatform()
