@@ -73,17 +73,16 @@ jobs:
       # appleboy/ssh-action@master 액션을 사용하여 지정한 서버에 ssh로 접속하고, script를 실행합니다.
       # script의 내용은 도커의 기존 프로세스들을 제거하고, docker repo로부터 방금 위에서 push한 내용을 pull 받아 실행하는 것입니다.
       # 실행 시, docker-compose를 사용합니다.
+      # useranme : ubuntu 우분투 기반 ec2 일 경우 기본이름
       - name: Deploy to server
         uses: appleboy/ssh-action@master
-        id: deploy
         with:
+          username: ubuntu 
           host: ${{ secrets.KCS_HOST_DEV }}
-          username: ubuntu # 우분투 기반 ec2 일 경우 기본이름
           key: ${{ secrets.KCS_KEY_DEV }}
-          envs: GITHUB_SHA # ???
           script: |
             docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-            sudo docker rm -f $(docker ps -qa) 
             sudo docker pull ${{ secrets.DOCKER_REPOSITORY }}:latest
-            docker-compose -f docker-compose-dev.yml up -d
-            docker image prune -f
+            docker-compose -f docker-compose-dev.yml down
+            docker rmi $(docker images -q)
+            docker-compose -f docker-compose-dev.yml up --build -d
