@@ -1,0 +1,8 @@
+version: '3'
+
+services:
+  server:
+    image: g22206/kcs-backend-dev:latest
+    container_name: server
+    ports:
+      - 8080:8080
