@@ -25,7 +25,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           token: ${{secrets.ACTION_TOKEN}} # private submodule 가져오기위해 사용
-          submodules: true
+          submodules: recursive
 
       # open jdk 17 버전 환경을 세팅
       - name: Set up JDK 17
@@ -58,7 +58,7 @@ jobs:
           username: ubuntu
           host: ${{ secrets.KCS_HOST_DEV }}
           key: ${{ secrets.KCS_KEY_DEV }}
-          source: "./src/main/resources/docker-compose-dev.yml"
+          source: "./src/main/resources/config/docker-compose-dev.yml"
           target: "/home/ubuntu/"
 
       # dockerfile을 통해 이미지를 빌드하고, 이를 docker repo로 push 합니다.
