@@ -1,0 +1,8 @@
+version: '3'
+
+services:
+  server:
+    image: ${DOCKER_REPOSITORY}:latest # 해당 DOCKER_REPOSITORY 는 EC2 에서 설정된 환경변수 입니다.
+    container_name: server
+    ports:
+      - 8080:8080
