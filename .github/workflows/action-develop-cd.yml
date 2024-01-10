@@ -82,6 +82,7 @@ jobs:
           key: ${{ secrets.KCS_KEY_DEV }}
           envs: GITHUB_SHA # ???
           script: |
+            docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
             sudo docker rm -f $(docker ps -qa) 
             sudo docker pull ${{ secrets.DOCKER_REPOSITORY }}:latest
             docker-compose -f docker-compose-dev.yml up -d
