@@ -19,7 +19,7 @@ public class StoreCertificationsByLocationResponse {
     String phoneNumber;    //전화번호
     Location location;    //(경도, 위도) 좌표
     List<StoreRegularOpeningHours> regularOpeningHours;   //영업 시간
-    List<String> photos;  //사진들
+    List<String> localPhotos;  //구글에서 실제로 다운로드 된 사진들, 현재까지는 최대 1장
     List<String> certificationName;   //가지고 있는 인증제 이름 리스트
 
     public StoreCertificationsByLocationResponse(StoreCertification storeCertification) {
@@ -31,7 +31,7 @@ public class StoreCertificationsByLocationResponse {
         this.phoneNumber = storeCertification.getStore().getPhoneNumber();
         this.location = new Location(storeCertification.getStore().getLocation().getX(), storeCertification.getStore().getLocation().getY());
         this.regularOpeningHours = storeCertification.getStore().getRegularOpeningHours();
-        this.photos = storeCertification.getStore().getPhotos();
+        this.localPhotos = storeCertification.getStore().getLocalPhotos();
         this.certificationName = new ArrayList<String>();
         this.certificationName.add(storeCertification.getCertification().getName());
     }
