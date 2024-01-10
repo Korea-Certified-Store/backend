@@ -55,10 +55,12 @@ jobs:
       - name: Send docker-compose.yml
         uses: appleboy/scp-action@master
         with:
+          token: ${{secrets.ACTION_TOKEN}} # private submodule 가져오기위해 사용
+          submodules: true
           username: ubuntu
           host: ${{ secrets.KCS_HOST_DEV }}
           key: ${{ secrets.KCS_KEY_DEV }}
-          source: ./src/main/resources/config/docker-compose-dev.yml
+          source: "./src/main/resources/config/docker-compose-dev.yml"
           target: "/home/ubuntu/"
 
       # dockerfile을 통해 이미지를 빌드하고, 이를 docker repo로 push 합니다.
