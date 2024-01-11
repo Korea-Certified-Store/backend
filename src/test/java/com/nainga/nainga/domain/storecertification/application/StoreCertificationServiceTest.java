@@ -1,6 +1,6 @@
 package com.nainga.nainga.domain.storecertification.application;
 
-import com.nainga.nainga.domain.store.application.GoogleMapStoreService;
+import com.nainga.nainga.domain.store.application.MobeomGoogleMapStoreService;
 import com.nainga.nainga.domain.store.dao.StoreRepository;
 import com.nainga.nainga.domain.store.domain.Location;
 import com.nainga.nainga.domain.store.domain.Store;
@@ -17,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
@@ -28,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.*;
 //따라서 아래 테스트를 Skip 할 수 있도록 mysql이라는 System property를 false로 넘겨주어 Skip하도록 하였다. 이건 내가 임의로 정한 proerty key와 value이다.
 class StoreCertificationServiceTest {
     @Autowired
-    GoogleMapStoreService googleMapStoreService;
+    MobeomGoogleMapStoreService mobeomGoogleMapStoreService;
     @Autowired
     StoreCertificationService storeCertificationService;
     @Autowired
@@ -42,7 +41,7 @@ class StoreCertificationServiceTest {
 
         //given
         //테스트용 mobeom_test.xlsx가 주어졌을 때!
-        googleMapStoreService.createAllMobeomStores("mobeom_test.xlsx");
+        mobeomGoogleMapStoreService.createAllMobeomStores("mobeom_test.xlsx");
         List<Store> stores = storeRepository.findAll();
         double minLongitude=999; double minLatitude=999; double maxLongitude=0; double maxLatitude=0;
 
