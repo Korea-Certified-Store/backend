@@ -1,7 +1,6 @@
 FROM openjdk:17-alpine as builder
 WORKDIR app
 ARG JAR_FILE=build/libs/*.jar
-ARG SPRING_PROFILE=dev
 COPY ${JAR_FILE} app.jar
 RUN java -Djarmode=layertools -jar app.jar extract
 
@@ -12,6 +11,4 @@ COPY --from=builder app/spring-boot-loader/ ./
 COPY --from=builder app/snapshot-dependencies/ ./
 COPY --from=builder app/application/ ./
 
-ENV spring_profile=${SPRING_PROFILE}
-
-ENTRYPOINT ["java", "-Dspring.profiles.active=${spring_profile}", "-Duser.timezone=Asia/Seoul", "-jar", "/app.jar"]
+ENTRYPOINT ["java", "-Dspring.profiles.active=${ACTIVE_SPRING_PROFILE}", "-Duser.timezone=Asia/Seoul", "org.springframework.boot.loader.launch.JarLauncher"]
