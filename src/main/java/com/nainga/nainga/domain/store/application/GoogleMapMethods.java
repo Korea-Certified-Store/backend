@@ -51,6 +51,9 @@ public class GoogleMapMethods {
     //https://developers.google.com/maps/documentation/places/web-service/usage-and-billing?hl=ko
     public static String getGoogleMapPlacesId(String name, String address, String googleApiKey) {
         String reqURL = "https://places.googleapis.com/v1/places:searchText";
+
+        // 정규표현식을 사용하여 처음 "(", "," "."가 나타나는 곳부터 문자열 끝까지 삭제! 이렇게 해야 상세 주소의 동,호수,층 등이 없어져서 검색 정확도가 높아진다.
+        address = address.replaceAll("[,(\\.].*", "");
         String textQuery = address + name;
 
         try {

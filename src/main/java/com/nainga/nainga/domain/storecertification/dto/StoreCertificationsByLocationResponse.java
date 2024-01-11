@@ -12,7 +12,6 @@ import java.util.List;
 @Data
 public class StoreCertificationsByLocationResponse {
     Long id;
-    String googlePlaceId;   //Google Map API에서 사용하는 place_id를 저장
     String displayName;    //가게 이름
     String primaryTypeDisplayName;    //가게 업종
     String formattedAddress;    //가게 전체 주소
@@ -24,7 +23,6 @@ public class StoreCertificationsByLocationResponse {
 
     public StoreCertificationsByLocationResponse(StoreCertification storeCertification) {
         this.id = storeCertification.getStore().getId();
-        this.googlePlaceId = storeCertification.getStore().getGooglePlaceId();
         this.displayName = storeCertification.getStore().getDisplayName();
         this.primaryTypeDisplayName = storeCertification.getStore().getPrimaryTypeDisplayName();
         this.formattedAddress = storeCertification.getStore().getFormattedAddress();
