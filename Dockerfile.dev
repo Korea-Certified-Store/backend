@@ -12,6 +12,6 @@ COPY --from=builder app/spring-boot-loader/ ./
 COPY --from=builder app/snapshot-dependencies/ ./
 COPY --from=builder app/application/ ./
 
-ENV SPRING_CONFIG_ACTIVATE_ON_PROFILE==${SPRING_PROFILE}
+ENV SPRING_CONFIG_ACTIVATE_ON_PROFILE=${SPRING_PROFILE}
 
 ENTRYPOINT ["java", "-Dspring.profiles.active=${SPRING_CONFIG_ACTIVATE_ON_PROFILE}", "-Duser.timezone=Asia/Seoul", "org.springframework.boot.loader.launch.JarLauncher"]
