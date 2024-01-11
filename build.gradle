@@ -60,10 +60,6 @@ jar {
 	enabled = false
 }
 
-bootJar {
-	loaderImplementation = org.springframework.boot.loader.tools.LoaderImplementation.CLASSIC
-}
-
 tasks.named('test') {
 	useJUnitPlatform()
 }
