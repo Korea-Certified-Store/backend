@@ -14,5 +14,5 @@ COPY --from=builder app/application/ ./
 
 ENV ACTIVE_SPRING_PROFILE=${SPRING_PROFILE}
 
-ENTRYPOINT ["java", "-Duser.timezone=Asia/Seoul", "org.springframework.boot.loader.JarLauncher"]
+ENTRYPOINT ["java", "-Duser.timezone=Asia/Seoul", "org.springframework.boot.loader.launch.JarLauncher"]
 CMD ["-spring.profiles.active=dev"]
