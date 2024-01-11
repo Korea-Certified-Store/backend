@@ -34,15 +34,16 @@ jobs:
           java-version: '17'
           distribution: 'corretto' # OpenJDK 배포사 corretto, temurin
 
+      # Repository secrets 에 등록해둔 환경변수 파일 생성
       - name: Copy secrets to application
         env:
-          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          OCCUPY_ENV: ${{ secrets.OCCUPY_ENV }}
           OCCUPY_SECRET_DIR: ./src/main/resources  # 레포지토리 내 빈 env.yml의 위치 (main)
           OCCUPY_SECRET_DIR_FILE_NAME: env.yml                 # 파일 이름
 
-        # secrets 값 복사
+        # 환경변수 값 복사
         run: |
-          echo "GOOGLE_API_KEY: $GOOGLE_API_KEY" >> $OCCUPY_SECRET_DIR/$OCCUPY_SECRET_DIR_FILE_NAME
+          echo $OCCUPY_ENV >> $OCCUPY_SECRET_DIR/$OCCUPY_SECRET_DIR_FILE_NAME
 
       # github action 에서 Gradle dependency 캐시 사용
       - name: Cache Gradle packages
