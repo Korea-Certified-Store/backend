@@ -32,12 +32,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.nainga.nainga.domain.store.application.GoogleMapMethods.*;
+
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class MobeomGoogleMapStoreService {
     @Value("${GOOGLE_API_KEY}")
-    private String googleApiKey;
+    private String googleApiKey;    //Spring bean 내에서만 @Value로 프로퍼티를 가져올 수 있어서 Service 단에서 받고 GoogleMapMethods에는 파라미터로 넘겨줌.
     private final StoreRepository storeRepository;
     private final CertificationRepository certificationRepository;
     private final StoreCertificationRepository storeCertificationRepository;
@@ -48,14 +50,14 @@ public class MobeomGoogleMapStoreService {
     public void createAllMobeomStores(String fileName) {
         List<StoreDataByParser> allMobeomStores = MobeomDataParser.getAllMobeomStores(fileName);
         for (StoreDataByParser storeDataByParser : allMobeomStores) {
-            String googleMapPlacesId = getGoogleMapPlacesId(storeDataByParser.getName(), storeDataByParser.getAddress());
+            String googleMapPlacesId = getGoogleMapPlacesId(storeDataByParser.getName(), storeDataByParser.getAddress(), googleApiKey);
 
             if(googleMapPlacesId == null)   //가져온 Google Map Place Id가 null이라는 것은 가게가 하나로 특정되지 않아 사용할 수 없다는 것을 의미
                 continue;
 
             Optional<Store> resultByGooglePlaceId = storeRepository.findByGooglePlaceId(googleMapPlacesId); //Google Map API에서 가져온 place id와 동일한 정보가 디비에 있으면 중복 가게!
             if (resultByGooglePlaceId.isEmpty()) {  //아직 DB에 존재하지 않는 가게인 경우!
-                JsonObject googleMapPlacesDetail = getGoogleMapPlacesDetail(googleMapPlacesId); //Google Map API를 통해 해당 가게의 상세 정보를 가져옴
+                JsonObject googleMapPlacesDetail = getGoogleMapPlacesDetail(googleMapPlacesId, googleApiKey); //Google Map API를 통해 해당 가게의 상세 정보를 가져옴
                 if (googleMapPlacesDetail == null)   //Google Map Place Detail을 제대로 불러오지 못했을 경우에는 skip
                     continue;
 
@@ -113,7 +115,7 @@ public class MobeomGoogleMapStoreService {
                         continue;
 
                     if (!googlePhotosList.isEmpty()) {  //가장 첫 번째 사진만 실제로 다운로드까지 진행하고 나머지는 나중에 쓸 용도로 googlePhotosList에 저장
-                        localPhotosList.add(getGoogleMapPlacesImage(googlePhotosList.get(0)));
+                        localPhotosList.add(getGoogleMapPlacesImage(googlePhotosList.get(0), googleApiKey));
                         googlePhotosList.remove(0);
                     }
 
@@ -202,7 +204,7 @@ public class MobeomGoogleMapStoreService {
         for (int i=startIndex; i< allMobeomStores.size(); ++i) {
 
 
-            String googleMapPlacesId = getGoogleMapPlacesId(allMobeomStores.get(i).getName(), allMobeomStores.get(i).getAddress());
+            String googleMapPlacesId = getGoogleMapPlacesId(allMobeomStores.get(i).getName(), allMobeomStores.get(i).getAddress(), googleApiKey);
 
             if(googleMapPlacesId == null)   //가져온 Google Map Place Id가 null이라는 것은 가게가 하나로 특정되지 않아 사용할 수 없다는 것을 의미
                 continue;
@@ -215,7 +217,7 @@ public class MobeomGoogleMapStoreService {
                     createDividedMobeomStoresResponse.setNextIndex(i);
                     return createDividedMobeomStoresResponse;
                 }
-                JsonObject googleMapPlacesDetail = getGoogleMapPlacesDetail(googleMapPlacesId); //Google Map API를 통해 해당 가게의 상세 정보를 가져옴, 0.02달러 소비
+                JsonObject googleMapPlacesDetail = getGoogleMapPlacesDetail(googleMapPlacesId, googleApiKey); //Google Map API를 통해 해당 가게의 상세 정보를 가져옴, 0.02달러 소비
 
                 //여기선 API call이 진행된 시점이므로, 남은 달러에 반영
                 dollars -= 0.02;
@@ -284,7 +286,7 @@ public class MobeomGoogleMapStoreService {
                             return createDividedMobeomStoresResponse;
                         }
                         //돈이 충분히 있으면,
-                        localPhotosList.add(getGoogleMapPlacesImage(googlePhotosList.get(0))); //가장 첫 번째 사진만 실제로 다운로드까지 진행하고 나머지는 나중에 쓸 용도로 googlePhotosList에 저장
+                        localPhotosList.add(getGoogleMapPlacesImage(googlePhotosList.get(0), googleApiKey)); //가장 첫 번째 사진만 실제로 다운로드까지 진행하고 나머지는 나중에 쓸 용도로 googlePhotosList에 저장
                         googlePhotosList.remove(0);
 
                         //소비한 비용 반영
@@ -369,142 +371,5 @@ public class MobeomGoogleMapStoreService {
         createDividedMobeomStoresResponse.setDollars(dollars);
         createDividedMobeomStoresResponse.setNextIndex(-1);
         return createDividedMobeomStoresResponse;
-    }
-
-    //아래 메서드는 Google Map API 내 사진 요청 API를 트리거하여 API call
-    public String getGoogleMapPlacesImage(String photosName) {
-        String maxWidthPx = "400";
-        String maxHeightPx = "400";
-
-        String reqURL = "https://places.googleapis.com/v1/" + photosName + "/media?maxHeightPx=" + maxHeightPx + "&maxWidthPx=" + maxWidthPx + "&key=" + googleApiKey;
-
-        String uuid = UUID.randomUUID().toString().replace("-", "");
-        String fileExtension = ".jpg";
-        String randomFilename = uuid + fileExtension;
-        String directoryPath = new File("").getAbsolutePath() + File.separator + "src" + File.separator + "main" + File.separator + "resources" + File.separator + "images" + File.separator;
-        String localFilePath = directoryPath + randomFilename;
-
-        Path localPath = Path.of(localFilePath);
-
-        try {
-            URL url = new URL(reqURL);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
-            InputStream inputStream = conn.getInputStream();
-
-            Files.copy(inputStream, localPath, StandardCopyOption.REPLACE_EXISTING);
-
-            conn.disconnect();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return localFilePath;
-    }
-
-    //이 메서드는 Google Map API 내 "텍스트 검색(신규)"를 활용하여 텍스트 기반으로 검색하고 매칭되는 가게의 places.id를 가져옵니다.
-    //주소나 이름이 잘못됐거나, 폐업을했거나하면 장소가 특정되지 않을 수 있습니다. 이땐, places.id가 반환되지 않습니다.
-    //혹은 흔한 이름이고 해당 주소지 근방에 비슷한 이름들을 가진 가게가 많을 경우 여러 개의 places.id가 반환될 수 있습니다.
-    //따라서, 모호함을 없애기 위해 저희 가게가 정말 잘 찾아진 경우, 즉 places.id가 딱 1개만 반환되었을 때만 DB에 반영합니다.
-    //이건 Google Map API에 텍스트 검색 (ID 전용) SKU를 호출하는 거라 호출 횟수 관계없이 호출 비용이 평생 무료이다.
-    //https://developers.google.com/maps/documentation/places/web-service/usage-and-billing?hl=ko
-    public String getGoogleMapPlacesId(String name, String address) {
-        String reqURL = "https://places.googleapis.com/v1/places:searchText";
-        String textQuery = address + name;
-
-        try {
-            URL url = new URL(reqURL);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-
-            conn.setRequestMethod("POST");  //Google Map API의 정해진 헤더
-            conn.setDoOutput(true);
-            conn.setRequestProperty("Content-Type", "application/json");
-            conn.setRequestProperty("X-Goog-Api-Key", googleApiKey);
-            conn.setRequestProperty("X-Goog-FieldMask", "places.id");
-
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("textQuery", textQuery);
-            String jsonData = new Gson().toJson(jsonObject);    //GSON을 활용해서 JSON 포맷의 request body 작성
-
-            OutputStream outputStream = conn.getOutputStream(); //Google Map API로 작성해둔 헤더와 request body를 보냄
-            byte[] bytes = jsonData.getBytes(StandardCharsets.UTF_8);
-            outputStream.write(bytes, 0, bytes.length);
-
-            int responseCode = conn.getResponseCode();
-
-            if (responseCode != 200) {
-                throw new IllegalStateException("Google Map API 요청 중 오류 발생");
-            }
-
-            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            String line = "";
-            String result = "";
-
-            while ((line = br.readLine()) != null) {    //Response string을 수집
-                result += line;
-            }
-
-            JsonParser parser = new JsonParser();
-            JsonElement jsonElement = parser.parse(result);
-
-            if (jsonElement.isJsonObject()) {   //꼼꼼하게 예외처리해주지 않으면 에러 발생
-                JsonObject resultJsonObject = jsonElement.getAsJsonObject();
-                JsonArray placesJsonArray = resultJsonObject.getAsJsonArray("places");  //Response body에서 원하는 데이터를 파싱
-
-                if (placesJsonArray != null) {  //꼼꼼하게 예외처리해주지 않으면 에러 발생
-                    if (placesJsonArray.size() == 1) {  //검색된 가게가 1개로 정확히 특정되었을 때만 해당 가게의 place id를 리턴
-                        return placesJsonArray.get(0).getAsJsonObject().get("id").getAsString();
-                    }
-                }
-            }
-            br.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return null;    //검색된 가게가 1개일 때를 제외하고는 null을 리턴
-    }
-
-    //아래 메서드는 SKU: Place Details (Advanced)를 트리거해서 api 콜 1개당 0.02달러씩 결제된다.
-    //https://developers.google.com/maps/documentation/places/web-service/usage-and-billing?hl=ko#advanced-placedetails
-    public JsonObject getGoogleMapPlacesDetail(String googleMapPlacesId) {
-        String reqURL = "https://places.googleapis.com/v1/places/" + googleMapPlacesId + "?languageCode=ko";
-
-        try {
-            URL url = new URL(reqURL);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-
-            conn.setRequestMethod("GET");  //Google Map API의 정해진 헤더
-            conn.setDoOutput(true);
-            conn.setRequestProperty("Content-Type", "application/json");
-            conn.setRequestProperty("X-Goog-Api-Key", googleApiKey);
-            conn.setRequestProperty("X-Goog-FieldMask", "id,displayName,primaryTypeDisplayName,formattedAddress,regularOpeningHours.periods,location,internationalPhoneNumber,photos.name,photos.widthPx,photos.heightPx");
-
-            int responseCode = conn.getResponseCode();
-
-            if (responseCode != 200) {
-                throw new IllegalStateException("Google Map API 요청 중 오류 발생");
-            }
-
-            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            String line = "";
-            String result = "";
-
-            while ((line = br.readLine()) != null) {    //Response string을 수집
-                result += line;
-            }
-
-            JsonParser parser = new JsonParser();
-            JsonElement jsonElement = parser.parse(result);
-
-            if (jsonElement.isJsonObject()) {
-                return jsonElement.getAsJsonObject();
-            }
-            br.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return null;    //Google Map API로 부터 얻은 Response JSON이 올바르지 않을 때 null을 리턴
     }
 }
