@@ -97,4 +97,6 @@ jobs:
             sudo docker pull {{ secrets.DOCKER_REPOSITORY }}:latest
             docker-compose -f docker-compose-dev.yml down
             docker rmi $(docker images -q)
+            cp -f ./src/main/resources/backend-submodule/docker-compose-dev.yml .
+            rm -r src
             docker-compose -f docker-compose-dev.yml up -d
