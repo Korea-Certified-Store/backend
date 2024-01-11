@@ -28,5 +28,7 @@ public class Store {
     @ElementCollection
     private List<StoreRegularOpeningHours> regularOpeningHours;   //영업 시간
     @ElementCollection
-    private List<String> photos;    //가게 사진들
+    private List<String> localPhotos;    //자체 DB에 저장된 가게 사진들
+    @ElementCollection
+    private List<String> googlePhotos;  //나중에 Google Map API에서 더 가져와야하는 사진들
 }

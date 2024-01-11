@@ -5,6 +5,7 @@ spring:
     import:
       - classpath:backend-submodule/application-local.yml
       - env.yml
+      - default.yml
 
 ---
 
@@ -15,6 +16,7 @@ spring:
     import:
       - classpath:backend-submodule/application-dev.yml
       - env.yml
+      - default.yml
 
 ---
 
@@ -25,3 +27,4 @@ spring:
     import:
       - classpath:backend-submodule/application-prod.yml
       - env.yml
+      - default.yml

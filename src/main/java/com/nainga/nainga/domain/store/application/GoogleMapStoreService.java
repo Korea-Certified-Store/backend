@@ -64,7 +64,8 @@ public class GoogleMapStoreService {
                     List<JsonObject> openList = new ArrayList<JsonObject>();
                     List<JsonObject> closeList = new ArrayList<JsonObject>();
                     List<StoreRegularOpeningHours> regularOpeningHours = new ArrayList<StoreRegularOpeningHours>();
-                    List<String> photosList = new ArrayList<>();
+                    List<String> localPhotosList = new ArrayList<>();
+                    List<String> googlePhotosList = new ArrayList<>();
                     String phoneNumber = null;
                     String primaryTypeDisplayName = null;
 
@@ -95,7 +96,7 @@ public class GoogleMapStoreService {
                     }
 
                     if (googleMapPlacesDetail.getAsJsonArray("photos") != null) {
-                        googleMapPlacesDetail.getAsJsonArray("photos").forEach(photo -> photosList.add(photo.getAsJsonObject().get("name").getAsString()));
+                        googleMapPlacesDetail.getAsJsonArray("photos").forEach(photo -> googlePhotosList.add(photo.getAsJsonObject().get("name").getAsString()));
                     }
 
                     if (googleMapPlacesDetail.get("internationalPhoneNumber") != null) {
@@ -111,10 +112,9 @@ public class GoogleMapStoreService {
                     if(phoneNumber == null && primaryTypeDisplayName == null)
                         continue;
 
-                    if (!photosList.isEmpty()) {
-                        String localFilePath = getGoogleMapPlacesImage(photosList.get(0));
-                        photosList.clear();
-                        photosList.add(localFilePath);
+                    if (!googlePhotosList.isEmpty()) {  //가장 첫 번째 사진만 실제로 다운로드까지 진행하고 나머지는 나중에 쓸 용도로 googlePhotosList에 저장
+                        localPhotosList.add(getGoogleMapPlacesImage(googlePhotosList.get(0)));
+                        googlePhotosList.remove(0);
                     }
 
                     //얻어온 가게 상세 정보를 바탕으로 DB에 저장할 객체를 생성
@@ -126,7 +126,8 @@ public class GoogleMapStoreService {
                             .regularOpeningHours(regularOpeningHours)
                             .displayName(googleMapPlacesDetail.getAsJsonObject("displayName").get("text").getAsString())
                             .primaryTypeDisplayName(primaryTypeDisplayName)
-                            .photos(photosList)
+                            .localPhotos(localPhotosList)
+                            .googlePhotos(googlePhotosList)
                             .build();
 
                     Optional<Certification> mobeom = certificationRepository.findByName("모범음식점");   //Certification 테이블에 이미 모범음식점 데이터가 있는지 조회
@@ -227,7 +228,8 @@ public class GoogleMapStoreService {
                     List<JsonObject> openList = new ArrayList<JsonObject>();
                     List<JsonObject> closeList = new ArrayList<JsonObject>();
                     List<StoreRegularOpeningHours> regularOpeningHours = new ArrayList<StoreRegularOpeningHours>();
-                    List<String> photosList = new ArrayList<>();
+                    List<String> localPhotosList = new ArrayList<>();
+                    List<String> googlePhotosList = new ArrayList<>();
                     String phoneNumber = null;
                     String primaryTypeDisplayName = null;
 
@@ -258,7 +260,7 @@ public class GoogleMapStoreService {
                     }
 
                     if (googleMapPlacesDetail.getAsJsonArray("photos") != null) {
-                        googleMapPlacesDetail.getAsJsonArray("photos").forEach(photo -> photosList.add(photo.getAsJsonObject().get("name").getAsString()));
+                        googleMapPlacesDetail.getAsJsonArray("photos").forEach(photo -> googlePhotosList.add(photo.getAsJsonObject().get("name").getAsString()));
                     }
 
                     if (googleMapPlacesDetail.get("internationalPhoneNumber") != null) {
@@ -274,7 +276,7 @@ public class GoogleMapStoreService {
                     if(phoneNumber == null && primaryTypeDisplayName == null)
                         continue;
 
-                    if (!photosList.isEmpty()) {
+                    if (!googlePhotosList.isEmpty()) {
                         if (dollars - 0.007 < 0) { //다음 API를 호출할 돈이 없으면 중단
                             CreateDividedMobeomStoresResponse createDividedMobeomStoresResponse = new CreateDividedMobeomStoresResponse();
                             createDividedMobeomStoresResponse.setDollars(dollars);
@@ -282,13 +284,11 @@ public class GoogleMapStoreService {
                             return createDividedMobeomStoresResponse;
                         }
                         //돈이 충분히 있으면,
-                        String localFilePath = getGoogleMapPlacesImage(photosList.get(0));  //0.007달러 소비
+                        localPhotosList.add(getGoogleMapPlacesImage(googlePhotosList.get(0))); //가장 첫 번째 사진만 실제로 다운로드까지 진행하고 나머지는 나중에 쓸 용도로 googlePhotosList에 저장
+                        googlePhotosList.remove(0);
 
                         //소비한 비용 반영
                         dollars -= 0.007;
-
-                        photosList.clear();
-                        photosList.add(localFilePath);
                     }
 
                     //얻어온 가게 상세 정보를 바탕으로 DB에 저장할 객체를 생성
@@ -300,7 +300,8 @@ public class GoogleMapStoreService {
                             .regularOpeningHours(regularOpeningHours)
                             .displayName(googleMapPlacesDetail.getAsJsonObject("displayName").get("text").getAsString())
                             .primaryTypeDisplayName(primaryTypeDisplayName)
-                            .photos(photosList)
+                            .localPhotos(localPhotosList)
+                            .googlePhotos(googlePhotosList)
                             .build();
 
                     Optional<Certification> mobeom = certificationRepository.findByName("모범음식점");   //Certification 테이블에 이미 모범음식점 데이터가 있는지 조회

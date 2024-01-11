@@ -1,10 +1,10 @@
-package com.nainga.nainga.domain.store.dto;
+package com.nainga.nainga.domain.storecertification.dto;
 
 import com.nainga.nainga.domain.store.domain.Location;
 import lombok.Data;
 
 @Data
-public class StoresByLocationRequest {
+public class StoreCertificationsByLocationRequest {
     Location northWestLocation;
     Location southEastLocation;
 }
