@@ -7,7 +7,6 @@ import com.nainga.nainga.domain.store.domain.Store;
 import com.nainga.nainga.domain.store.dto.CreateDividedMobeomStoresResponse;
 import com.nainga.nainga.domain.storecertification.dao.StoreCertificationRepository;
 import com.nainga.nainga.domain.storecertification.domain.StoreCertification;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,14 +16,13 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional  //테스트가 끝난 뒤 롤백하기 위해
-class GoogleMapStoreServiceTest {
+class MobeomGoogleMapStoreServiceTest {
 
     @Autowired
-    GoogleMapStoreService googleMapStoreService;
+    MobeomGoogleMapStoreService mobeomGoogleMapStoreService;
 
     @Autowired
     StoreRepository storeRepository;
@@ -40,7 +38,7 @@ class GoogleMapStoreServiceTest {
         //given
         //테스트용 mobeom_test.xlsx가 주어졌을 때!
         //이 테스트 파일은 중복된 가게, 폐업된 가게, 모범 음식점에 선정되었다가 취소된 가게 등의 케이스를 모두 포함하고 있다.
-        googleMapStoreService.createAllMobeomStores("mobeom_test.xlsx");
+        mobeomGoogleMapStoreService.createAllMobeomStores("mobeom_test.xlsx");
 
         //when
         List<Store> stores = storeRepository.findAll();
@@ -66,7 +64,7 @@ class GoogleMapStoreServiceTest {
         //given
         //테스트용 mobeom_test.xlsx가 주어졌을 때!
         //이 테스트 파일은 중복된 가게, 폐업된 가게, 모범 음식점에 선정되었다가 취소된 가게 등의 케이스를 모두 포함하고 있다.
-        CreateDividedMobeomStoresResponse result = googleMapStoreService.createDividedMobeomStores("mobeom_test.xlsx", 1000, 0);
+        CreateDividedMobeomStoresResponse result = mobeomGoogleMapStoreService.createDividedMobeomStores("mobeom_test.xlsx", 1000, 0);
 
         //when
 
@@ -75,7 +73,7 @@ class GoogleMapStoreServiceTest {
         assertThat(result.getNextIndex()).isEqualTo(-1);    //한 싸이클 모두 조회가 되어야 함
 
         //그 뒤로 바로 이어서 동일한 메서드를 추가 호출했을 때, 이미 DB에 등록된 상태이므로 API call이 나가지 않아야 함
-        CreateDividedMobeomStoresResponse result2 = googleMapStoreService.createDividedMobeomStores("mobeom_test.xlsx", 1000, 0);
+        CreateDividedMobeomStoresResponse result2 = mobeomGoogleMapStoreService.createDividedMobeomStores("mobeom_test.xlsx", 1000, 0);
         assertThat(result2.getDollars()).isEqualTo(1000);   //API call이 나가지 않아서 비용 그대로!
         assertThat(result2.getNextIndex()).isEqualTo(-1);   //한 싸이클은 전부 조회하므로 -1 리턴
     }

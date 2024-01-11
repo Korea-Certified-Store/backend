@@ -35,7 +35,7 @@ import java.util.UUID;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class GoogleMapStoreService {
+public class MobeomGoogleMapStoreService {
     @Value("${GOOGLE_API_KEY}")
     private String googleApiKey;
     private final StoreRepository storeRepository;
