@@ -40,6 +40,8 @@ import static com.nainga.nainga.domain.store.application.GoogleMapMethods.*;
 public class MobeomGoogleMapStoreService {
     @Value("${GOOGLE_API_KEY}")
     private String googleApiKey;    //Spring bean 내에서만 @Value로 프로퍼티를 가져올 수 있어서 Service 단에서 받고 GoogleMapMethods에는 파라미터로 넘겨줌.
+    @Value("${ROAD_NAME_ADDRESS_API_KEY}")
+    private String roadNameAddressApiKey;
     private final StoreRepository storeRepository;
     private final CertificationRepository certificationRepository;
     private final StoreCertificationRepository storeCertificationRepository;
@@ -50,7 +52,7 @@ public class MobeomGoogleMapStoreService {
     public void createAllMobeomStores(String fileName) {
         List<StoreDataByParser> allMobeomStores = MobeomDataParser.getAllMobeomStores(fileName);
         for (StoreDataByParser storeDataByParser : allMobeomStores) {
-            String googleMapPlacesId = getGoogleMapPlacesId(storeDataByParser.getName(), storeDataByParser.getAddress(), googleApiKey);
+            String googleMapPlacesId = getGoogleMapPlacesId(storeDataByParser.getName(), storeDataByParser.getAddress(), googleApiKey, roadNameAddressApiKey);
 
             if(googleMapPlacesId == null)   //가져온 Google Map Place Id가 null이라는 것은 가게가 하나로 특정되지 않아 사용할 수 없다는 것을 의미
                 continue;
@@ -204,7 +206,7 @@ public class MobeomGoogleMapStoreService {
         for (int i=startIndex; i< allMobeomStores.size(); ++i) {
 
 
-            String googleMapPlacesId = getGoogleMapPlacesId(allMobeomStores.get(i).getName(), allMobeomStores.get(i).getAddress(), googleApiKey);
+            String googleMapPlacesId = getGoogleMapPlacesId(allMobeomStores.get(i).getName(), allMobeomStores.get(i).getAddress(), googleApiKey, roadNameAddressApiKey);
 
             if(googleMapPlacesId == null)   //가져온 Google Map Place Id가 null이라는 것은 가게가 하나로 특정되지 않아 사용할 수 없다는 것을 의미
                 continue;
