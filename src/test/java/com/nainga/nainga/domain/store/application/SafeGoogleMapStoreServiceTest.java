@@ -8,6 +8,7 @@ import com.nainga.nainga.domain.store.dto.CreateDividedSafeStoresResponse;
 import com.nainga.nainga.domain.storecertification.dao.StoreCertificationRepository;
 import com.nainga.nainga.domain.storecertification.domain.StoreCertification;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +20,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional  //테스트가 끝난 뒤 롤백하기 위해
+@DisabledIfSystemProperty(named = "isOnGitHubRunner", matches = "true")    //Github Actions Workflow 파일에서 해당 System property를 false로 넘겨주어 skip!
+//Github Actions runner에서 돌아가는 경우 IP를 특정할 수 없어서 도로명 주소 API 테스트를 할 수 없고, 현재 설정상 인메모리 H2 DB를 사용하므로 MySQL에 specific한 Test도 불가능하다.
 class SafeGoogleMapStoreServiceTest {
 
     @Autowired
