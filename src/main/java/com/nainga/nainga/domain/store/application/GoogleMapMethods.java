@@ -111,6 +111,10 @@ public class GoogleMapMethods {
         return null;    //검색된 가게가 1개일 때를 제외하고는 null을 리턴
     }
 
+    public String requestRoadNameAddress(String address, String roadNameAddressApiKey) {
+
+    }
+
     //아래 메서드는 SKU: Place Details (Advanced)를 트리거해서 api 콜 1개당 0.02달러씩 결제된다.
     //https://developers.google.com/maps/documentation/places/web-service/usage-and-billing?hl=ko#advanced-placedetails
     public static JsonObject getGoogleMapPlacesDetail(String googleMapPlacesId, String googleApiKey) {
