@@ -1,15 +1,20 @@
 package com.nainga.nainga.domain.gcsguide;
 
 
+import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageOptions;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ResourceUtils;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.UUID;
 
 @Service
@@ -32,7 +37,7 @@ public class GcsService {
         // 이미지 접근 url : https://storage.googleapis.com/버킷이름/UUID값
         try {
             BlobInfo blobInfo = BlobInfo.newBuilder(bucketName, uuid)
-            정.setContentType(ext)
+                    .setContentType(ext)
                     .build();
 
             Blob blob = storage.create(blobInfo, response.getImage().getBytes());
