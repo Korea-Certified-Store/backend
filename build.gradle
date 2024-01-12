@@ -41,6 +41,10 @@ dependencies {
 	// 확장자를 읽어들이기 위해 추가
 	implementation group: 'commons-io', name: 'commons-io', version: '2.4'
 
+	// for GCS
+	implementation group: 'org.springframework.cloud', name: 'spring-cloud-gcp-starter', version: '1.2.8.RELEASE'
+	implementation group: 'org.springframework.cloud', name: 'spring-cloud-gcp-storage', version: '1.2.8.RELEASE'
+
 	// JsonParser를 사용하기 위해 추가
 	dependencies { implementation 'com.google.code.gson:gson:2.8.8' }
 
