@@ -101,10 +101,10 @@ public class SafeGoogleMapStoreService {
                         googleMapPlacesDetail.getAsJsonArray("photos").forEach(photo -> googlePhotosList.add(photo.getAsJsonObject().get("name").getAsString()));
                     }
 
-                    if (googleMapPlacesDetail.get("internationalPhoneNumber") != null) {
-                        phoneNumber = googleMapPlacesDetail.get("internationalPhoneNumber").getAsString();
-                    } else if (googleMapPlacesDetail.get("nationalPhoneNumber") != null) {
+                    if (googleMapPlacesDetail.get("nationalPhoneNumber") != null) {
                         phoneNumber = googleMapPlacesDetail.get("nationalPhoneNumber").getAsString();
+                    } else if (googleMapPlacesDetail.get("internationalPhoneNumber") != null) {
+                        phoneNumber = googleMapPlacesDetail.get("internationalPhoneNumber").getAsString();
                     }
 
                     if (googleMapPlacesDetail.getAsJsonObject("primaryTypeDisplayName") != null && googleMapPlacesDetail.getAsJsonObject("primaryTypeDisplayName").get("text") != null) {
@@ -265,10 +265,10 @@ public class SafeGoogleMapStoreService {
                         googleMapPlacesDetail.getAsJsonArray("photos").forEach(photo -> googlePhotosList.add(photo.getAsJsonObject().get("name").getAsString()));
                     }
 
-                    if (googleMapPlacesDetail.get("internationalPhoneNumber") != null) {
-                        phoneNumber = googleMapPlacesDetail.get("internationalPhoneNumber").getAsString();
-                    } else if (googleMapPlacesDetail.get("nationalPhoneNumber") != null) {
+                    if (googleMapPlacesDetail.get("nationalPhoneNumber") != null) {
                         phoneNumber = googleMapPlacesDetail.get("nationalPhoneNumber").getAsString();
+                    } else if (googleMapPlacesDetail.get("internationalPhoneNumber") != null) {
+                        phoneNumber = googleMapPlacesDetail.get("internationalPhoneNumber").getAsString();
                     }
 
                     if (googleMapPlacesDetail.getAsJsonObject("primaryTypeDisplayName") != null && googleMapPlacesDetail.getAsJsonObject("primaryTypeDisplayName").get("text") != null) {
