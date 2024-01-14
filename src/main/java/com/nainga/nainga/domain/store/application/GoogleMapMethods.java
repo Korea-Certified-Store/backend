@@ -49,14 +49,14 @@ public class GoogleMapMethods {
     //따라서, 모호함을 없애기 위해 저희 가게가 정말 잘 찾아진 경우, 즉 places.id가 딱 1개만 반환되었을 때만 DB에 반영합니다.
     //이건 Google Map API에 텍스트 검색 (ID 전용) SKU를 호출하는 거라 호출 횟수 관계없이 호출 비용이 평생 무료이다.
     //https://developers.google.com/maps/documentation/places/web-service/usage-and-billing?hl=ko
-    public static String getGoogleMapPlacesId(String name, String address, String googleApiKey, String roadNameAddressApiKey) {
+    public static String getGoogleMapPlacesId(String name, String address, String googleApiKey) {
         // 정규표현식을 사용하여 처음 "(", "," "."가 나타나는 곳부터 문자열 끝까지 삭제! 이렇게 해야 상세 주소의 동,호수,층 등이 없어져서 검색 정확도가 높아진다.
-        address = address.replaceAll("[,(\\.].*", "");
-        String textQuery = address + name;
-
+//        address = address.replaceAll("[,(\\.].*", "");
+//        String textQuery = address + name;
+        return null;
     }
 
-    public String requestGoogleMapPlacesId(String textQuery, String googleApiKey) {
+    public static String requestGoogleMapPlacesId(String textQuery, String googleApiKey) {
         try {
             String reqURL = "https://places.googleapis.com/v1/places:searchText";
             URL url = new URL(reqURL);
@@ -109,10 +109,6 @@ public class GoogleMapMethods {
         }
 
         return null;    //검색된 가게가 1개일 때를 제외하고는 null을 리턴
-    }
-
-    public String requestRoadNameAddress(String address, String roadNameAddressApiKey) {
-
     }
 
     //아래 메서드는 SKU: Place Details (Advanced)를 트리거해서 api 콜 1개당 0.02달러씩 결제된다.
