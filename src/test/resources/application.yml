@@ -2,4 +2,4 @@
 spring:
   config:
     import:
-      - classpath:backend-submodule/application-local.yml
+      - classpath:backend-submodule/application-test.yml

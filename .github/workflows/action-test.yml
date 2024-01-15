@@ -43,7 +43,8 @@ jobs:
           host port: 3306
           container port: 3306
           mysql database: 'nainga_test'
-          mysql root password: ${{ secrets.DB_PASSWORD }}
+          mysql user: 'test'
+          mysql password: ${{ secrets.DB_PASSWORD }}
 
       # github action 에서 Gradle dependency 캐시 사용
       - name: Cache Gradle packages
