@@ -76,7 +76,6 @@ public class GoogleMapMethods {
         addressList.add(address6);
 
         for (String addr : addressList) {   //위에서 뽑은 후보 주소지들을 가지고 Google Map API에 places Id를 가져와봅니다.
-            System.out.println("addr = " + addr);
             String result = requestGoogleMapPlacesId(addr + " " + name, googleApiKey);
             if(result != null)
                 return result;
