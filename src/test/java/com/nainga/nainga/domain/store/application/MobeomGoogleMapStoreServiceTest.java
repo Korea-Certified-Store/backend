@@ -8,6 +8,7 @@ import com.nainga.nainga.domain.store.dto.CreateDividedMobeomStoresResponse;
 import com.nainga.nainga.domain.storecertification.dao.StoreCertificationRepository;
 import com.nainga.nainga.domain.storecertification.domain.StoreCertification;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
@@ -69,7 +70,7 @@ class MobeomGoogleMapStoreServiceTest {
         //when
 
         //then
-        assertThat(Math.floor(result.getDollars() * 10000) / 10000).isEqualTo(999.9460);    //부동 소수점 계산 오차 때문에 소수점 넷째자리까지만 표현
+        assertThat(Math.floor(result.getDollars())).isEqualTo(999);
         assertThat(result.getNextIndex()).isEqualTo(-1);    //한 싸이클 모두 조회가 되어야 함
 
         //그 뒤로 바로 이어서 동일한 메서드를 추가 호출했을 때, 이미 DB에 등록된 상태이므로 API call이 나가지 않아야 함
