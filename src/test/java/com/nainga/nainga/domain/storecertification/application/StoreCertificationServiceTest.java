@@ -20,12 +20,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
-@DisabledIfSystemProperty(named = "isOnGitHubRunner", matches = "true")    //Github Actions Workflow 파일에서 해당 System property를 false로 넘겨주어 skip!
-//Github Actions runner에서 돌아가는 경우 현재 설정상 인메모리 H2 DB를 사용하므로 MySQL에 specific한 Test가 불가능하다.
-@TestPropertySource(locations = "classpath:application-mysql.yml", properties = "spring.profiles.active=mysql") //해당 테스트 클레스에 대해서는 application-mysql.yml이 적용될 수 있도록 active와 path 설정
-//테스트용 DB로 사용하는 H2 DB에서는 아래 MBR쿼리를 실행시킬 수 없으므로, 아래 테스트는 mysql 전용 properties를 사용하도록 설정
-//하지만 이렇게하면, Github Actions 상에서 돌아가는 테스트의 경우 Local MySQL이 없으므로 테스트가 실패할 것이다.
-//따라서 아래 테스트를 Skip 할 수 있도록 mysql이라는 System property를 false로 넘겨주어 Skip하도록 하였다. 이건 내가 임의로 정한 proerty key와 value이다.
 class StoreCertificationServiceTest {
     @Autowired
     MobeomGoogleMapStoreService mobeomGoogleMapStoreService;

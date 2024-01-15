@@ -61,7 +61,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Test with Gradle
-        run: ./gradlew test -DisOnGitHubRunner=true  # Github Actions 상에서는 현재 Local MySQL 테스트가 불가능하기 때문에, 이를 Skip 시켜주는 System Property를 함께 전달
+        run: ./gradlew test
       # 또한, Github Actions 상에서는 머신의 IP 주소를 특정할 수가 없어서 도로명 주소 API 사용이 불가능하기 때문이 이와 관련된 테스트도 Skip!
       # 테스트 후 Result를 보기위해 Publish Unit Test Results step 추가
       - name: Publish Unit Test Results
