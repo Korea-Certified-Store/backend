@@ -63,39 +63,21 @@ public class SafeGoogleMapStoreService {
 
                 //WKTReader Parse exception에 대한 처리를 위한 try-catch문
                 try {
-                    List<JsonObject> openList = new ArrayList<JsonObject>();
-                    List<JsonObject> closeList = new ArrayList<JsonObject>();
-                    List<StoreRegularOpeningHours> regularOpeningHours = new ArrayList<StoreRegularOpeningHours>();
+                    List<StoreRegularOpeningHours> regularOpeningHours;
+                    List<String> weekdayDescriptions = new ArrayList<>();
                     List<String> localPhotosList = new ArrayList<>();
                     List<String> googlePhotosList = new ArrayList<>();
                     String phoneNumber = null;
                     String primaryTypeDisplayName = null;
 
                     //이 아래 4개의 if문들은 해당 값들이 없는 가게가 존재하기 때문에 예외처리 목적으로 작성
-                    if (googleMapPlacesDetail.getAsJsonObject("regularOpeningHours") != null && googleMapPlacesDetail.getAsJsonObject("regularOpeningHours").getAsJsonArray("periods") != null) {
-                        googleMapPlacesDetail.getAsJsonObject("regularOpeningHours").getAsJsonArray("periods").forEach(period -> {
-                            openList.add(period.getAsJsonObject().getAsJsonObject("open"));
-                            closeList.add(period.getAsJsonObject().getAsJsonObject("close"));
+                    if (googleMapPlacesDetail.getAsJsonObject("regularOpeningHours") != null && googleMapPlacesDetail.getAsJsonObject("regularOpeningHours").getAsJsonArray("weekdayDescriptions") != null) {
+                        googleMapPlacesDetail.getAsJsonObject("regularOpeningHours").getAsJsonArray("weekdayDescriptions").forEach(weekdayDescription -> {
+                            weekdayDescriptions.add(weekdayDescription.getAsString());
                         });
-
-                        for (int i = 0; i < openList.size(); ++i) { //Google API에서 가져온 가게 Open, 가게 Close 시간 정보를 파싱하는 과정
-                            StoreRegularOpeningHours storeRegularOpeningHours = new StoreRegularOpeningHours();
-                            StoreOpenCloseDay storeOpenDay = new StoreOpenCloseDay();
-                            StoreOpenCloseDay storeCloseDay = new StoreOpenCloseDay();
-
-                            storeOpenDay.setDay(StoreDay.values()[openList.get(i).get("day").getAsInt()]);
-                            storeOpenDay.setHour(openList.get(i).get("hour").getAsInt());
-                            storeOpenDay.setMinute(openList.get(i).get("minute").getAsInt());
-
-                            storeCloseDay.setDay(StoreDay.values()[closeList.get(i).get("day").getAsInt()]);
-                            storeCloseDay.setHour(closeList.get(i).get("hour").getAsInt());
-                            storeCloseDay.setMinute(closeList.get(i).get("minute").getAsInt());
-
-                            storeRegularOpeningHours.setOpen(storeOpenDay);
-                            storeRegularOpeningHours.setClose(storeCloseDay);
-                            regularOpeningHours.add(storeRegularOpeningHours);
-                        }
                     }
+
+                    regularOpeningHours = parseWeekdayDescriptions(weekdayDescriptions);
 
                     if (googleMapPlacesDetail.getAsJsonArray("photos") != null) {
                         googleMapPlacesDetail.getAsJsonArray("photos").forEach(photo -> googlePhotosList.add(photo.getAsJsonObject().get("name").getAsString()));
@@ -126,6 +108,7 @@ public class SafeGoogleMapStoreService {
                             .formattedAddress(googleMapPlacesDetail.get("formattedAddress").getAsString())
                             .location((Point) new WKTReader().read(String.format("POINT(%s %s)", googleMapPlacesDetail.getAsJsonObject("location").get("longitude").getAsString(), googleMapPlacesDetail.getAsJsonObject("location").get("latitude").getAsString())))
                             .regularOpeningHours(regularOpeningHours)
+                            .weekdayDescriptions(weekdayDescriptions)
                             .displayName(googleMapPlacesDetail.getAsJsonObject("displayName").get("text").getAsString())
                             .primaryTypeDisplayName(primaryTypeDisplayName)
                             .localPhotos(localPhotosList)
@@ -227,39 +210,21 @@ public class SafeGoogleMapStoreService {
 
                 //WKTReader Parse exception에 대한 처리를 위한 try-catch문
                 try {
-                    List<JsonObject> openList = new ArrayList<JsonObject>();
-                    List<JsonObject> closeList = new ArrayList<JsonObject>();
-                    List<StoreRegularOpeningHours> regularOpeningHours = new ArrayList<StoreRegularOpeningHours>();
+                    List<StoreRegularOpeningHours> regularOpeningHours;
+                    List<String> weekdayDescriptions = new ArrayList<>();
                     List<String> localPhotosList = new ArrayList<>();
                     List<String> googlePhotosList = new ArrayList<>();
                     String phoneNumber = null;
                     String primaryTypeDisplayName = null;
 
                     //이 아래 4개의 if문들은 해당 값들이 없는 가게가 존재하기 때문에 예외처리 목적으로 작성
-                    if (googleMapPlacesDetail.getAsJsonObject("regularOpeningHours") != null && googleMapPlacesDetail.getAsJsonObject("regularOpeningHours").getAsJsonArray("periods") != null) {
-                        googleMapPlacesDetail.getAsJsonObject("regularOpeningHours").getAsJsonArray("periods").forEach(period -> {
-                            openList.add(period.getAsJsonObject().getAsJsonObject("open"));
-                            closeList.add(period.getAsJsonObject().getAsJsonObject("close"));
+                    if (googleMapPlacesDetail.getAsJsonObject("regularOpeningHours") != null && googleMapPlacesDetail.getAsJsonObject("regularOpeningHours").getAsJsonArray("weekdayDescriptions") != null) {
+                        googleMapPlacesDetail.getAsJsonObject("regularOpeningHours").getAsJsonArray("weekdayDescriptions").forEach(weekdayDescription -> {
+                            weekdayDescriptions.add(weekdayDescription.getAsString());
                         });
-
-                        for (int j = 0; j < openList.size(); ++j) { //Google API에서 가져온 가게 Open, 가게 Close 시간 정보를 파싱하는 과정
-                            StoreRegularOpeningHours storeRegularOpeningHours = new StoreRegularOpeningHours();
-                            StoreOpenCloseDay storeOpenDay = new StoreOpenCloseDay();
-                            StoreOpenCloseDay storeCloseDay = new StoreOpenCloseDay();
-
-                            storeOpenDay.setDay(StoreDay.values()[openList.get(j).get("day").getAsInt()]);
-                            storeOpenDay.setHour(openList.get(j).get("hour").getAsInt());
-                            storeOpenDay.setMinute(openList.get(j).get("minute").getAsInt());
-
-                            storeCloseDay.setDay(StoreDay.values()[closeList.get(j).get("day").getAsInt()]);
-                            storeCloseDay.setHour(closeList.get(j).get("hour").getAsInt());
-                            storeCloseDay.setMinute(closeList.get(j).get("minute").getAsInt());
-
-                            storeRegularOpeningHours.setOpen(storeOpenDay);
-                            storeRegularOpeningHours.setClose(storeCloseDay);
-                            regularOpeningHours.add(storeRegularOpeningHours);
-                        }
                     }
+
+                    regularOpeningHours = parseWeekdayDescriptions(weekdayDescriptions);
 
                     if (googleMapPlacesDetail.getAsJsonArray("photos") != null) {
                         googleMapPlacesDetail.getAsJsonArray("photos").forEach(photo -> googlePhotosList.add(photo.getAsJsonObject().get("name").getAsString()));
@@ -300,6 +265,7 @@ public class SafeGoogleMapStoreService {
                             .formattedAddress(googleMapPlacesDetail.get("formattedAddress").getAsString())
                             .location((Point) new WKTReader().read(String.format("POINT(%s %s)", googleMapPlacesDetail.getAsJsonObject("location").get("longitude").getAsString(), googleMapPlacesDetail.getAsJsonObject("location").get("latitude").getAsString())))
                             .regularOpeningHours(regularOpeningHours)
+                            .weekdayDescriptions(weekdayDescriptions)
                             .displayName(googleMapPlacesDetail.getAsJsonObject("displayName").get("text").getAsString())
                             .primaryTypeDisplayName(primaryTypeDisplayName)
                             .localPhotos(localPhotosList)
@@ -371,5 +337,115 @@ public class SafeGoogleMapStoreService {
         createDividedSafeStoresResponse.setDollars(dollars);
         createDividedSafeStoresResponse.setNextIndex(-1);
         return createDividedSafeStoresResponse;
+    }
+
+    //Google Map API에서 제공해주는 영업 시간 정보가 periods와 weekdayDescriptions 방식이 있는데, 기존에 구조화된 periods를 사용했었지만 데이터가 깨져있는 경우가 종종 있어서,
+    //조금 더 안정적인 weekdayDescriptions으로 데이터를 받아오고 직접 파싱해서 periods 식으로 변환하여 저장하기 위함
+    public List<StoreRegularOpeningHours> parseWeekdayDescriptions(List<String> weekdayDescriptions) {
+        List<StoreRegularOpeningHours> storeRegularOpeningHoursList = new ArrayList<>();
+
+        for (String weekdayDescription : weekdayDescriptions) {
+            weekdayDescription = weekdayDescription.replace(",", " ");   //,는 제거
+            weekdayDescription = weekdayDescription.replace("~", " ~ "); //~은 확실히 포함될 수 있게 앞뒤 공백 추가
+            String[] words = weekdayDescription.split("\\s+");   //공백 단위로 단어 분리
+
+            StoreDay storeDay = null;
+            boolean isOpenDay = true;
+            boolean isBeforeNoon = true;   //오전과 오후를 구분하기 위해 사용
+            if(words[0].equals("일요일:")) {
+                storeDay = StoreDay.SUN;
+            } else if (words[0].equals("월요일:")) {
+                storeDay = StoreDay.MON;
+            } else if (words[0].equals("화요일:")) {
+                storeDay = StoreDay.TUE;
+            } else if (words[0].equals("수요일:")) {
+                storeDay = StoreDay.WED;
+            } else if (words[0].equals("목요일:")) {
+                storeDay = StoreDay.THU;
+            } else if (words[0].equals("금요일:")) {
+                storeDay = StoreDay.FRI;
+            } else if (words[0].equals("토요일:")) {
+                storeDay = StoreDay.SAT;
+            }
+
+            if (words[1].equals("24시간")) {  //24시간 영업일 때
+                StoreRegularOpeningHours storeRegularOpeningHours = new StoreRegularOpeningHours();
+                StoreOpenCloseDay storeOpenDay = new StoreOpenCloseDay();
+                StoreOpenCloseDay storeCloseDay = new StoreOpenCloseDay();
+                storeOpenDay.setDay(storeDay);
+                storeOpenDay.setHour(0);
+                storeOpenDay.setMinute(0);
+                storeCloseDay.setDay(storeDay);
+                storeCloseDay.setHour(24);
+                storeCloseDay.setMinute(0);
+                storeRegularOpeningHours.setOpen(storeOpenDay);
+                storeRegularOpeningHours.setClose(storeCloseDay);
+                storeRegularOpeningHoursList.add(storeRegularOpeningHours);
+                continue;
+            } else if (words[1].equals("휴무일")) {    //휴무인경우
+                continue;
+            }
+
+            StoreOpenCloseDay storeOpenDay = new StoreOpenCloseDay();
+            StoreOpenCloseDay storeCloseDay = new StoreOpenCloseDay();
+            StoreRegularOpeningHours storeRegularOpeningHours = new StoreRegularOpeningHours();
+            for (int i = 1; i < words.length; ++i) {
+
+                if (words[i].equals("오전")) {
+                    isBeforeNoon = true;
+                    continue;
+                } else if (words[i].equals("오후")) {
+                    isBeforeNoon = false;
+                    continue;
+                } else if (words[i].equals("~")) {
+                    isOpenDay = false;
+                    continue;
+                }
+
+                if (isOpenDay) {
+                    String[] time = words[i].split(":");
+                    int hours = Integer.parseInt(time[0]);
+                    int minutes = Integer.parseInt(time[1]);
+
+                    if(hours == 12 && isBeforeNoon) {   //오전 12시 XX분의 경우는 0시 XX분으로 표현
+                        hours = 0;
+                    }
+
+                    if (!isBeforeNoon && hours != 12) { //오후 12시 XX분의 경우에는 추가로 12시를 더해주면 안됨
+                        hours += 12;
+                    }
+
+                    storeOpenDay.setDay(storeDay);
+                    storeOpenDay.setHour(hours);
+                    storeOpenDay.setMinute(minutes);
+                } else if (!isOpenDay) {
+                    String[] time = words[i].split(":");
+                    int hours = Integer.parseInt(time[0]);
+                    int minutes = Integer.parseInt(time[1]);
+
+                    if(hours == 12 && isBeforeNoon) {   //오전 12시 XX분의 경우는 0시 XX분으로 표현
+                        hours = 0;
+                    }
+
+                    if (!isBeforeNoon && hours != 12) { //오후 12시 XX분의 경우에는 추가로 12시를 더해주면 안됨
+                        hours += 12;
+                    }
+
+                    storeCloseDay.setDay(storeDay);
+                    storeCloseDay.setHour(hours);
+                    storeCloseDay.setMinute(minutes);
+
+                    storeRegularOpeningHours.setOpen(storeOpenDay);
+                    storeRegularOpeningHours.setClose(storeCloseDay);
+                    storeRegularOpeningHoursList.add(storeRegularOpeningHours);
+                    storeRegularOpeningHours = new StoreRegularOpeningHours();    //안전하게 재활용하기 위해 명시적으로 재할당
+                    storeOpenDay = new StoreOpenCloseDay();
+                    storeCloseDay = new StoreOpenCloseDay();
+
+                    isOpenDay = true;   //OpenDay와 CloseDay가 한짝이 맞았으므로 이제 다시 OpenDay 시기가 된 것
+                }
+            }
+        }
+        return storeRegularOpeningHoursList;
     }
 }
