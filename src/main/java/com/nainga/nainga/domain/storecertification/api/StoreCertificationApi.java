@@ -12,7 +12,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -26,9 +29,27 @@ public class StoreCertificationApi {
     @GetMapping("api/v1/storecertification/byLocation")
     public Result<List<StoreCertificationsByLocationResponse>> findStoreCertificationsByLocation(@RequestParam("nwLong") double nwLong, @RequestParam("nwLat") double nwLat, @RequestParam("seLong") double seLong, @RequestParam("seLat") double seLat) {
         List<StoreCertification> storeCertificationsByLocation = storeCertificationService.findStoreCertificationsByLocation(new Location(nwLong, nwLat), new Location(seLong, seLat));
-        List<StoreCertificationsByLocationResponse> storeCertificationsByLocationResponse = storeCertificationsByLocation.stream()
-                .map(StoreCertificationsByLocationResponse::new)
-                .collect(Collectors.toList());
-        return new Result<>(Result.CODE_SUCCESS, Result.MESSAGE_OK, storeCertificationsByLocationResponse);
+        List<Long> storeIdsWithMultipleCertifications = storeCertificationService.findStoreIdsWithMultipleCertifications(); //여러 인증제를 가지고 있는 가게의 id 리스트
+        List<StoreCertificationsByLocationResponse> storeCertificationsByLocationResponses = new ArrayList<>(); //반환해줄 StoreCertificationsByLocationResponse들의 List
+        Map<Long, StoreCertificationsByLocationResponse> map = new HashMap<>(); //여러 인증제를 가지고 있는 가게들의 response를 임시로 저장하고 있을 map
+
+        for (StoreCertification storeCertification : storeCertificationsByLocation) {
+            if (!storeIdsWithMultipleCertifications.contains(storeCertification.getStore().getId())) {
+                storeCertificationsByLocationResponses.add(new StoreCertificationsByLocationResponse(storeCertification));
+            } else {
+                StoreCertificationsByLocationResponse storeCertificationResult = map.get(storeCertification.getStore().getId());
+                if (storeCertificationResult != null) {
+                    storeCertificationResult.getCertificationName().add(storeCertification.getCertification().getName());
+                } else {
+                    map.put(storeCertification.getStore().getId(), new StoreCertificationsByLocationResponse(storeCertification));
+                }
+            }
+        }
+
+        map.forEach((key,value) -> {    //여러 인증제를 가지고 있는 가게들의 Responses들도 최종 반환해줄 List에 추가
+            storeCertificationsByLocationResponses.add(value);
+        });
+
+        return new Result<>(Result.CODE_SUCCESS, Result.MESSAGE_OK, storeCertificationsByLocationResponses);
     }
 }

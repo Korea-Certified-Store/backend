@@ -9,6 +9,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class GoogleMapMethods {
@@ -50,13 +52,73 @@ public class GoogleMapMethods {
     //이건 Google Map API에 텍스트 검색 (ID 전용) SKU를 호출하는 거라 호출 횟수 관계없이 호출 비용이 평생 무료이다.
     //https://developers.google.com/maps/documentation/places/web-service/usage-and-billing?hl=ko
     public static String getGoogleMapPlacesId(String name, String address, String googleApiKey) {
-        String reqURL = "https://places.googleapis.com/v1/places:searchText";
-
-        // 정규표현식을 사용하여 처음 "(", "," "."가 나타나는 곳부터 문자열 끝까지 삭제! 이렇게 해야 상세 주소의 동,호수,층 등이 없어져서 검색 정확도가 높아진다.
-        address = address.replaceAll("[,(\\.].*", "");
         String textQuery = address + name;
+        address = address.replace("번지", "");    //번지라는 글자가 들어가는 순간 검색이 안되는 데이터들이 종종 있어서 정확도를 높이기 위해 제거
+        //정규표현식을 사용하여 처음 "(", "," "."가 나타나는 곳부터 문자열 끝까지 삭제! 이렇게 해야 상세 주소의 동,호수,층 등이 없어져서 검색 정확도가 높아진다.
+        String address1 = address.replaceAll("[,(\\.].*", "");
+        // "decimal-decimal" 패턴 찾아서 해당 패턴 및 그 뒤의 문자열 제거
+        // 하지만 이걸로 모든 주소를 거를 수는 없음. 왜냐하면, decimal-decimal이 아닌 경우도 엄청 많기 때문.
+        String address2 = removeDetailsOfAddressUsingHyphen(address);
+        // 3번째 주소 후보는, 처음 가공하지 않은 주소 그대로
+        String address3 = address;
+        // 4번째 주소 후보는, 후보 1번 주소에서 "층"이라는 글자가 포함된 단어서부터 문자열 끝까지 제거
+        String address4 = removeDetailsOfAddress(address1, '층');
+        // 5번째 주소 후보는, 후보 1번 주소에서 "호"이라는 글자가 포함된 단어서부터 문자열 끝까지 제거
+        String address5 = removeDetailsOfAddress(address1, '호');
+        // 6번째 주소 후보는, 후보 1번 주소에서 "동"이라는 글자가 포함된 단어서부터 문자열 끝까지 제거
+        String address6 = removeDetailsOfAddress(address1, '동');
+        List<String> addressList = new ArrayList<>();
+        addressList.add(address1);
+        addressList.add(address2);
+        addressList.add(address3);
+        addressList.add(address4);
+        addressList.add(address5);
+        addressList.add(address6);
 
+        for (String addr : addressList) {   //위에서 뽑은 후보 주소지들을 가지고 Google Map API에 places Id를 가져와봅니다.
+            String result = requestGoogleMapPlacesId(addr + " " + name, googleApiKey);
+            if(result != null)
+                return result;
+        }
+        return null;
+    }
+
+    //주소지에 건물이름, 동, 호수, 층 등이 있으면 Google Map API 사용시 검색 정확도가 떨어지기 때문에 제거
+    public static String removeDetailsOfAddress(String address, char findChar) {
+        boolean flag = false;
+
+        for (int i = address.length() - 1; i >= 0; --i) {
+            if(String.valueOf(address.charAt(i)).equals(String.valueOf(findChar))) {
+                flag = true;
+                continue;
+            }
+            if (flag && String.valueOf(address.charAt(i)).equals(String.valueOf(' '))) {
+                return address.substring(0, i);
+            }
+        }
+        return address;
+    }
+
+    //위와 마찬가지의 이유로, Google Map API 검색 정확도를 높이기 위해 -(하이픈)을 구분자로 활용하여 필요없는 상세 주소는 제거
+    public static String removeDetailsOfAddressUsingHyphen(String address) {
+        for (int i = 0; i < address.length(); ++i) {
+            if(String.valueOf(address.charAt(i)).equals(String.valueOf('-')) && (i != 0) && Character.isDigit(address.charAt(i-1))) {
+                int temp = i;
+
+                while (temp < address.length()-1 && Character.isDigit(address.charAt(temp+1))) {    //temp+1 시 OutOfRange가 발생할 수 있으므로, 전처리
+                    ++temp;
+                }
+                if (temp != i) {
+                    return address.substring(0, temp+1);
+                }
+            }
+        }
+        return address;
+    }
+
+    public static String requestGoogleMapPlacesId(String textQuery, String googleApiKey) {
         try {
+            String reqURL = "https://places.googleapis.com/v1/places:searchText";
             URL url = new URL(reqURL);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
@@ -122,7 +184,7 @@ public class GoogleMapMethods {
             conn.setDoOutput(true);
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setRequestProperty("X-Goog-Api-Key", googleApiKey);
-            conn.setRequestProperty("X-Goog-FieldMask", "id,displayName,primaryTypeDisplayName,formattedAddress,regularOpeningHours.periods,location,internationalPhoneNumber,photos.name,photos.widthPx,photos.heightPx");
+            conn.setRequestProperty("X-Goog-FieldMask", "id,displayName,primaryTypeDisplayName,formattedAddress,regularOpeningHours.weekdayDescriptions,location,nationalPhoneNumber,photos.name,photos.widthPx,photos.heightPx");
 
             int responseCode = conn.getResponseCode();
 
