@@ -51,7 +51,7 @@ jobs:
           username: ${{ secrets.KCS_USERNAME_PROD }}
           host: ${{ secrets.KCS_HOST_PROD }}
           key: ${{ secrets.KCS_KEY_PROD }}
-          source: "src/main/resources/backend-submodule/docker-compose-dev.yml"
+          source: "src/main/resources/backend-submodule/docker-compose.yml"
           target: "/home"
 
       # Docker hub 로그인
@@ -66,9 +66,9 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
-          file: ./Dockerfile.dev
+          file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_REPOSITORY }}:latest
+          tags: ${{ secrets.DOCKER_REPOSITORY_PROD }}:latest
           cache-from: type=gha
           cache-to: type=gha, mode=max
 
@@ -82,7 +82,7 @@ jobs:
           key: ${{ secrets.KCS_KEY_PROD }}
           script: |
             docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-            sudo docker pull {{ secrets.DOCKER_REPOSITORY }}:latest
+            sudo docker pull {{ secrets.DOCKER_REPOSITORY_PROD }}:latest
             docker-compose -f docker-compose-dev.yml down
             docker rmi $(docker images -q)
             cp -f ./src/main/resources/backend-submodule/docker-compose-dev.yml .
