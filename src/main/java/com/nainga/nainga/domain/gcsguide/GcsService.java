@@ -5,7 +5,6 @@ import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,14 +16,12 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class GcsService {
 
-    @Value("${spring.cloud.gcp.storage.bucket}") // application.yml에 써둔 bucket 이름
-    private String bucketName;
-
     private final Storage storage;
 
     public String uploadImage(GcsResponse response) {
 
         // 이미지 업로드
+        String bucketName = "kcs-dev-bucket";
         String uuid = UUID.randomUUID().toString(); // Google Cloud Storage에 저장될 파일 이름(중복 이름 안되게 저장하도록 주의)
         String ext = response.getImage().getContentType(); // 파일의 형식 ex) JPG
 
