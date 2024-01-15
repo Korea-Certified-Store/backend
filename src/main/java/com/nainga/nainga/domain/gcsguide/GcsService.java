@@ -21,7 +21,7 @@ public class GcsService {
     public String uploadImage(GcsResponse response) {
 
         // 이미지 업로드
-        String bucketName = "kcs-dev-bucket";
+        String bucketName = "kcs-dev-bucket1";
         String uuid = UUID.randomUUID().toString(); // Google Cloud Storage에 저장될 파일 이름(중복 이름 안되게 저장하도록 주의)
         String ext = response.getImage().getContentType(); // 파일의 형식 ex) JPG
 
