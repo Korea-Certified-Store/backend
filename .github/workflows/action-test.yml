@@ -37,6 +37,14 @@ jobs:
           java-version: '17'
           distribution: 'corretto' # OpenJDK 배포사 corretto, temurin
 
+      - name: Set up MySQL
+        uses: mirromutth/mysql-action@v1.1
+        with:
+          host port: 3306
+          container port: 3306
+          mysql database: 'nainga_test'
+          mysql root password: ${{ secrets.DB_PASSWORD }}
+
       # github action 에서 Gradle dependency 캐시 사용
       - name: Cache Gradle packages
         uses: actions/cache@v3

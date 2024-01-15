@@ -1,21 +1,5 @@
-# 테스트용 설정 - 인메모리 db 사용
+# 테스트용 설정
 spring:
-  datasource:
-    url: jdbc:h2:mem:test
-    username: sa
-    password:
-    driver-class-name: org.h2.Driver
-
-  jpa:
-    hibernate:
-      ddl-auto: create
-    properties:
-      hibernate:
-        format_sql: true
   config:
     import:
       - classpath:backend-submodule/application-local.yml
-
-logging:
-  level:
-    org.hibernate.SQL: debug
