@@ -4,14 +4,17 @@ import com.nainga.nainga.global.util.Result;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Profile({"dev", "prod"})
 @RestController
 @RequiredArgsConstructor
 public class GcsController {
+
 
     private final GcsService gcsService;
 

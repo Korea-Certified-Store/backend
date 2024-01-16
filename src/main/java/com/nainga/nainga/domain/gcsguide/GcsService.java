@@ -5,12 +5,15 @@ import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobInfo;
 import com.google.cloud.storage.Storage;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.UUID;
 
+@Profile({"dev", "prod"})
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -18,10 +21,12 @@ public class GcsService {
 
     private final Storage storage;
 
+    @Value("${GOOGLE_GCS_BUCKET}")
+    private String bucketName;
+
     public String uploadImage(GcsResponse response) {
 
         // 이미지 업로드
-        String bucketName = "kcs-dev-bucket1";
         String uuid = UUID.randomUUID().toString(); // Google Cloud Storage에 저장될 파일 이름(중복 이름 안되게 저장하도록 주의)
         String ext = response.getImage().getContentType(); // 파일의 형식 ex) JPG
 
