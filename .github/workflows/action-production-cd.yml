@@ -52,7 +52,7 @@ jobs:
           host: ${{ secrets.KCS_HOST_PROD }}
           key: ${{ secrets.KCS_KEY_PROD }}
           source: "src/main/resources/backend-submodule/docker-compose.yml"
-          target: "/home/g22203"
+          target: "/home/g22203/"
 
       # Docker hub 로그인
       - name: Login to dockerHub
@@ -85,6 +85,6 @@ jobs:
             sudo docker pull {{ secrets.DOCKER_REPOSITORY_PROD }}:latest
             docker-compose -f docker-compose-dev.yml down
             docker rmi $(docker images -q)
-            cp -f ./src/main/resources/backend-submodule/docker-compose-dev.yml .
+            cp -f ./src/main/resources/backend-submodule/docker-compose.yml .
             rm -r src
-            docker-compose -f docker-compose-dev.yml up -d
+            docker-compose -f docker-compose.yml up -d

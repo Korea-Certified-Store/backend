@@ -1,10 +1,10 @@
-FROM openjdk:17 as builder
+FROM openjdk:17-alpine as builder
 WORKDIR app
 ARG JAR_FILE=build/libs/*.jar
 COPY ${JAR_FILE} app.jar
 RUN java -Djarmode=layertools -jar app.jar extract
 
-FROM openjdk:17
+FROM openjdk:17-alpine
 WORKDIR app
 COPY --from=builder app/dependencies/ ./
 COPY --from=builder app/spring-boot-loader/ ./
