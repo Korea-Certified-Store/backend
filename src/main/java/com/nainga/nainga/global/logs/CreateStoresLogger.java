@@ -27,11 +27,18 @@ public class CreateStoresLogger {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        try (FileWriter fileWriter = new FileWriter(logFile, true)) {
+            fileWriter.write("[WARNING] Google Map에서 끝내 찾지 못한 가게 이름" + System.lineSeparator());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         return absolutePath + logFileName;  //생성한 파일의 경로 리턴
     }
 
     //이미 생성된 로그 파일의 경로와 기록할 message를 전달받아 해당 파일에 기록
-    public static void writeToLogFile(String path, String message) {    //메시지 포맷 => [WARNING] Google Map에서 끝내 찾지 못한 가게 이름: 김밥천국
+    public static void writeToLogFile(String path, String message) {    //끝내 찾지 못한 가게 이름들이 기록된다
         File logFile = new File(path);
 
         try (FileWriter fileWriter = new FileWriter(logFile, true)) {
