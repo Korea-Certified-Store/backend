@@ -12,7 +12,9 @@ import com.nainga.nainga.domain.store.dto.CreateDividedSafeStoresResponse;
 import com.nainga.nainga.domain.store.dto.StoreDataByParser;
 import com.nainga.nainga.domain.storecertification.dao.StoreCertificationRepository;
 import com.nainga.nainga.domain.storecertification.domain.StoreCertification;
+import com.nainga.nainga.global.logs.CreateStoresLogger;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.io.FilenameUtils;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
@@ -49,11 +51,16 @@ public class SafeGoogleMapStoreService {
     @Transactional
     public void createAllSafeStores(String fileName) {
         List<StoreDataByParser> allSafeStores = SafeDataParser.getAllSafeStores(fileName);
+        String fileNameWithoutExtension = FilenameUtils.removeExtension(fileName);  //Filename에서 확장자 제거
+        String logFilePath = CreateStoresLogger.createLogFile("safe", "_" + fileNameWithoutExtension);//정해진 경로에 log file 생성
+
         for (StoreDataByParser storeDataByParser : allSafeStores) {
             String googleMapPlacesId = getGoogleMapPlacesId(storeDataByParser.getName(), storeDataByParser.getAddress(), googleApiKey);
 
-            if(googleMapPlacesId == null)   //가져온 Google Map Place Id가 null이라는 것은 가게가 하나로 특정되지 않아 사용할 수 없다는 것을 의미
+            if(googleMapPlacesId == null){   //가져온 Google Map Place Id가 null이라는 것은 가게가 하나로 특정되지 않아 사용할 수 없다는 것을 의미
+                CreateStoresLogger.writeToLogFile(logFilePath, storeDataByParser.getName());    //로그 파일에 기록
                 continue;
+            }
 
             Optional<Store> resultByGooglePlaceId = storeRepository.findByGooglePlaceId(googleMapPlacesId); //Google Map API에서 가져온 place id와 동일한 정보가 디비에 있으면 중복 가게!
             if (resultByGooglePlaceId.isEmpty()) {  //아직 DB에 존재하지 않는 가게인 경우!
@@ -184,13 +191,18 @@ public class SafeGoogleMapStoreService {
     @Transactional
     public CreateDividedSafeStoresResponse createDividedSafeStores(String fileName, double dollars, int startIndex) {
         List<StoreDataByParser> allSafeStores = SafeDataParser.getAllSafeStores(fileName);
+        String fileNameWithoutExtension = FilenameUtils.removeExtension(fileName);  //Filename에서 확장자 제거
+        String logFilePath = CreateStoresLogger.createLogFile("safe", "_" + fileNameWithoutExtension + "_dollars=" + String.valueOf(dollars) + "_startIndex=" + String.valueOf(startIndex));//정해진 경로에 log file 생성
+
         for (int i=startIndex; i< allSafeStores.size(); ++i) {
 
 
             String googleMapPlacesId = getGoogleMapPlacesId(allSafeStores.get(i).getName(), allSafeStores.get(i).getAddress(), googleApiKey);
 
-            if(googleMapPlacesId == null)   //가져온 Google Map Place Id가 null이라는 것은 가게가 하나로 특정되지 않아 사용할 수 없다는 것을 의미
+            if(googleMapPlacesId == null){   //가져온 Google Map Place Id가 null이라는 것은 가게가 하나로 특정되지 않아 사용할 수 없다는 것을 의미
+                CreateStoresLogger.writeToLogFile(logFilePath, allSafeStores.get(i).getName());    //로그 파일에 기록
                 continue;
+            }
 
             Optional<Store> resultByGooglePlaceId = storeRepository.findByGooglePlaceId(googleMapPlacesId); //Google Map API에서 가져온 place id와 동일한 정보가 디비에 있으면 중복 가게!
             if (resultByGooglePlaceId.isEmpty()) {  //아직 DB에 존재하지 않는 가게인 경우!
