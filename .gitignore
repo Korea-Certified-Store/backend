@@ -47,3 +47,6 @@ out/
 
 ### 환경 변수 ###
 env.yml
+
+### 로그 파일 ###
+/src/main/resources/logs/
