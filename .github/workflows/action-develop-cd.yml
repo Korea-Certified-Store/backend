@@ -105,6 +105,7 @@ jobs:
           script: |
             docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
             sudo docker pull {{ secrets.DOCKER_REPOSITORY }}:latest
+            sudo docker pull {{ secrets.DOCKER_NGINX_REPOSITORY }}:latest
             docker-compose -f docker-compose-dev.yml down
             docker rmi $(docker images -q)
             cp -f ./src/main/resources/backend-submodule/docker-compose-dev.yml .
