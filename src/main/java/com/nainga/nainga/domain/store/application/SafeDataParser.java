@@ -44,23 +44,23 @@ public class SafeDataParser {
             for (int i = 1; i <= sheet.getLastRowNum(); i++) {   //0번째 Row는 column title이라 제외하고 1번부터 마지막 Row까지 조회
                 Row row = sheet.getRow(i);
 
-                Cell statusCell = row.getCell(12);   //현재 안심 식당을 유지하고 있는지를 알려주는 12번 컬럼에 대해 검사.
-                if (isCellEmpty(statusCell)) {  //이렇게 isCellEmpty() Method처럼 다중으로 검증해주지 않으면 POI에서 제대로 Blank cell이나 Empty cell에 대해서 처리를 잘 못한다.
-                    continue;
-                }
+//                Cell statusCell = row.getCell(12);   //현재 안심 식당을 유지하고 있는지를 알려주는 12번 컬럼에 대해 검사.
+//                if (isCellEmpty(statusCell)) {  //이렇게 isCellEmpty() Method처럼 다중으로 검증해주지 않으면 POI에서 제대로 Blank cell이나 Empty cell에 대해서 처리를 잘 못한다.
+//                    continue;
+//                }
 
-                if (statusCell.getCellType() == CellType.STRING) {  //빡빡하게 타입 검사! String 일때만 비교하기
-                    if(statusCell.getStringCellValue().equals("N"))    //만약에 선정 여부가 "N"이면 인증 취소된 것이므로 skip!
-                        continue;
-                }
+//                if (statusCell.getCellType() == CellType.STRING) {  //빡빡하게 타입 검사! String 일때만 비교하기
+//                    if(statusCell.getStringCellValue().equals("N"))    //만약에 선정 여부가 "N"이면 인증 취소된 것이므로 skip!
+//                        continue;
+//                }
 
-                Cell unregisteredCell = row.getCell(13);    //안심 식당 지정 취소가되면 해당 컬럼에 날짜가 기입된다. 따라서, 해당 Cell 값이 비어있어야 현재도 안심 식당으로 지정된 곳이다.
-                if(!isCellEmpty(unregisteredCell))
-                    continue;
+//                Cell unregisteredCell = row.getCell(13);    //안심 식당 지정 취소가되면 해당 컬럼에 날짜가 기입된다. 따라서, 해당 Cell 값이 비어있어야 현재도 안심 식당으로 지정된 곳이다.
+//                if(!isCellEmpty(unregisteredCell))
+//                    continue;
 
                 StoreDataByParser storeDataByParser = new StoreDataByParser();
 
-                Cell nameCell = row.getCell(4); //가개 이름이 저장되어있는 4번 컬럼 조회
+                Cell nameCell = row.getCell(0); //가개 이름이 저장되어있는 0번 컬럼 조회
                 if(isCellEmpty(nameCell))   //Empty cell, Blank cell Empty string 여부를 검사
                     continue;
 
@@ -68,7 +68,7 @@ public class SafeDataParser {
                     storeDataByParser.setName(nameCell.getStringCellValue());
                 }
 
-                Cell addressCell = row.getCell(7);  //주소가 적힌 컬럼을 조회!
+                Cell addressCell = row.getCell(1);  //주소가 적힌 1번 컬럼을 조회!
                 if (!isCellEmpty(addressCell)) {
                     if(addressCell.getCellType() == CellType.STRING) {
                         storeDataByParser.setAddress(addressCell.getStringCellValue());
