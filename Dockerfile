@@ -12,4 +12,4 @@ COPY --from=builder app/snapshot-dependencies/ ./
 COPY --from=builder app/application/ ./
 COPY src/main/resources/data/ ./src/main/resources/data/
 
-ENTRYPOINT ["java", "-Dspring.profiles.active=${ACTIVE_SPRING_PROFILE}", "-Duser.timezone=Asia/Seoul", "org.springframework.boot.loader.launch.JarLauncher"]
+ENTRYPOINT ["java", "-Xms128m", "-Dspring.profiles.active=${ACTIVE_SPRING_PROFILE}", "-Duser.timezone=Asia/Seoul", "org.springframework.boot.loader.launch.JarLauncher"]
