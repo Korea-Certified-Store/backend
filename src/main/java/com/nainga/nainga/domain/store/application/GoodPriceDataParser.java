@@ -46,7 +46,7 @@ public class GoodPriceDataParser {
 
                 StoreDataByParser storeDataByParser = new StoreDataByParser();
 
-                Cell nameCell = row.getCell(3); //가게 이름이 저장되어있는 3번 컬럼 조회
+                Cell nameCell = row.getCell(0); //가게 이름이 저장되어있는 0번 컬럼 조회
                 if(isCellEmpty(nameCell))   //Empty cell, Blank cell Empty string 여부를 검사
                     continue;
 
@@ -54,7 +54,7 @@ public class GoodPriceDataParser {
                     storeDataByParser.setName(nameCell.getStringCellValue());
                 }
 
-                Cell addressCell = row.getCell(5);  //주소가 적힌 컬럼을 조회!
+                Cell addressCell = row.getCell(1);  //주소가 적힌 1번 컬럼을 조회!
                 if (!isCellEmpty(addressCell)) {
                     if(addressCell.getCellType() == CellType.STRING) {
                         storeDataByParser.setAddress(addressCell.getStringCellValue());
