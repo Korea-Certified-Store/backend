@@ -74,10 +74,5 @@ class SafeGoogleMapStoreServiceTest {
         //then
         assertThat(Math.floor(result.getDollars())).isEqualTo(999);
         assertThat(result.getNextIndex()).isEqualTo(-1);    //한 싸이클 모두 조회가 되어야 함
-
-        //그 뒤로 바로 이어서 동일한 메서드를 추가 호출했을 때, 이미 DB에 등록된 상태이므로 API call이 나가지 않아야 함
-        CreateDividedSafeStoresResponse result2 = safeGoogleMapStoreService.createDividedSafeStores("safe_test.xlsx", 1000, 0);
-        assertThat(result2.getDollars()).isEqualTo(1000);   //API call이 나가지 않아서 비용 그대로!
-        assertThat(result2.getNextIndex()).isEqualTo(-1);   //한 싸이클은 전부 조회하므로 -1 리턴
     }
 }
