@@ -415,7 +415,7 @@ public class GoodPriceGoogleMapStoreService {
                 storeOpenDay.setHour(0);
                 storeOpenDay.setMinute(0);
                 storeCloseDay.setDay(storeDay);
-                storeCloseDay.setHour(24);
+                storeCloseDay.setHour(0);
                 storeCloseDay.setMinute(0);
                 storeRegularOpeningHours.setOpen(storeOpenDay);
                 storeRegularOpeningHours.setClose(storeCloseDay);
