@@ -14,8 +14,8 @@ import java.util.List;
 import java.util.UUID;
 
 public class GoogleMapMethods {
-    //아래 메서드는 Google Map API 내 사진 요청 API를 트리거하여 API call
-    public static String getGoogleMapPlacesImage(String photosName, String googleApiKey) {
+    //아래 메서드는 Google Map API 내 사진 요청 API를 통해 이미지 한장을 가져와서 Local에 저장
+    public static String getGoogleMapPlacesImageToLocal(String photosName, String googleApiKey) {
         String maxWidthPx = "400";
         String maxHeightPx = "400";
 
@@ -43,6 +43,31 @@ public class GoogleMapMethods {
         }
 
         return localFilePath;
+    }
+
+    //아래 메서드는 Google Map API를 통해 해당 name에 해당하는 이미지의 Bytes를 가져와 반환
+    //이렇게 가져오는 이유는 GCS에 저장하기 위해
+    public static byte[] getGoogleMapPlacesImageAsBytes(String photosName, String googleApiKey) {
+        String maxWidthPx = "400";
+        String maxHeightPx = "400";
+
+        String reqURL = "https://places.googleapis.com/v1/" + photosName + "/media?maxHeightPx=" + maxHeightPx + "&maxWidthPx=" + maxWidthPx + "&key=" + googleApiKey;
+
+        try {
+            URL url = new URL(reqURL);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            InputStream inputStream = conn.getInputStream();
+            byte[] bytes = inputStream.readAllBytes();
+            inputStream.close();
+            conn.disconnect();
+
+            return bytes;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;    //제대로 가져오지 못하면 null 반환
     }
 
     //이 메서드는 Google Map API 내 "텍스트 검색(신규)"를 활용하여 텍스트 기반으로 검색하고 매칭되는 가게의 places.id를 가져옵니다.

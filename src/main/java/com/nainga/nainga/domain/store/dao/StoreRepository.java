@@ -1,9 +1,7 @@
 package com.nainga.nainga.domain.store.dao;
 
-import com.nainga.nainga.domain.store.domain.Location;
 import com.nainga.nainga.domain.store.domain.Store;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.Query;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

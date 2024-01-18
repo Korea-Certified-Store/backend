@@ -1,6 +1,5 @@
 package com.nainga.nainga;
 
-import com.nainga.nainga.domain.store.application.GoogleMapMethods;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 

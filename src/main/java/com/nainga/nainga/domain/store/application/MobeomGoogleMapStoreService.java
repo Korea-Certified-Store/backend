@@ -1,8 +1,9 @@
 package com.nainga.nainga.domain.store.application;
 
-import com.google.gson.*;
+import com.google.gson.JsonObject;
 import com.nainga.nainga.domain.certification.dao.CertificationRepository;
 import com.nainga.nainga.domain.certification.domain.Certification;
+import com.nainga.nainga.domain.gcsguide.GcsService;
 import com.nainga.nainga.domain.store.dao.StoreRepository;
 import com.nainga.nainga.domain.store.domain.Store;
 import com.nainga.nainga.domain.store.domain.StoreDay;
@@ -18,21 +19,14 @@ import org.apache.commons.io.FilenameUtils;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import static com.nainga.nainga.domain.store.application.GoogleMapMethods.*;
 
@@ -42,9 +36,24 @@ import static com.nainga.nainga.domain.store.application.GoogleMapMethods.*;
 public class MobeomGoogleMapStoreService {
     @Value("${GOOGLE_API_KEY}")
     private String googleApiKey;    //Spring bean 내에서만 @Value로 프로퍼티를 가져올 수 있어서 Service 단에서 받고 GoogleMapMethods에는 파라미터로 넘겨줌.
+    @Value("${CURRENT_PROFILE}")
+    private String currentProfile;  //현재 Active Profile을 조회
     private final StoreRepository storeRepository;
     private final CertificationRepository certificationRepository;
     private final StoreCertificationRepository storeCertificationRepository;
+    private final GcsService gcsService;
+
+    //아래 생성자 주입을 별도로 작성한 이유는 특정 Profile에서만 의존성 주입이 필요한 GcsService에 @Autowired(required = false)를 적용해주기 위해
+    @Autowired
+    public MobeomGoogleMapStoreService(@Value("${GOOGLE_API_KEY}") String googleApiKey,@Value("${CURRENT_PROFILE}") String currentProfile, StoreRepository storeRepository, CertificationRepository certificationRepository, StoreCertificationRepository storeCertificationRepository, @Autowired(required = false) GcsService gcsService) {
+        this.googleApiKey = googleApiKey;
+        this.currentProfile = currentProfile;
+        this.storeRepository = storeRepository;
+        this.certificationRepository = certificationRepository;
+        this.storeCertificationRepository = storeCertificationRepository;
+        this.gcsService = gcsService;
+    }
+
 
     //이 메서드는 Mobeom Excel dataset 파싱을 통해 가게 이름과 주소를 얻고, 이 정보를 바탕으로 Google Map Place Id를 가져옵니다.
     //그 후 얻어진 Google Map Place Id를 가지고 가게 상세 정보를 Google Map API로부터 가져와 Store DB에 저장합니다.
@@ -104,8 +113,17 @@ public class MobeomGoogleMapStoreService {
                         continue;
 
                     if (!googlePhotosList.isEmpty()) {  //가장 첫 번째 사진만 실제로 다운로드까지 진행하고 나머지는 나중에 쓸 용도로 googlePhotosList에 저장
-                        localPhotosList.add(getGoogleMapPlacesImage(googlePhotosList.get(0), googleApiKey));
-                        googlePhotosList.remove(0);
+                        if (currentProfile.equals("dev") || currentProfile.equals("prod")) {
+                            byte[] googleMapPlacesImageAsBytes = getGoogleMapPlacesImageAsBytes(googlePhotosList.get(0), googleApiKey);
+                            if (googleMapPlacesImageAsBytes != null) {
+                                String gcsPath = gcsService.uploadImage(googleMapPlacesImageAsBytes);
+                                localPhotosList.add(gcsPath);
+                                googlePhotosList.remove(0);
+                            }
+                        } else {    //local이나 test 시
+                            localPhotosList.add(getGoogleMapPlacesImageToLocal(googlePhotosList.get(0), googleApiKey));
+                            googlePhotosList.remove(0);
+                        }
                     }
 
                     //얻어온 가게 상세 정보를 바탕으로 DB에 저장할 객체를 생성
@@ -263,11 +281,21 @@ public class MobeomGoogleMapStoreService {
                             return createDividedMobeomStoresResponse;
                         }
                         //돈이 충분히 있으면,
-                        localPhotosList.add(getGoogleMapPlacesImage(googlePhotosList.get(0), googleApiKey)); //가장 첫 번째 사진만 실제로 다운로드까지 진행하고 나머지는 나중에 쓸 용도로 googlePhotosList에 저장
-                        googlePhotosList.remove(0);
-
-                        //소비한 비용 반영
-                        dollars -= 0.007;
+                        if (currentProfile.equals("dev") || currentProfile.equals("prod")) {
+                            byte[] googleMapPlacesImageAsBytes = getGoogleMapPlacesImageAsBytes(googlePhotosList.get(0), googleApiKey);
+                            if (googleMapPlacesImageAsBytes != null) {
+                                String gcsPath = gcsService.uploadImage(googleMapPlacesImageAsBytes);
+                                localPhotosList.add(gcsPath);
+                                googlePhotosList.remove(0);
+                                //소비한 비용 반영
+                                dollars -= 0.007;
+                            }
+                        } else {    //local이나 test 시
+                            localPhotosList.add(getGoogleMapPlacesImageToLocal(googlePhotosList.get(0), googleApiKey)); //가장 첫 번째 사진만 실제로 다운로드까지 진행하고 나머지는 나중에 쓸 용도로 googlePhotosList에 저장
+                            googlePhotosList.remove(0);
+                            //소비한 비용 반영
+                            dollars -= 0.007;
+                        }
                     }
 
                     //얻어온 가게 상세 정보를 바탕으로 DB에 저장할 객체를 생성

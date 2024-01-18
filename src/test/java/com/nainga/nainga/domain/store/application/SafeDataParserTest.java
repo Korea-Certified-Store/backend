@@ -1,18 +1,12 @@
 package com.nainga.nainga.domain.store.application;
 
 import com.nainga.nainga.domain.store.dto.StoreDataByParser;
-import org.apache.commons.io.FilenameUtils;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class SafeDataParserTest {

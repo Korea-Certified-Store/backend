@@ -1,7 +1,6 @@
 package com.nainga.nainga.domain.storecertification.dao;
 
 import com.nainga.nainga.domain.store.domain.Location;
-import com.nainga.nainga.domain.store.domain.Store;
 import com.nainga.nainga.domain.storecertification.domain.StoreCertification;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;

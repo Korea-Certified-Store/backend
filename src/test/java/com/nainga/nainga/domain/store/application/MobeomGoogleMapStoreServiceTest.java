@@ -8,7 +8,6 @@ import com.nainga.nainga.domain.store.dto.CreateDividedMobeomStoresResponse;
 import com.nainga.nainga.domain.storecertification.dao.StoreCertificationRepository;
 import com.nainga.nainga.domain.storecertification.domain.StoreCertification;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
