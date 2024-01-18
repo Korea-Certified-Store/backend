@@ -1,7 +1,6 @@
 package com.nainga.nainga.domain.storecertification.dto;
 
 import com.nainga.nainga.domain.store.domain.Location;
-import com.nainga.nainga.domain.store.domain.Store;
 import com.nainga.nainga.domain.store.domain.StoreRegularOpeningHours;
 import com.nainga.nainga.domain.storecertification.domain.StoreCertification;
 import lombok.Data;
