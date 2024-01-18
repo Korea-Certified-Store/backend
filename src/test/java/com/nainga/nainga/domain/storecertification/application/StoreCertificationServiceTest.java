@@ -7,11 +7,9 @@ import com.nainga.nainga.domain.store.domain.Store;
 import com.nainga.nainga.domain.storecertification.dao.StoreCertificationRepository;
 import com.nainga.nainga.domain.storecertification.domain.StoreCertification;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.DisabledIfSystemProperty;
 import org.locationtech.jts.geom.Point;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;

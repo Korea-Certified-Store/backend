@@ -1,6 +1,6 @@
 package com.nainga.nainga.domain.store.application;
 
-import com.google.gson.*;
+import com.google.gson.JsonObject;
 import com.nainga.nainga.domain.certification.dao.CertificationRepository;
 import com.nainga.nainga.domain.certification.domain.Certification;
 import com.nainga.nainga.domain.store.dao.StoreRepository;
@@ -22,17 +22,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 import static com.nainga.nainga.domain.store.application.GoogleMapMethods.*;
 

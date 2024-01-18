@@ -1,7 +1,7 @@
 package com.nainga.nainga.domain.storecertification.domain;
 
-import com.nainga.nainga.domain.store.domain.Store;
 import com.nainga.nainga.domain.certification.domain.Certification;
+import com.nainga.nainga.domain.store.domain.Store;
 import jakarta.persistence.*;
 import lombok.*;
 

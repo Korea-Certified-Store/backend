@@ -1,22 +1,21 @@
 package com.nainga.nainga.domain.storecertification.api;
 
 import com.nainga.nainga.domain.store.domain.Location;
-import com.nainga.nainga.domain.store.domain.Store;
 import com.nainga.nainga.domain.storecertification.application.StoreCertificationService;
 import com.nainga.nainga.domain.storecertification.domain.StoreCertification;
-import com.nainga.nainga.domain.storecertification.dto.StoreCertificationsByLocationRequest;
 import com.nainga.nainga.domain.storecertification.dto.StoreCertificationsByLocationResponse;
 import com.nainga.nainga.global.util.Result;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
