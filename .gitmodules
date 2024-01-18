@@ -1,0 +1,6 @@
+[submodule "src/main/resources/backend-submodule"]
+	path = src/main/resources/backend-submodule
+	url = https://github.com/Korea-Certified-Store/backend-submodule.git
+[submodule "src/test/resources/backend-submodule"]
+	path = src/test/resources/backend-submodule
+	url = https://github.com/Korea-Certified-Store/backend-submodule.git

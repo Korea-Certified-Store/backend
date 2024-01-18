@@ -31,7 +31,37 @@ dependencies {
 
 	// 테스트 설정
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	implementation group: 'org.hibernate', name: 'hibernate-spatial', version: '6.4.1.Final'	//Geometry 사용을 위해 추가
 	testRuntimeOnly 'com.h2database:h2'
+
+	// Excel file을 순수 Java로 처리하기 위한 Apache POI import
+	implementation group: 'org.apache.poi', name: 'poi', version: '5.0.0'
+	implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '5.0.0'
+
+	// 확장자를 읽어들이기 위해 추가
+	implementation group: 'commons-io', name: 'commons-io', version: '2.4'
+
+	// for GCS
+	implementation group: 'org.springframework.cloud', name: 'spring-cloud-gcp-starter', version: '1.2.8.RELEASE'
+	implementation group: 'org.springframework.cloud', name: 'spring-cloud-gcp-storage', version: '1.2.8.RELEASE'
+
+	// JsonParser를 사용하기 위해 추가
+	dependencies { implementation 'com.google.code.gson:gson:2.8.8' }
+
+	//spring doc 추가
+	dependencies {
+		implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
+	}
+
+}
+
+test {
+	systemProperties = System.properties
+}
+
+// spring 2.6 부터는 빌드시 plain.jar 이 생기는데 이를 만들지 않는 설정, 해당 jar 을 기반으로 이미지 생성하면 안되기때문
+jar {
+	enabled = false
 }
 
 tasks.named('test') {

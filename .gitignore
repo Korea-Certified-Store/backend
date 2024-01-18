@@ -38,3 +38,15 @@ out/
 
 ### .DS_Store
 .DS_Store
+
+###
+/src/main/resources/images/
+
+### 서브 모듈 ###
+/src/main/resources/backend-submodule/
+
+### 환경 변수 ###
+env.yml
+
+### 로그 파일 ###
+/src/main/resources/logs/
