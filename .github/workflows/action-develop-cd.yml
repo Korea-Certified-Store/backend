@@ -83,15 +83,15 @@ jobs:
           cache-to: type=gha, mode=max
 
       # Docker Hub 에 nginx 푸시
-      - name: Build and push nginx
-        uses: docker/build-push-action@v4
-        with:
-          context: ./nginx
-          file: nginx/Dockerfile-nginx
-          push: true
-          tags: ${{ secrets.DOCKER_NGINX_REPOSITORY }}:latest
-          cache-from: type=gha
-          cache-to: type=gha, mode=max
+#      - name: Build and push nginx
+#        uses: docker/build-push-action@v4
+#        with:
+#          context: ./nginx
+#          file: nginx/Dockerfile-nginx
+#          push: true
+#          tags: ${{ secrets.DOCKER_NGINX_REPOSITORY }}:latest
+#          cache-from: type=gha
+#          cache-to: type=gha, mode=max
 
       # appleboy/ssh-action@master 액션을 사용하여 지정한 서버에 ssh로 접속하고, script를 실행합니다.
       # 실행 시, docker-compose를 사용합니다.
@@ -105,11 +105,8 @@ jobs:
           script: |
             docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
             sudo docker pull {{ secrets.DOCKER_REPOSITORY }}:latest
-            sudo docker pull {{ secrets.DOCKER_NGINX_REPOSITORY }}:latest
             docker-compose -f docker-compose-dev.yml down
             docker rmi $(docker images -q)
             cp -f ./src/main/resources/backend-submodule/docker-compose-dev.yml .
             rm -r src
-            cp ./nginx/nginx.conf .
-            rm -r nginx
             docker-compose -f docker-compose-dev.yml up -d
