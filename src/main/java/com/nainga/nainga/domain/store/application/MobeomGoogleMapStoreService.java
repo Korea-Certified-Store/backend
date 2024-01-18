@@ -113,14 +113,7 @@ public class MobeomGoogleMapStoreService {
                         continue;
 
                     if (!googlePhotosList.isEmpty()) {  //가장 첫 번째 사진만 실제로 다운로드까지 진행하고 나머지는 나중에 쓸 용도로 googlePhotosList에 저장
-                        if (currentProfile.equals("dev")) {
-                            byte[] googleMapPlacesImageAsBytes = getGoogleMapPlacesImageAsBytes(googlePhotosList.get(0), googleApiKey);
-                            if (googleMapPlacesImageAsBytes != null) {
-                                String gcsPath = gcsService.uploadImage(googleMapPlacesImageAsBytes);
-                                localPhotosList.add(gcsPath);
-                                googlePhotosList.remove(0);
-                            }
-                        } else if (currentProfile.equals("prod")) {
+                        if (currentProfile.equals("dev") || currentProfile.equals("prod")) {
                             byte[] googleMapPlacesImageAsBytes = getGoogleMapPlacesImageAsBytes(googlePhotosList.get(0), googleApiKey);
                             if (googleMapPlacesImageAsBytes != null) {
                                 String gcsPath = gcsService.uploadImage(googleMapPlacesImageAsBytes);
@@ -288,16 +281,7 @@ public class MobeomGoogleMapStoreService {
                             return createDividedMobeomStoresResponse;
                         }
                         //돈이 충분히 있으면,
-                        if (currentProfile.equals("dev")) {
-                            byte[] googleMapPlacesImageAsBytes = getGoogleMapPlacesImageAsBytes(googlePhotosList.get(0), googleApiKey);
-                            if (googleMapPlacesImageAsBytes != null) {
-                                String gcsPath = gcsService.uploadImage(googleMapPlacesImageAsBytes);
-                                localPhotosList.add(gcsPath);
-                                googlePhotosList.remove(0);
-                                //소비한 비용 반영
-                                dollars -= 0.007;
-                            }
-                        } else if (currentProfile.equals("prod")) {
+                        if (currentProfile.equals("dev") || currentProfile.equals("prod")) {
                             byte[] googleMapPlacesImageAsBytes = getGoogleMapPlacesImageAsBytes(googlePhotosList.get(0), googleApiKey);
                             if (googleMapPlacesImageAsBytes != null) {
                                 String gcsPath = gcsService.uploadImage(googleMapPlacesImageAsBytes);
