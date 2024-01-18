@@ -19,6 +19,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,6 +42,17 @@ public class SafeGoogleMapStoreService {
     private final CertificationRepository certificationRepository;
     private final StoreCertificationRepository storeCertificationRepository;
     private final GcsService gcsService;
+
+    //아래 생성자 주입을 별도로 작성한 이유는 특정 Profile에서만 의존성 주입이 필요한 GcsService에 @Autowired(required = false)를 적용해주기 위해
+    @Autowired
+    public SafeGoogleMapStoreService(@Value("${GOOGLE_API_KEY}") String googleApiKey,@Value("${CURRENT_PROFILE}") String currentProfile, StoreRepository storeRepository, CertificationRepository certificationRepository, StoreCertificationRepository storeCertificationRepository, @Autowired(required = false) GcsService gcsService) {
+        this.googleApiKey = googleApiKey;
+        this.currentProfile = currentProfile;
+        this.storeRepository = storeRepository;
+        this.certificationRepository = certificationRepository;
+        this.storeCertificationRepository = storeCertificationRepository;
+        this.gcsService = gcsService;
+    }
 
     //이 메서드는 Safe Excel dataset 파싱을 통해 가게 이름과 주소를 얻고, 이 정보를 바탕으로 Google Map Place Id를 가져옵니다.
     //그 후 얻어진 Google Map Place Id를 가지고 가게 상세 정보를 Google Map API로부터 가져와 Store DB에 저장합니다.
