@@ -3,6 +3,7 @@ package com.nainga.nainga.domain.store.application;
 import com.google.gson.JsonObject;
 import com.nainga.nainga.domain.certification.dao.CertificationRepository;
 import com.nainga.nainga.domain.certification.domain.Certification;
+import com.nainga.nainga.domain.gcsguide.GcsService;
 import com.nainga.nainga.domain.store.dao.StoreRepository;
 import com.nainga.nainga.domain.store.domain.Store;
 import com.nainga.nainga.domain.store.domain.StoreDay;
@@ -22,6 +23,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -34,9 +36,12 @@ import static com.nainga.nainga.domain.store.application.GoogleMapMethods.*;
 public class GoodPriceGoogleMapStoreService {
     @Value("${GOOGLE_API_KEY}")
     private String googleApiKey;    //Spring bean 내에서만 @Value로 프로퍼티를 가져올 수 있어서 Service 단에서 받고 GoogleMapMethods에는 파라미터로 넘겨줌.
+    @Value("${CURRENT_PROFILE}")
+    private String currentProfile;  //현재 Active Profile을 조회
     private final StoreRepository storeRepository;
     private final CertificationRepository certificationRepository;
     private final StoreCertificationRepository storeCertificationRepository;
+    private final GcsService gcsService;
 
     //이 메서드는 GoodPrice Excel dataset 파싱을 통해 가게 이름과 주소를 얻고, 이 정보를 바탕으로 Google Map Place Id를 가져옵니다.
     //그 후 얻어진 Google Map Place Id를 가지고 가게 상세 정보를 Google Map API로부터 가져와 Store DB에 저장합니다.
@@ -96,8 +101,24 @@ public class GoodPriceGoogleMapStoreService {
                         continue;
 
                     if (!googlePhotosList.isEmpty()) {  //가장 첫 번째 사진만 실제로 다운로드까지 진행하고 나머지는 나중에 쓸 용도로 googlePhotosList에 저장
-                        localPhotosList.add(getGoogleMapPlacesImage(googlePhotosList.get(0), googleApiKey));
-                        googlePhotosList.remove(0);
+                        if (currentProfile.equals("dev")) {
+                            byte[] googleMapPlacesImageAsBytes = getGoogleMapPlacesImageAsBytes(googlePhotosList.get(0), googleApiKey);
+                            if (googleMapPlacesImageAsBytes != null) {
+                                String gcsPath = gcsService.uploadImage(googleMapPlacesImageAsBytes);
+                                localPhotosList.add(gcsPath);
+                                googlePhotosList.remove(0);
+                            }
+                        } else if (currentProfile.equals("prod")) {
+                            byte[] googleMapPlacesImageAsBytes = getGoogleMapPlacesImageAsBytes(googlePhotosList.get(0), googleApiKey);
+                            if (googleMapPlacesImageAsBytes != null) {
+                                String gcsPath = gcsService.uploadImage(googleMapPlacesImageAsBytes);
+                                localPhotosList.add(gcsPath);
+                                googlePhotosList.remove(0);
+                            }
+                        } else {    //local이나 test 시
+                            localPhotosList.add(getGoogleMapPlacesImageToLocal(googlePhotosList.get(0), googleApiKey));
+                            googlePhotosList.remove(0);
+                        }
                     }
 
                     //얻어온 가게 상세 정보를 바탕으로 DB에 저장할 객체를 생성
@@ -255,7 +276,7 @@ public class GoodPriceGoogleMapStoreService {
                             return createDividedGoodPriceStoresResponse;
                         }
                         //돈이 충분히 있으면,
-                        localPhotosList.add(getGoogleMapPlacesImage(googlePhotosList.get(0), googleApiKey)); //가장 첫 번째 사진만 실제로 다운로드까지 진행하고 나머지는 나중에 쓸 용도로 googlePhotosList에 저장
+                        localPhotosList.add(getGoogleMapPlacesImageToLocal(googlePhotosList.get(0), googleApiKey)); //가장 첫 번째 사진만 실제로 다운로드까지 진행하고 나머지는 나중에 쓸 용도로 googlePhotosList에 저장
                         googlePhotosList.remove(0);
 
                         //소비한 비용 반영

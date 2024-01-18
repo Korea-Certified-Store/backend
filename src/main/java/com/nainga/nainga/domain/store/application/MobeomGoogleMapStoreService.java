@@ -96,7 +96,7 @@ public class MobeomGoogleMapStoreService {
                         continue;
 
                     if (!googlePhotosList.isEmpty()) {  //가장 첫 번째 사진만 실제로 다운로드까지 진행하고 나머지는 나중에 쓸 용도로 googlePhotosList에 저장
-                        localPhotosList.add(getGoogleMapPlacesImage(googlePhotosList.get(0), googleApiKey));
+                        localPhotosList.add(getGoogleMapPlacesImageToLocal(googlePhotosList.get(0), googleApiKey));
                         googlePhotosList.remove(0);
                     }
 
@@ -255,7 +255,7 @@ public class MobeomGoogleMapStoreService {
                             return createDividedMobeomStoresResponse;
                         }
                         //돈이 충분히 있으면,
-                        localPhotosList.add(getGoogleMapPlacesImage(googlePhotosList.get(0), googleApiKey)); //가장 첫 번째 사진만 실제로 다운로드까지 진행하고 나머지는 나중에 쓸 용도로 googlePhotosList에 저장
+                        localPhotosList.add(getGoogleMapPlacesImageToLocal(googlePhotosList.get(0), googleApiKey)); //가장 첫 번째 사진만 실제로 다운로드까지 진행하고 나머지는 나중에 쓸 용도로 googlePhotosList에 저장
                         googlePhotosList.remove(0);
 
                         //소비한 비용 반영
