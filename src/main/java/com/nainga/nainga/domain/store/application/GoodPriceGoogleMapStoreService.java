@@ -276,11 +276,30 @@ public class GoodPriceGoogleMapStoreService {
                             return createDividedGoodPriceStoresResponse;
                         }
                         //돈이 충분히 있으면,
-                        localPhotosList.add(getGoogleMapPlacesImageToLocal(googlePhotosList.get(0), googleApiKey)); //가장 첫 번째 사진만 실제로 다운로드까지 진행하고 나머지는 나중에 쓸 용도로 googlePhotosList에 저장
-                        googlePhotosList.remove(0);
-
-                        //소비한 비용 반영
-                        dollars -= 0.007;
+                        if (currentProfile.equals("dev")) {
+                            byte[] googleMapPlacesImageAsBytes = getGoogleMapPlacesImageAsBytes(googlePhotosList.get(0), googleApiKey);
+                            if (googleMapPlacesImageAsBytes != null) {
+                                String gcsPath = gcsService.uploadImage(googleMapPlacesImageAsBytes);
+                                localPhotosList.add(gcsPath);
+                                googlePhotosList.remove(0);
+                                //소비한 비용 반영
+                                dollars -= 0.007;
+                            }
+                        } else if (currentProfile.equals("prod")) {
+                            byte[] googleMapPlacesImageAsBytes = getGoogleMapPlacesImageAsBytes(googlePhotosList.get(0), googleApiKey);
+                            if (googleMapPlacesImageAsBytes != null) {
+                                String gcsPath = gcsService.uploadImage(googleMapPlacesImageAsBytes);
+                                localPhotosList.add(gcsPath);
+                                googlePhotosList.remove(0);
+                                //소비한 비용 반영
+                                dollars -= 0.007;
+                            }
+                        } else {    //local이나 test 시
+                            localPhotosList.add(getGoogleMapPlacesImageToLocal(googlePhotosList.get(0), googleApiKey)); //가장 첫 번째 사진만 실제로 다운로드까지 진행하고 나머지는 나중에 쓸 용도로 googlePhotosList에 저장
+                            googlePhotosList.remove(0);
+                            //소비한 비용 반영
+                            dollars -= 0.007;
+                        }
                     }
 
                     //얻어온 가게 상세 정보를 바탕으로 DB에 저장할 객체를 생성
