@@ -87,7 +87,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: ./nginx
-          file: ./Dockerfile-nginx
+          file: nginx/Dockerfile-nginx
           push: true
           tags: ${{ secrets.DOCKER_NGINX_REPOSITORY }}:latest
           cache-from: type=gha
