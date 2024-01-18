@@ -73,7 +73,7 @@ jobs:
           password: ${{ secrets.DOCKER_TOKEN}}
 
       # Docker Hub 에 Springboot 푸시
-      - name: Build and push
+      - name: Build and push springboot
         uses: docker/build-push-action@v4
         with:
           context: .
@@ -84,11 +84,11 @@ jobs:
           cache-to: type=gha, mode=max
 
       # Docker Hub 에 nginx 푸시
-      - name: Build and push
+      - name: Build and push nginx
         uses: docker/build-push-action@v4
         with:
-          context: .
-          file: ./nginx/Dockerfile-nginx
+          context: ./nginx
+          file: Dockerfile-nginx
           push: true
           tags: ${{ secrets.DOCKER_NGINX_REPOSITORY }}:latest
           cache-from: type=gha
