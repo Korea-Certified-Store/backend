@@ -60,7 +60,7 @@ public class MobeomDataParser {
 
                 StoreDataByParser storeDataByParser = new StoreDataByParser();
 
-                Cell nameCell = row.getCell(4); //가게 이름이 저장되어있는 4번 컬럼 조회
+                Cell nameCell = row.getCell(0); //가게 이름이 저장되어있는 0번 컬럼 조회
                 if(isCellEmpty(nameCell))   //Empty cell, Blank cell Empty string 여부를 검사
                     continue;
 
@@ -68,13 +68,13 @@ public class MobeomDataParser {
                     storeDataByParser.setName(nameCell.getStringCellValue());
                 }
 
-                Cell streetNumberAddressCell = row.getCell(7);  //지번 주소가 적힌 컬럼을 먼저 조회!
+                Cell streetNumberAddressCell = row.getCell(2);  //지번 주소가 적힌 컬럼을 먼저 조회!
                 if (!isCellEmpty(streetNumberAddressCell)) {
                     if(streetNumberAddressCell.getCellType() == CellType.STRING) {
                         storeDataByParser.setAddress(streetNumberAddressCell.getStringCellValue());
                     }
                 } else {
-                    Cell streetNameAddressCell = row.getCell(6);
+                    Cell streetNameAddressCell = row.getCell(1);
                     if (!isCellEmpty(streetNameAddressCell)) {  //만약에 지번 주소가 없는 가게면 도로명 주소를 조회
                         if(streetNameAddressCell.getCellType() == CellType.STRING) {
                             storeDataByParser.setAddress(streetNameAddressCell.getStringCellValue());
