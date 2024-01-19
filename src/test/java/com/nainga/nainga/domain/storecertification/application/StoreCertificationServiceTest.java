@@ -55,9 +55,11 @@ class StoreCertificationServiceTest {
         }
 
         //when
-        Location location1 = new Location(minLongitude - 1.0, minLatitude - 1.0);
-        Location location2 = new Location(maxLongitude + 1.0, maxLatitude + 1.0);
-        List<StoreCertification> storeCertificationsByLocation = storeCertificationService.findStoreCertificationsByLocation(location1, location2);
+        Location location1 = new Location(minLongitude - 1.0, maxLatitude + 1.0);
+        Location location2 = new Location(minLongitude - 1.0, minLatitude - 1.0);
+        Location location3 = new Location(maxLongitude + 1.0, minLatitude - 1.0);
+        Location location4 = new Location(maxLongitude + 1.0, maxLatitude + 1.0);
+        List<StoreCertification> storeCertificationsByLocation = storeCertificationService.findStoreCertificationsByLocation(location1, location2, location3, location4);
 
         //then
         assertThat(storeCertificationsByLocation.size()).isEqualTo(stores.size());
