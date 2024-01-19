@@ -79,7 +79,7 @@ jobs:
           script: |
             docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
             sudo docker pull {{ secrets.DOCKER_REPOSITORY_PROD }}:latest
-            docker-compose -f docker-compose-dev.yml down
+            docker-compose -f docker-compose.yml down
             docker rmi $(docker images -q)
             cp -f ./src/main/resources/backend-submodule/docker-compose.yml .
             rm -r src
