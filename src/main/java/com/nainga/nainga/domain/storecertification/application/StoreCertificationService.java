@@ -16,8 +16,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class StoreCertificationService {
     private final StoreCertificationRepository storeCertificationRepository;
-    public List<StoreCertification> findStoreCertificationsByLocation(Location northWestLocation, Location southEastLocation) {
-        return storeCertificationRepository.findStoreCertificationsByLocation(northWestLocation, southEastLocation);
+    public List<StoreCertification> findStoreCertificationsByLocation(Location northWestLocation, Location southWestLocation, Location southEastLocation, Location northEastLocation) {
+        return storeCertificationRepository.findStoreCertificationsByLocation(northWestLocation, southWestLocation, southEastLocation, northEastLocation);
     }
 
     public List<Long> findStoreIdsWithMultipleCertifications() {
