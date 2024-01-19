@@ -44,24 +44,16 @@ jobs:
           chmod +x ./gradlew
           ./gradlew clean build -x test
 
-      # 도커 컴포즈 설정 파일 서버(EC2)로 전달
-      - name: Send docker-compose.yml
+      # 설정 파일 서버(EC2)로 전달
+      - name: Send docker-compose.yml and nginx.conf
         uses: appleboy/scp-action@master
         with:
           username: ubuntu
           host: ${{ secrets.KCS_HOST_DEV }}
           key: ${{ secrets.KCS_KEY_DEV }}
-          source: "src/main/resources/backend-submodule/docker-compose-dev.yml"
-          target: "/home/ubuntu/"
-
-      # nginx 설정 파일 서버로 전달
-      - name: Send nginx.conf
-        uses: appleboy/scp-action@master
-        with:
-          username: ubuntu
-          host: ${{ secrets.KCS_HOST_DEV }}
-          key: ${{ secrets.KCS_KEY_DEV }}
-          source: "./nginx/nginx.conf"
+          source: |
+            "src/main/resources/backend-submodule/docker-compose-dev.yml"
+            "./nginx/nginx.conf"
           target: "/home/ubuntu/"
 
       # Docker hub 로그인
