@@ -51,9 +51,7 @@ jobs:
           username: ubuntu
           host: ${{ secrets.KCS_HOST_DEV }}
           key: ${{ secrets.KCS_KEY_DEV }}
-          source: |
-            "src/main/resources/backend-submodule/docker-compose-dev.yml"
-            "./nginx/nginx.conf"
+          source: "src/main/resources/backend-submodule/docker-compose-dev.yml,./nginx/nginx.conf"
           target: "/home/ubuntu/"
 
       # Docker hub 로그인
