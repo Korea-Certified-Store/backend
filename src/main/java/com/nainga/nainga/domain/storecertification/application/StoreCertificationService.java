@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,16 +23,16 @@ public class StoreCertificationService {
 
     public List<Long> findStoreIdsWithMultipleCertifications() {
         List<StoreCertification> allStoreCertifications = storeCertificationRepository.findAll();   //중복된 id를 검사하기 위함
-        List<Long> allStoreIds = new ArrayList<>();
+
+        HashSet<Long> uniqueStoreIds = new HashSet<>(); //조회 성능을 높이기 위해 HashSet으로 저장
+        HashSet<Long> duplicatedStoreIds = new HashSet<>();
+
         for (StoreCertification storeCertification : allStoreCertifications) {
-            allStoreIds.add(storeCertification.getStore().getId());
+            Long storeId = storeCertification.getStore().getId();
+            if (!uniqueStoreIds.add(storeId)) { //HashSet에 add를 했을 때 이미 존재하는 데이터면 false가 리턴되는 것을 활용
+                duplicatedStoreIds.add(storeId);
+            }
         }
-
-        List<Long> duplicatedIds = allStoreIds.stream()
-                .filter(e -> allStoreIds.indexOf(e) != allStoreIds.lastIndexOf(e))  //중복된 StoreId가 있는 경우
-                .distinct() //해당 id를 모아서 1번씩만(중복 제거) 리스트에 담아 전달
-                .collect(Collectors.toList());
-
-        return duplicatedIds;
+        return new ArrayList<>(duplicatedStoreIds);
     }
 }
