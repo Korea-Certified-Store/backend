@@ -5,6 +5,10 @@ on:
   push:
     branches:
       - main
+  pull_request: # 테스트 브랜치
+    branches:
+      - develop
+      - feature/**
 
 # 코드의 내용을 이 파일을 실행하여 action을 수행하는 주체(Github Actions에서 사용하는 VM)가 읽을 수 있도록 권한을 설정
 permissions:
@@ -40,14 +44,14 @@ jobs:
           chmod +x ./gradlew
           ./gradlew clean build -x test
 
-      # 도커 컴포즈 설정 파일 서버로 전달
-      - name: Send docker-compose.yml
+      # 설정 파일 서버로 전달
+      - name: Send docker-compose.yml and nginx
         uses: appleboy/scp-action@master
         with:
           username: ${{ secrets.KCS_USERNAME_PROD }}
           host: ${{ secrets.KCS_HOST_PROD }}
           key: ${{ secrets.KCS_KEY_PROD }}
-          source: "src/main/resources/backend-submodule/docker-compose.yml"
+          source: "src/main/resources/backend-submodule/docker-compose.yml, src/main/resources/backend-submodule/nginx/nginx.conf"
           target: "/home/g22203/"
 
       # Docker hub 로그인
