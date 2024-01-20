@@ -51,7 +51,7 @@ jobs:
           username: ${{ secrets.KCS_USERNAME_PROD }}
           host: ${{ secrets.KCS_HOST_PROD }}
           key: ${{ secrets.KCS_KEY_PROD }}
-          source: "src/main/resources/backend-submodule/docker-compose.yml, src/main/resources/backend-submodule/nginx/nginx.conf"
+          source: "src/main/resources/backend-submodule/docker-compose.yml,src/main/resources/backend-submodule/nginx/nginx.conf"
           target: "/home/g22203/"
 
       # Docker hub 로그인
