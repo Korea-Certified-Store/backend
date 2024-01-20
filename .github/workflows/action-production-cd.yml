@@ -86,5 +86,6 @@ jobs:
             docker-compose -f docker-compose.yml down
             docker rmi $(docker images -q)
             cp -f ./src/main/resources/backend-submodule/docker-compose.yml .
+            cp -rf ./src/main/resources/backend-submodule/nginx .
             rm -r src
             docker-compose -f docker-compose.yml up -d
