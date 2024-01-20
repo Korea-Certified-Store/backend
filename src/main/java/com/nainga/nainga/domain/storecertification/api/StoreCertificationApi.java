@@ -45,7 +45,7 @@ public class StoreCertificationApi {
     @GetMapping("api/v1/storecertification/byLocation")
     public Result<List<StoreCertificationsByLocationResponse>> findStoreCertificationsByLocation(@RequestParam("nwLong") double nwLong, @RequestParam("nwLat") double nwLat, @RequestParam("swLong") double swLong, @RequestParam("swLat") double swLat, @RequestParam("seLong") double seLong, @RequestParam("seLat") double seLat, @RequestParam("neLong") double neLong, @RequestParam("neLat") double neLat) {
         List<StoreCertification> storeCertificationsByLocation = storeCertificationService.findStoreCertificationsByLocation(new Location(nwLong, nwLat), new Location(swLong, swLat), new Location(seLong, seLat), new Location(neLong, neLat));
-        List<Long> storeIdsWithMultipleCertifications = storeCertificationService.findStoreIdsWithMultipleCertifications(); //여러 인증제를 가지고 있는 가게의 id 리스트
+        List<Long> storeIdsWithMultipleCertifications = storeCertificationService.getDuplicatedStoreIds(); //여러 인증제를 가지고 있는 가게의 id 리스트
         List<StoreCertificationsByLocationResponse> storeCertificationsByLocationResponses = new ArrayList<>(); //반환해줄 StoreCertificationsByLocationResponse들의 List
         Map<Long, StoreCertificationsByLocationResponse> map = new HashMap<>(); //여러 인증제를 가지고 있는 가게들의 response를 임시로 저장하고 있을 map
 
