@@ -3,35 +3,49 @@ package com.nainga.nainga.domain.storecertification.application;
 import com.nainga.nainga.domain.store.domain.Location;
 import com.nainga.nainga.domain.storecertification.dao.StoreCertificationRepository;
 import com.nainga.nainga.domain.storecertification.domain.StoreCertification;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
-@RequiredArgsConstructor
 public class StoreCertificationService {
     private final StoreCertificationRepository storeCertificationRepository;
-    public List<StoreCertification> findStoreCertificationsByLocation(Location northWestLocation, Location southEastLocation) {
-        return storeCertificationRepository.findStoreCertificationsByLocation(northWestLocation, southEastLocation);
+    private List<Long> duplicatedStoreIds;  //여러 인증제를 가지는 중복된 storeId를 담고있는 리스트
+
+    @Autowired
+    public StoreCertificationService(StoreCertificationRepository storeCertificationRepository) {
+        this.storeCertificationRepository = storeCertificationRepository;
     }
 
-    public List<Long> findStoreIdsWithMultipleCertifications() {
+    @PostConstruct
+    public void init() {    //이 Service Bean이 생성된 이후에 한번만 중복된 storeId를 검사해서 Globally하게 저장
         List<StoreCertification> allStoreCertifications = storeCertificationRepository.findAll();   //중복된 id를 검사하기 위함
-        List<Long> allStoreIds = new ArrayList<>();
+
+        HashSet<Long> uniqueStoreIds = new HashSet<>(); //조회 성능을 높이기 위해 HashSet으로 저장
+        HashSet<Long> duplicatedIds = new HashSet<>();
+
         for (StoreCertification storeCertification : allStoreCertifications) {
-            allStoreIds.add(storeCertification.getStore().getId());
+            Long storeId = storeCertification.getStore().getId();
+            if (!uniqueStoreIds.add(storeId)) { //HashSet에 add를 했을 때 이미 존재하는 데이터면 false가 리턴되는 것을 활용
+                duplicatedIds.add(storeId);
+            }
         }
+        duplicatedStoreIds = new ArrayList<>(duplicatedIds);
+    }
 
-        List<Long> duplicatedIds = allStoreIds.stream()
-                .filter(e -> allStoreIds.indexOf(e) != allStoreIds.lastIndexOf(e))  //중복된 StoreId가 있는 경우
-                .distinct() //해당 id를 모아서 1번씩만(중복 제거) 리스트에 담아 전달
-                .collect(Collectors.toList());
+    public List<StoreCertification> findStoreCertificationsByLocation(Location northWestLocation, Location southWestLocation, Location southEastLocation, Location northEastLocation) {
+        return storeCertificationRepository.findStoreCertificationsByLocation(northWestLocation, southWestLocation, southEastLocation, northEastLocation);
+    }
 
-        return duplicatedIds;
+    public List<Long> getDuplicatedStoreIds() {
+        return duplicatedStoreIds;
     }
 }
