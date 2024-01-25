@@ -75,7 +75,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     private ErrorResponse makeErrorResponse(ErrorCode errorCode) {
         return ErrorResponse.builder()
-                .code(errorCode.name())
+                .httpStatusValue(errorCode.getHttpStatus().value())
+                .httpStatusCode(errorCode.name())
                 .message(errorCode.getMessage())
                 .build();
     }
@@ -87,7 +88,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     private ErrorResponse makeErrorResponse(ErrorCode errorCode, String message) {
         return ErrorResponse.builder()
-                .code(errorCode.name())
+                .httpStatusValue(errorCode.getHttpStatus().value())
+                .httpStatusCode(errorCode.name())
                 .message(message)
                 .build();
     }
@@ -104,7 +106,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .collect(Collectors.toList());
 
         return ErrorResponse.builder()
-                .code(errorCode.name())
+                .httpStatusValue(errorCode.getHttpStatus().value())
+                .httpStatusCode(errorCode.name())
                 .message(errorCode.getMessage())
                 .errors(validationErrorList)
                 .build();

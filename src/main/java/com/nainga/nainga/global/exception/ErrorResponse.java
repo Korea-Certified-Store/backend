@@ -15,7 +15,8 @@ import java.util.List;
 @Builder
 @RequiredArgsConstructor
 public class ErrorResponse {
-    private final String code;
+    private final int httpStatusValue;
+    private final String httpStatusCode;
     private final String message;
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)     //만약 비어있으면 JSON에 포함되지 않도록 JsonInclude 애너테이션을 붙였습니다.
