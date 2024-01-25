@@ -10,9 +10,9 @@ import org.springframework.http.HttpStatus;
 @Getter
 @RequiredArgsConstructor
 public enum StoreErrorCode implements ErrorCode {
-    INVALID_FILE_EXTENSION(HttpStatus.NOT_FOUND, "올바르지 않은 파일 확장자입니다. Excel 파일 확장자만 허용됩니다."),
-    GCS_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Google Cloud Storage 관련 서버 오류입니다."),
-    GOOGLE_MAP_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Google Map API 관련 서버 오류입니다.");
+    INVALID_FILE_EXTENSION(HttpStatus.NOT_FOUND, "There are incorrect files. Only the extension of Excel file is allowed."),
+    GCS_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "There are internal server errors related to Google Cloud Storage."),
+    GOOGLE_MAP_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "There are internal server errors related to Google Map API.");
 
     private final HttpStatus httpStatus;
     private final String message;
