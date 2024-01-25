@@ -21,8 +21,8 @@ import java.util.stream.Collectors;
 @Slf4j
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(RestApiException.class)   //직접 만들었던 예외 클래스인 RestApiException 클래스에 대한 핸들러
-    public ResponseEntity<Object> handleCustomException(RestApiException e) {
+    @ExceptionHandler(GlobalException.class)   //직접 만들었던 예외 클래스인 RestApiException 클래스에 대한 핸들러
+    public ResponseEntity<Object> handleCustomException(GlobalException e) {
         ErrorCode errorCode = e.getErrorCode();
         return handleExceptionInternal(errorCode);
     }

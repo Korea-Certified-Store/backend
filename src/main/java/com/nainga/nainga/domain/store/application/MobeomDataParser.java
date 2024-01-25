@@ -1,7 +1,7 @@
 package com.nainga.nainga.domain.store.application;
 
 import com.nainga.nainga.domain.store.dto.StoreDataByParser;
-import com.nainga.nainga.global.exception.RestApiException;
+import com.nainga.nainga.global.exception.GlobalException;
 import com.nainga.nainga.global.exception.StoreErrorCode;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -20,7 +20,7 @@ import java.util.List;
 public class MobeomDataParser {
     //모범 음식점 엑셀 파일로부터 가게 이름과 주소지만을 파싱해서 모두 가져오는 메서드
     //테스트에서 번거롭게 Mocking 파일을 쓰지 않고 Test 파일 이름을 지정해줄 수 있도록 fileName을 파라미터에 지정
-    public static List<StoreDataByParser> getAllMobeomStores(String fileName) throws RestApiException {
+    public static List<StoreDataByParser> getAllMobeomStores(String fileName) throws GlobalException {
         List<StoreDataByParser> storeDataByParserList = new ArrayList<>();
 
         //프로젝트 폴더 내 resources/data 폴더에 접근하기 위해 절대 경로를 설정
@@ -89,7 +89,7 @@ public class MobeomDataParser {
                 storeDataByParserList.add(storeDataByParser);   //위에서 파싱한 각 가게별 데이터를 List에 담기
             }
         } catch (IOException e) {   //입출력 예외처리
-            throw new RestApiException(StoreErrorCode.INVALID_FILE_EXTENSION);
+            throw new GlobalException(StoreErrorCode.INVALID_FILE_EXTENSION);
         }
         return storeDataByParserList;
     }
