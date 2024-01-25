@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
@@ -21,7 +22,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(GlobalException.class)   //직접 만들었던 예외 클래스인 RestApiException 클래스에 대한 핸들러
+    @ExceptionHandler(GlobalException.class)   //직접 만들었던 예외 클래스인 GlobalException 클래스에 대한 핸들러
     public ResponseEntity<Object> handleCustomException(GlobalException e) {
         ErrorCode errorCode = e.getErrorCode();
         return handleExceptionInternal(errorCode);
@@ -44,6 +45,18 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ErrorCode errorCode = CommonErrorCode.INVALID_PARAMETER;
         return handleExceptionInternal(e, errorCode);
     }
+
+    @Override
+    public ResponseEntity<Object> handleMissingServletRequestParameter( //MissingServletRequestParameterException에 대한 커스텀 핸들러
+            MissingServletRequestParameterException e,
+            HttpHeaders headers,
+            HttpStatusCode staus,
+            WebRequest request) {
+        log.warn("handleIllegalArgument", e);
+        ErrorCode errorCode = CommonErrorCode.INVALID_PARAMETER;
+        return handleExceptionInternal(errorCode, e.getMessage());
+    }
+
 
     @ExceptionHandler({Exception.class})
     public ResponseEntity<Object> handleAllException(Exception ex) {    //그 이외 모든 Exception에 대한 핸들러
@@ -83,7 +96,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(errorCode.getHttpStatus())
                 .body(makeErrorResponse(e, errorCode));
     }
-
     private ErrorResponse makeErrorResponse(BindException e, ErrorCode errorCode) {
         List<ErrorResponse.ValidationError> validationErrorList = e.getBindingResult()
                 .getFieldErrors()
@@ -97,5 +109,4 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .errors(validationErrorList)
                 .build();
     }
-
 }
