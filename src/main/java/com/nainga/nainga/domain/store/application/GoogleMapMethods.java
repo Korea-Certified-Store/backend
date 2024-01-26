@@ -1,6 +1,8 @@
 package com.nainga.nainga.domain.store.application;
 
 import com.google.gson.*;
+import com.nainga.nainga.global.exception.GlobalException;
+import com.nainga.nainga.global.exception.StoreErrorCode;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -141,7 +143,7 @@ public class GoogleMapMethods {
         return address;
     }
 
-    public static String requestGoogleMapPlacesId(String textQuery, String googleApiKey) {
+    public static String requestGoogleMapPlacesId(String textQuery, String googleApiKey) throws GlobalException {
         try {
             String reqURL = "https://places.googleapis.com/v1/places:searchText";
             URL url = new URL(reqURL);
@@ -164,7 +166,7 @@ public class GoogleMapMethods {
             int responseCode = conn.getResponseCode();
 
             if (responseCode != 200) {
-                throw new IllegalStateException("Google Map API 요청 중 오류 발생");
+                throw new GlobalException(StoreErrorCode.GOOGLE_MAP_SERVER_ERROR);
             }
 
             BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -190,7 +192,7 @@ public class GoogleMapMethods {
             }
             br.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new GlobalException(StoreErrorCode.GOOGLE_MAP_SERVER_ERROR);
         }
 
         return null;    //검색된 가게가 1개일 때를 제외하고는 null을 리턴
@@ -198,7 +200,7 @@ public class GoogleMapMethods {
 
     //아래 메서드는 SKU: Place Details (Advanced)를 트리거해서 api 콜 1개당 0.02달러씩 결제된다.
     //https://developers.google.com/maps/documentation/places/web-service/usage-and-billing?hl=ko#advanced-placedetails
-    public static JsonObject getGoogleMapPlacesDetail(String googleMapPlacesId, String googleApiKey) {
+    public static JsonObject getGoogleMapPlacesDetail(String googleMapPlacesId, String googleApiKey) throws GlobalException {
         String reqURL = "https://places.googleapis.com/v1/places/" + googleMapPlacesId + "?languageCode=ko";
 
         try {
@@ -214,7 +216,7 @@ public class GoogleMapMethods {
             int responseCode = conn.getResponseCode();
 
             if (responseCode != 200) {
-                throw new IllegalStateException("Google Map API 요청 중 오류 발생");
+                throw new GlobalException(StoreErrorCode.GOOGLE_MAP_SERVER_ERROR);
             }
 
             BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -233,7 +235,7 @@ public class GoogleMapMethods {
             }
             br.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new GlobalException(StoreErrorCode.GOOGLE_MAP_SERVER_ERROR);
         }
 
         return null;    //Google Map API로 부터 얻은 Response JSON이 올바르지 않을 때 null을 리턴

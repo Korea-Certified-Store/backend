@@ -22,6 +22,7 @@ public class StoreApi {
     private final SafeGoogleMapStoreService safeGoogleMapStoreService;
     private final GoodPriceGoogleMapStoreService goodPriceGoogleMapStoreService;
 
+    @Hidden
     @Tag(name = "초기 Data 생성")
     @Operation(summary = "모범음식점 데이터 생성", description = "[WARNING] DB에 처음으로 모든 모범음식점 데이터를 주입해주는 API입니다. DB에 엄청난 부하가 가는 작업으로, 합의 없이 실행시켜선 안됩니다!")
     @GetMapping("api/v1/store/mobeom")
@@ -30,6 +31,7 @@ public class StoreApi {
         return new Result<>(Result.CODE_SUCCESS, Result.MESSAGE_OK, null);
     }
 
+    @Hidden
     @Tag(name = "초기 Data 생성")
     @Operation(summary = "지정한 Credit까지만 사용하여 모범음식점 데이터 생성", description = "[WARNING] 지정한 Credit까지만 사용하여 그동안 DB에 모범음식점 데이터를 주입해주는 API입니다. DB에 엄청난 부하가 가는 작업으로, 합의 없이 실행시켜선 안됩니다!")
     @GetMapping("api/v1/store/dividedMobeom")
@@ -39,6 +41,7 @@ public class StoreApi {
         return new Result<>(Result.CODE_SUCCESS, Result.MESSAGE_OK, response);
     }
 
+    @Hidden
     @Tag(name = "초기 Data 생성")
     @Operation(summary = "안심식당 데이터 생성", description = "[WARNING] DB에 처음으로 모든 안심식당 데이터를 주입해주는 API입니다. DB에 엄청난 부하가 가는 작업으로, 합의 없이 실행시켜선 안됩니다!")
     @GetMapping("api/v1/store/safe")
@@ -47,6 +50,7 @@ public class StoreApi {
         return new Result<>(Result.CODE_SUCCESS, Result.MESSAGE_OK, null);
     }
 
+    @Hidden
     @Tag(name = "초기 Data 생성")
     @Operation(summary = "지정한 Credit까지만 사용하여 안심식당 데이터 생성", description = "[WARNING] 지정한 Credit까지만 사용하여 그동안 DB에 안심식당 데이터를 주입해주는 API입니다. DB에 엄청난 부하가 가는 작업으로, 합의 없이 실행시켜선 안됩니다!")
     @GetMapping("api/v1/store/dividedSafe")
@@ -56,6 +60,7 @@ public class StoreApi {
         return new Result<>(Result.CODE_SUCCESS, Result.MESSAGE_OK, response);
     }
 
+    @Hidden
     @Tag(name = "초기 Data 생성")
     @Operation(summary = "착한가격업소 데이터 생성", description = "[WARNING] DB에 처음으로 모든 착한가격업소 데이터를 주입해주는 API입니다. DB에 엄청난 부하가 가는 작업으로, 합의 없이 실행시켜선 안됩니다!")
     @GetMapping("api/v1/store/goodPrice")
@@ -64,6 +69,7 @@ public class StoreApi {
         return new Result<>(Result.CODE_SUCCESS, Result.MESSAGE_OK, null);
     }
 
+    @Hidden
     @Tag(name = "초기 Data 생성")
     @Operation(summary = "지정한 Credit까지만 사용하여 착한가격업소 데이터 생성", description = "[WARNING] 지정한 Credit까지만 사용하여 그동안 DB에 착한가격업소 데이터를 주입해주는 API입니다. DB에 엄청난 부하가 가는 작업으로, 합의 없이 실행시켜선 안됩니다!")
     @GetMapping("api/v1/store/dividedGoodPrice")
