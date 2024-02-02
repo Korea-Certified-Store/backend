@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 
 @RestController
 @RequiredArgsConstructor
@@ -43,7 +44,7 @@ public class StoreCertificationApi {
             "certificationName: 가게의 인증제 목록<br>" +
             "=> 각 인증제별 순서는 보장되지 않습니다.")
     @GetMapping("api/v1/storecertification/byLocation")
-    public Result<List<StoreCertificationsByLocationResponse>> findStoreCertificationsByLocation(@RequestParam("nwLong") double nwLong, @RequestParam("nwLat") double nwLat, @RequestParam("swLong") double swLong, @RequestParam("swLat") double swLat, @RequestParam("seLong") double seLong, @RequestParam("seLat") double seLat, @RequestParam("neLong") double neLong, @RequestParam("neLat") double neLat) {
+    public Result<List<List<StoreCertificationsByLocationResponse>>> findStoreCertificationsByLocation(@RequestParam("nwLong") double nwLong, @RequestParam("nwLat") double nwLat, @RequestParam("swLong") double swLong, @RequestParam("swLat") double swLat, @RequestParam("seLong") double seLong, @RequestParam("seLat") double seLat, @RequestParam("neLong") double neLong, @RequestParam("neLat") double neLat) {
         List<StoreCertification> storeCertificationsByLocation = storeCertificationService.findStoreCertificationsByLocation(new Location(nwLong, nwLat), new Location(swLong, swLat), new Location(seLong, seLat), new Location(neLong, neLat));
         List<Long> storeIdsWithMultipleCertifications = storeCertificationService.getDuplicatedStoreIds(); //여러 인증제를 가지고 있는 가게의 id 리스트
         List<StoreCertificationsByLocationResponse> storeCertificationsByLocationResponses = new ArrayList<>(); //반환해줄 StoreCertificationsByLocationResponse들의 List
@@ -66,6 +67,31 @@ public class StoreCertificationApi {
             storeCertificationsByLocationResponses.add(value);
         });
 
-        return new Result<>(Result.CODE_SUCCESS, Result.MESSAGE_OK, storeCertificationsByLocationResponses);
+        List<List<StoreCertificationsByLocationResponse>> storeCertificationsByLocationListResponses = new ArrayList<>();
+
+        //아래 로직은 Multi threads 환경에도 safe한 ThreadLocalRandom을 통해 영역 안에 들어가는 전체 가게 리스트 중 랜덤하게 최대 75개를 뽑는 과정
+        int[] randomInts = ThreadLocalRandom.current()
+                .ints(0, storeCertificationsByLocationResponses.size())
+                .distinct()
+                .limit(75)
+                .toArray();
+
+        int count = 0;
+        List<StoreCertificationsByLocationResponse> subArray = new ArrayList<>();
+        for (int i=0; i < randomInts.length; ++i) { //난수로 뽑은 인덱스를 활용해서 전체 가게 리스트에서 15개씩 가게를 뽑아 배열에 담는 과정
+            ++count;
+            subArray.add(storeCertificationsByLocationResponses.get(randomInts[i]));
+
+            if (count == 15) {
+                storeCertificationsByLocationListResponses.add(subArray);
+                subArray = new ArrayList<>();
+                count = 0;
+            } else if (i == randomInts.length - 1) {
+                storeCertificationsByLocationListResponses.add(subArray);
+                break;
+            }
+        }
+
+        return new Result<>(Result.CODE_SUCCESS, Result.MESSAGE_OK, storeCertificationsByLocationListResponses);
     }
 }
