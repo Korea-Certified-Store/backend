@@ -76,7 +76,7 @@ public class StoreCertificationApi {
         int[] randomInts = ThreadLocalRandom.current()
                 .ints(0, storeCertificationsByLocationResponses.size())
                 .distinct()
-                .limit(75)
+                .limit(Math.min(storeCertificationsByLocationResponses.size(), 75)) //여기서 limit를 75로만 설정해버리면, 검색 결과의 사이즈가 75개보다 작을 때 무한 루프가 돔
                 .toArray();
 
         int count = 0;
