@@ -68,6 +68,9 @@ public class StoreCertificationApi {
         });
 
         List<List<StoreCertificationsByLocationResponse>> storeCertificationsByLocationListResponses = new ArrayList<>();
+        if (storeCertificationsByLocationResponses.size() == 0) {   //size가 0일 때 예외 처리를 안해주면, 밑에 난수 뽑을 때 ints 메서드에서 boundary exception 발생
+            return new Result<>(Result.CODE_SUCCESS, Result.MESSAGE_OK, storeCertificationsByLocationListResponses);
+        }
 
         //아래 로직은 Multi threads 환경에도 safe한 ThreadLocalRandom을 통해 영역 안에 들어가는 전체 가게 리스트 중 랜덤하게 최대 75개를 뽑는 과정
         int[] randomInts = ThreadLocalRandom.current()
