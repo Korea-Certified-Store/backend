@@ -296,7 +296,8 @@ public class MobeomGoogleMapStoreService {
                                 if (iterator.hasNext()) {   //googlePhotosList에서 가장 첫 번째 원소를 제거
                                     iterator.next();
                                     iterator.remove();
-                                }                                //소비한 비용 반영
+                                }
+                                //소비한 비용 반영
                                 dollars -= 0.007;
                             }
                         } else {    //local이나 test 시
@@ -305,7 +306,8 @@ public class MobeomGoogleMapStoreService {
                             if (iterator.hasNext()) {   //googlePhotosList에서 가장 첫 번째 원소를 제거
                                 iterator.next();
                                 iterator.remove();
-                            }                            //소비한 비용 반영
+                            }
+                            //소비한 비용 반영
                             dollars -= 0.007;
                         }
                     }
