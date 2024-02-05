@@ -24,9 +24,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static com.nainga.nainga.domain.store.application.GoogleMapMethods.*;
 
@@ -79,10 +77,10 @@ public class MobeomGoogleMapStoreService {
 
                 //WKTReader Parse exception에 대한 처리를 위한 try-catch문
                 try {
-                    List<StoreRegularOpeningHours> regularOpeningHours;
-                    List<String> weekdayDescriptions = new ArrayList<>();
-                    List<String> localPhotosList = new ArrayList<>();
-                    List<String> googlePhotosList = new ArrayList<>();
+                    Set<StoreRegularOpeningHours> regularOpeningHours;
+                    Set<String> weekdayDescriptions = new LinkedHashSet<>();
+                    Set<String> localPhotosList = new LinkedHashSet<>();
+                    Set<String> googlePhotosList = new LinkedHashSet<>();
                     String phoneNumber = null;
                     String primaryTypeDisplayName = null;
 
@@ -114,15 +112,23 @@ public class MobeomGoogleMapStoreService {
 
                     if (!googlePhotosList.isEmpty()) {  //가장 첫 번째 사진만 실제로 다운로드까지 진행하고 나머지는 나중에 쓸 용도로 googlePhotosList에 저장
                         if (currentProfile.equals("dev") || currentProfile.equals("prod")) {
-                            byte[] googleMapPlacesImageAsBytes = getGoogleMapPlacesImageAsBytes(googlePhotosList.get(0), googleApiKey);
+                            byte[] googleMapPlacesImageAsBytes = getGoogleMapPlacesImageAsBytes(googlePhotosList.stream().findFirst().get(), googleApiKey);
                             if (googleMapPlacesImageAsBytes != null) {
                                 String gcsPath = gcsService.uploadImage(googleMapPlacesImageAsBytes);
                                 localPhotosList.add(gcsPath);
-                                googlePhotosList.remove(0);
+                                Iterator<String> iterator = googlePhotosList.iterator();
+                                if (iterator.hasNext()) {   //googlePhotosList에서 가장 첫 번째 원소를 제거
+                                    iterator.next();
+                                    iterator.remove();
+                                }
                             }
                         } else {    //local이나 test 시
-                            localPhotosList.add(getGoogleMapPlacesImageToLocal(googlePhotosList.get(0), googleApiKey));
-                            googlePhotosList.remove(0);
+                            localPhotosList.add(getGoogleMapPlacesImageToLocal(googlePhotosList.stream().findFirst().get(), googleApiKey));
+                            Iterator<String> iterator = googlePhotosList.iterator();
+                            if (iterator.hasNext()) {   //googlePhotosList에서 가장 첫 번째 원소를 제거
+                                iterator.next();
+                                iterator.remove();
+                            }
                         }
                     }
 
@@ -240,10 +246,10 @@ public class MobeomGoogleMapStoreService {
 
                 //WKTReader Parse exception에 대한 처리를 위한 try-catch문
                 try {
-                    List<StoreRegularOpeningHours> regularOpeningHours;
-                    List<String> weekdayDescriptions = new ArrayList<>();
-                    List<String> localPhotosList = new ArrayList<>();
-                    List<String> googlePhotosList = new ArrayList<>();
+                    Set<StoreRegularOpeningHours> regularOpeningHours;
+                    Set<String> weekdayDescriptions = new LinkedHashSet<>();
+                    Set<String> localPhotosList = new LinkedHashSet<>();
+                    Set<String> googlePhotosList = new LinkedHashSet<>();
                     String phoneNumber = null;
                     String primaryTypeDisplayName = null;
 
@@ -282,18 +288,24 @@ public class MobeomGoogleMapStoreService {
                         }
                         //돈이 충분히 있으면,
                         if (currentProfile.equals("dev") || currentProfile.equals("prod")) {
-                            byte[] googleMapPlacesImageAsBytes = getGoogleMapPlacesImageAsBytes(googlePhotosList.get(0), googleApiKey);
+                            byte[] googleMapPlacesImageAsBytes = getGoogleMapPlacesImageAsBytes(googlePhotosList.stream().findFirst().get(), googleApiKey);
                             if (googleMapPlacesImageAsBytes != null) {
                                 String gcsPath = gcsService.uploadImage(googleMapPlacesImageAsBytes);
                                 localPhotosList.add(gcsPath);
-                                googlePhotosList.remove(0);
-                                //소비한 비용 반영
+                                Iterator<String> iterator = googlePhotosList.iterator();
+                                if (iterator.hasNext()) {   //googlePhotosList에서 가장 첫 번째 원소를 제거
+                                    iterator.next();
+                                    iterator.remove();
+                                }                                //소비한 비용 반영
                                 dollars -= 0.007;
                             }
                         } else {    //local이나 test 시
-                            localPhotosList.add(getGoogleMapPlacesImageToLocal(googlePhotosList.get(0), googleApiKey)); //가장 첫 번째 사진만 실제로 다운로드까지 진행하고 나머지는 나중에 쓸 용도로 googlePhotosList에 저장
-                            googlePhotosList.remove(0);
-                            //소비한 비용 반영
+                            localPhotosList.add(getGoogleMapPlacesImageToLocal(googlePhotosList.stream().findFirst().get(), googleApiKey)); //가장 첫 번째 사진만 실제로 다운로드까지 진행하고 나머지는 나중에 쓸 용도로 googlePhotosList에 저장
+                            Iterator<String> iterator = googlePhotosList.iterator();
+                            if (iterator.hasNext()) {   //googlePhotosList에서 가장 첫 번째 원소를 제거
+                                iterator.next();
+                                iterator.remove();
+                            }                            //소비한 비용 반영
                             dollars -= 0.007;
                         }
                     }
@@ -381,8 +393,8 @@ public class MobeomGoogleMapStoreService {
 
     //Google Map API에서 제공해주는 영업 시간 정보가 periods와 weekdayDescriptions 방식이 있는데, 기존에 구조화된 periods를 사용했었지만 데이터가 깨져있는 경우가 종종 있어서,
     //조금 더 안정적인 weekdayDescriptions으로 데이터를 받아오고 직접 파싱해서 periods 식으로 변환하여 저장하기 위함
-    public List<StoreRegularOpeningHours> parseWeekdayDescriptions(List<String> weekdayDescriptions) {
-        List<StoreRegularOpeningHours> storeRegularOpeningHoursList = new ArrayList<>();
+    public Set<StoreRegularOpeningHours> parseWeekdayDescriptions(Set<String> weekdayDescriptions) {
+        Set<StoreRegularOpeningHours> storeRegularOpeningHoursList = new LinkedHashSet<>();
 
         for (String weekdayDescription : weekdayDescriptions) {
             weekdayDescription = weekdayDescription.replace(",", " ");   //,는 제거
