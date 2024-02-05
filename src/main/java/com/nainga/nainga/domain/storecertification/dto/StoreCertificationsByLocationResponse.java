@@ -7,6 +7,7 @@ import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Data
 public class StoreCertificationsByLocationResponse {
@@ -16,8 +17,8 @@ public class StoreCertificationsByLocationResponse {
     String formattedAddress;    //가게 전체 주소
     String phoneNumber;    //전화번호
     Location location;    //(경도, 위도) 좌표
-    List<StoreRegularOpeningHours> regularOpeningHours;   //영업 시간
-    List<String> localPhotos;  //구글에서 실제로 다운로드 된 사진들, 현재까지는 최대 1장
+    Set<StoreRegularOpeningHours> regularOpeningHours;   //영업 시간
+    Set<String> localPhotos;  //구글에서 실제로 다운로드 된 사진들, 현재까지는 최대 1장
     List<String> certificationName;   //가지고 있는 인증제 이름 리스트
 
     public StoreCertificationsByLocationResponse(StoreCertification storeCertification) {
