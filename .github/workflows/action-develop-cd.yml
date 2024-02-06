@@ -5,8 +5,11 @@ on:
   push:
     branches:
       - develop
+  pull_request: # 테스트 트리거
+    branches:
+      - develop
 
-# 코드의 내용을 이 파일을 실행하여 action을 수행하는 주체(Github Actions에서 사용하는 VM)가 읽을 수 있도록 권한을 설정
+      # 코드의 내용을 이 파일을 실행하여 action을 수행하는 주체(Github Actions에서 사용하는 VM)가 읽을 수 있도록 권한을 설정
 permissions:
   contents: read
 
@@ -47,7 +50,7 @@ jobs:
           username: ubuntu
           host: ${{ secrets.KCS_HOST_DEV }}
           key: ${{ secrets.KCS_KEY_DEV }}
-          source: "src/main/resources/backend-submodule/docker-compose-dev.yml,./nginx/nginx.conf"
+          source: "src/main/resources/backend-submodule,./nginx/nginx.conf"
           target: "/home/ubuntu/"
 
       # Docker hub 로그인
@@ -83,5 +86,4 @@ jobs:
             docker-compose -f docker-compose-dev.yml down
             docker rmi $(docker images -q)
             cp -f ./src/main/resources/backend-submodule/docker-compose-dev.yml .
-            rm -r src
             docker-compose -f docker-compose-dev.yml up -d
