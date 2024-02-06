@@ -18,7 +18,6 @@
     </appender>
 
     <appender name="FILE-DEBUG" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>logs/debug.log</file>
         <encoder>
             <pattern>${CUSTOM_FILE_LOG_PATTERN}</pattern>
         </encoder>
@@ -35,7 +34,6 @@
     </appender>
 
     <appender name="FILE-INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>logs/info.log</file>
         <encoder>
             <pattern>${CUSTOM_FILE_LOG_PATTERN}</pattern>
         </encoder>
@@ -52,7 +50,6 @@
     </appender>
 
     <appender name="FILE-WARN" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>logs/warn.log</file>
         <encoder>
             <pattern>${CUSTOM_FILE_LOG_PATTERN}</pattern>
         </encoder>
@@ -69,7 +66,6 @@
     </appender>
 
     <appender name="FILE-ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>logs/error.log</file>
         <encoder>
             <pattern>${CUSTOM_FILE_LOG_PATTERN}</pattern>
         </encoder>
