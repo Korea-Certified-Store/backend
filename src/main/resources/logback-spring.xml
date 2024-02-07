@@ -2,19 +2,14 @@
 
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
 
-    <property name="CUSTOM_CONSOLE_LOG_PATTERN" value="[%X{request_id:-startup}] ${CONSOLE_LOG_PATTERN}"/>
-    <property name="CUSTOM_FILE_LOG_PATTERN" value="[%X{request_id:-startup}] ${FILE_LOG_PATTERN}"/>
+    <property name="CUSTOM_CONSOLE_LOG_PATTERN" value="[%X{request_id:-nainga}] ${CONSOLE_LOG_PATTERN}"/>
+    <property name="CUSTOM_FILE_LOG_PATTERN" value="[%X{request_id:-nainga}] ${FILE_LOG_PATTERN}"/>
 
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-        <!-- encoders are assigned the type
-             ch.qos.logback.classic.encoder.PatternLayoutEncoder by default -->
         <encoder>
             <pattern>${CUSTOM_CONSOLE_LOG_PATTERN}</pattern>
             <charset>utf8</charset>
         </encoder>
-        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>INFO</level>
-        </filter>
     </appender>
 
     <appender name="FILE-DEBUG" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -81,6 +76,7 @@
         </rollingPolicy>
     </appender>
 
+    <logger name="com.nainga.nainga" level="DEBUG" />
     <root level="info">
         <appender-ref ref="CONSOLE"/>
         <appender-ref ref="FILE-DEBUG"/>
