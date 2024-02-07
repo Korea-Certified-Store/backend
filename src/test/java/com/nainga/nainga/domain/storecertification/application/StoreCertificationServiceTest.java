@@ -60,7 +60,7 @@ class StoreCertificationServiceTest {
         Location location2 = new Location(minLongitude - 1.0, minLatitude - 1.0);
         Location location3 = new Location(maxLongitude + 1.0, minLatitude - 1.0);
         Location location4 = new Location(maxLongitude + 1.0, maxLatitude + 1.0);
-        List<List<StoreCertificationsByLocationResponse>> storeCertificationsByLocation = storeCertificationService.findStoreCertificationsByLocation(location1, location2, location3, location4);
+        List<List<StoreCertificationsByLocationResponse>> storeCertificationsByLocation = storeCertificationService.findStoreCertificationsByLocationRandomly(location1, location2, location3, location4);
 
         int sizeSum = 0;
         for (int i = 0; i < storeCertificationsByLocation.size(); ++i) {

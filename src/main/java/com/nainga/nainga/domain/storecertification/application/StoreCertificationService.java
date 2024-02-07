@@ -40,8 +40,8 @@ public class StoreCertificationService {
         duplicatedStoreIds = new ArrayList<>(duplicatedIds);
     }
 
-    public List<List<StoreCertificationsByLocationResponse>> findStoreCertificationsByLocation(Location northWestLocation, Location southWestLocation, Location southEastLocation, Location northEastLocation) {
-        List<StoreCertification> storeCertificationsByLocation = storeCertificationRepository.findStoreCertificationsByLocation(northWestLocation, southWestLocation, southEastLocation, northEastLocation);
+    public List<List<StoreCertificationsByLocationResponse>> findStoreCertificationsByLocationRandomly(Location northWestLocation, Location southWestLocation, Location southEastLocation, Location northEastLocation) {
+        List<StoreCertification> storeCertificationsByLocation = storeCertificationRepository.findStoreCertificationsByLocationRandomly(northWestLocation, southWestLocation, southEastLocation, northEastLocation);
         List<StoreCertificationsByLocationResponse> storeCertificationsByLocationResponses = new ArrayList<>(); //반환해줄 StoreCertificationsByLocationResponse들의 List
 
         Map<Long, Boolean> isChecked = new HashMap<>(); //이미 조회한 가게인지 여부를 저장하는 HashMap

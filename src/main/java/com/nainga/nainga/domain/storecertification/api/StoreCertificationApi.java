@@ -23,9 +23,9 @@ import java.util.concurrent.ThreadLocalRandom;
 public class StoreCertificationApi {
     private final StoreCertificationService storeCertificationService;
 
-    //북서쪽, 남동쪽 좌표를 받아 두 좌표로 만들어지는 가장 작은 사각형 내 모든 가게 상세 정보를 반환
+    //총 사각형 영역의 네 꼭짓점 좌표를 받아 최대 75개를 랜덤하게 뽑아낸 뒤, 해당 가게들의 상세 정보를 반환
     @Tag(name = "가게 상세 정보")
-    @Operation(summary = "사용자 위치 기반 가게 상세 정보 제공", description = "사용자 위치를 기준으로 좌상단, 우하단 위도 경도 좌표를 넘겨 받아 두 좌표로 만들 수 있는 최소 크기의 사각형 범위 내 모든 가게의 상세 정보를 전달해줍니다.<br><br>" +
+    @Operation(summary = "사용자 위치 기반 가게 상세 정보 제공", description = "총 사각형 영역의 네 꼭짓점 좌표를 받아 최대 75개를 랜덤하게 뽑아낸 뒤, 해당 가게들의 상세 정보를 반환해줍니다.<br><br>" +
             "[Request Body]<br>" +
             "nwLong: 북서쪽 좌표 경도<br>" +
             "nwLat: 북서쪽 좌표 위도<br>" +
@@ -43,9 +43,9 @@ public class StoreCertificationApi {
             "localPhotos: 저장된 가게 사진 URL<br>" +
             "certificationName: 가게의 인증제 목록<br>" +
             "=> 각 인증제별 순서는 보장되지 않습니다.")
-    @GetMapping("api/v1/storecertification/byLocation")
-    public Result<List<List<StoreCertificationsByLocationResponse>>> findStoreCertificationsByLocation(@RequestParam("nwLong") double nwLong, @RequestParam("nwLat") double nwLat, @RequestParam("swLong") double swLong, @RequestParam("swLat") double swLat, @RequestParam("seLong") double seLong, @RequestParam("seLat") double seLat, @RequestParam("neLong") double neLong, @RequestParam("neLat") double neLat) {
-        List<List<StoreCertificationsByLocationResponse>> storeCertificationsByLocation = storeCertificationService.findStoreCertificationsByLocation(new Location(nwLong, nwLat), new Location(swLong, swLat), new Location(seLong, seLat), new Location(neLong, neLat));
-        return new Result<>(Result.CODE_SUCCESS, Result.MESSAGE_OK, storeCertificationsByLocation);
+    @GetMapping("api/v2/storecertification/byLocation")
+    public Result<List<List<StoreCertificationsByLocationResponse>>> findStoreCertificationsByLocationRandomly(@RequestParam("nwLong") double nwLong, @RequestParam("nwLat") double nwLat, @RequestParam("swLong") double swLong, @RequestParam("swLat") double swLat, @RequestParam("seLong") double seLong, @RequestParam("seLat") double seLat, @RequestParam("neLong") double neLong, @RequestParam("neLat") double neLat) {
+        List<List<StoreCertificationsByLocationResponse>> storeCertificationsByLocationRandomly = storeCertificationService.findStoreCertificationsByLocationRandomly(new Location(nwLong, nwLat), new Location(swLong, swLat), new Location(seLong, seLat), new Location(neLong, neLat));
+        return new Result<>(Result.CODE_SUCCESS, Result.MESSAGE_OK, storeCertificationsByLocationRandomly);
     }
 }
