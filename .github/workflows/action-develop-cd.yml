@@ -71,6 +71,14 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha, mode=max
 
+      # Discord 에 알람 보내기
+      - name: Discord notification
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        uses: Ilshidur/action-discord@master
+        with:
+          args: '{{ EVENT_PAYLOAD.repository.full_name }} 가 배포 되었 습니다. 개발 서버가 재시작 됩니다.'
+
       # appleboy/ssh-action@master 액션을 사용하여 지정한 서버에 ssh로 접속하고, script를 실행합니다.
       # 실행 시, docker-compose를 사용합니다.
       # useranme : ubuntu 우분투 기반 ec2 일 경우 기본이름
