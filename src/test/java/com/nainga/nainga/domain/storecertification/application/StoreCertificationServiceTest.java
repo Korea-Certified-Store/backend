@@ -6,6 +6,7 @@ import com.nainga.nainga.domain.store.domain.Location;
 import com.nainga.nainga.domain.store.domain.Store;
 import com.nainga.nainga.domain.storecertification.dao.StoreCertificationRepository;
 import com.nainga.nainga.domain.storecertification.domain.StoreCertification;
+import com.nainga.nainga.domain.storecertification.dto.StoreCertificationsByLocationResponse;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Point;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,9 +60,14 @@ class StoreCertificationServiceTest {
         Location location2 = new Location(minLongitude - 1.0, minLatitude - 1.0);
         Location location3 = new Location(maxLongitude + 1.0, minLatitude - 1.0);
         Location location4 = new Location(maxLongitude + 1.0, maxLatitude + 1.0);
-        List<StoreCertification> storeCertificationsByLocation = storeCertificationService.findStoreCertificationsByLocation(location1, location2, location3, location4);
+        List<List<StoreCertificationsByLocationResponse>> storeCertificationsByLocation = storeCertificationService.findStoreCertificationsByLocation(location1, location2, location3, location4);
+
+        int sizeSum = 0;
+        for (int i = 0; i < storeCertificationsByLocation.size(); ++i) {
+            sizeSum += storeCertificationsByLocation.get(i).size();
+        }
 
         //then
-        assertThat(storeCertificationsByLocation.size()).isEqualTo(stores.size());
+        assertThat(sizeSum).isEqualTo(stores.size());
     }
 }
