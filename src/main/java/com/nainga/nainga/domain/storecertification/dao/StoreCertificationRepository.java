@@ -4,6 +4,7 @@ import com.nainga.nainga.domain.store.domain.Location;
 import com.nainga.nainga.domain.storecertification.domain.StoreCertification;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
+import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -46,7 +47,12 @@ public class StoreCertificationRepository {
                 northWestLocation.getLongitude(), northWestLocation.getLatitude(), southWestLocation.getLongitude(), southWestLocation.getLatitude(), southEastLocation.getLongitude(), southEastLocation.getLatitude(), northEastLocation.getLongitude(), northEastLocation.getLatitude(), northWestLocation.getLongitude(), northWestLocation.getLatitude()
         );
 
-        Query query = em.createNativeQuery("SELECT sc.* " + "FROM store_certification AS sc " + "JOIN store AS s ON sc.store_id = s.store_id " + "JOIN certification AS c ON sc.certification_id = c.certification_id " + "WHERE ST_CONTAINS(ST_POLYGONFROMTEXT(" + pointFormat + "), s.location)", StoreCertification.class);
+        TypedQuery<StoreCertification> query = em.createQuery(
+                "SELECT sc FROM StoreCertification sc " +
+                        "JOIN FETCH sc.store s " +
+                        "JOIN FETCH sc.certification c " +
+                        "WHERE ST_CONTAINS(ST_POLYGONFROMTEXT(" + pointFormat + "), s.location) ORDER BY RAND() LIMIT 225",
+                StoreCertification.class);
 
         return query.getResultList();
     }
