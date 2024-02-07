@@ -41,6 +41,18 @@ public class StoreCertificationRepository {
     }
 
     //북서쪽 좌표, 남서쪽 좌표, 남동쪽 좌표, 북동쪽 좌표를 받아 그 네 좌표로 만들어지는 사각형 영역 내에 위치하는 가게들 리턴
+    public List<StoreCertification> findStoreCertificationsByLocation(Location northWestLocation, Location southWestLocation, Location southEastLocation, Location northEastLocation) {
+        String pointFormat = String.format(
+                "'POLYGON((%f %f, %f %f, %f %f, %f %f, %f %f))'",   //POINT는 (경도, 위도) 순이다. 즉, (Logitude, Latitude)순
+                northWestLocation.getLongitude(), northWestLocation.getLatitude(), southWestLocation.getLongitude(), southWestLocation.getLatitude(), southEastLocation.getLongitude(), southEastLocation.getLatitude(), northEastLocation.getLongitude(), northEastLocation.getLatitude(), northWestLocation.getLongitude(), northWestLocation.getLatitude()
+        );
+
+        Query query = em.createNativeQuery("SELECT sc.* " + "FROM store_certification AS sc " + "JOIN store AS s ON sc.store_id = s.store_id " + "JOIN certification AS c ON sc.certification_id = c.certification_id " + "WHERE ST_CONTAINS(ST_POLYGONFROMTEXT(" + pointFormat + "), s.location)", StoreCertification.class);
+
+        return query.getResultList();
+    }
+
+    //북서쪽 좌표, 남서쪽 좌표, 남동쪽 좌표, 북동쪽 좌표를 받아 그 네 좌표로 만들어지는 사각형 영역 내에 위치하는 가게들 리턴
     public List<StoreCertification> findStoreCertificationsByLocationRandomly(Location northWestLocation, Location southWestLocation, Location southEastLocation, Location northEastLocation) {
         String pointFormat = String.format(
                 "'POLYGON((%f %f, %f %f, %f %f, %f %f, %f %f))'",   //POINT는 (경도, 위도) 순이다. 즉, (Logitude, Latitude)순

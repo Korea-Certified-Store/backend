@@ -40,6 +40,10 @@ public class StoreCertificationService {
         duplicatedStoreIds = new ArrayList<>(duplicatedIds);
     }
 
+    public List<StoreCertification> findStoreCertificationsByLocation(Location northWestLocation, Location southWestLocation, Location southEastLocation, Location northEastLocation) {
+        return storeCertificationRepository.findStoreCertificationsByLocation(northWestLocation, southWestLocation, southEastLocation, northEastLocation);
+    }
+
     public List<List<StoreCertificationsByLocationResponse>> findStoreCertificationsByLocationRandomly(Location northWestLocation, Location southWestLocation, Location southEastLocation, Location northEastLocation) {
         List<StoreCertification> storeCertificationsByLocation = storeCertificationRepository.findStoreCertificationsByLocationRandomly(northWestLocation, southWestLocation, southEastLocation, northEastLocation);
         List<StoreCertificationsByLocationResponse> storeCertificationsByLocationResponses = new ArrayList<>(); //반환해줄 StoreCertificationsByLocationResponse들의 List
