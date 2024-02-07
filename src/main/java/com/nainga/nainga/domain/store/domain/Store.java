@@ -5,7 +5,6 @@ import lombok.*;
 import org.locationtech.jts.geom.Point;
 
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Getter
@@ -27,11 +26,12 @@ public class Store {
     @Column(columnDefinition = "GEOMETRY")
     private Point location;    //(경도, 위도) 좌표
     @ElementCollection
-    private Set<StoreRegularOpeningHours> regularOpeningHours;   //영업 시간
+    private List<StoreRegularOpeningHours> regularOpeningHours;   //영업 시간
     @ElementCollection
-    private Set<String> weekdayDescriptions;    //String 형식의 영업 시간
+    private List<String> weekdayDescriptions;    //String 형식의 영업 시간
     @ElementCollection
-    private Set<String> localPhotos;    //자체 DB에 저장된 가게 사진들
+    private List<String> localPhotos;    //자체 DB에 저장된 가게 사진들
     @ElementCollection
-    private Set<String> googlePhotos;  //나중에 Google Map API에서 더 가져와야하는 사진들
+    private List<String> googlePhotos;  //나중에 Google Map API에서 더 가져와야하는 사진들
 }
+
