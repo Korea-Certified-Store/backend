@@ -3,15 +3,14 @@ package com.nainga.nainga.domain.storecertification.application;
 import com.nainga.nainga.domain.store.domain.Location;
 import com.nainga.nainga.domain.storecertification.dao.StoreCertificationRepository;
 import com.nainga.nainga.domain.storecertification.domain.StoreCertification;
+import com.nainga.nainga.domain.storecertification.dto.StoreCertificationsByLocationResponse;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,8 +40,49 @@ public class StoreCertificationService {
         duplicatedStoreIds = new ArrayList<>(duplicatedIds);
     }
 
-    public List<StoreCertification> findStoreCertificationsByLocation(Location northWestLocation, Location southWestLocation, Location southEastLocation, Location northEastLocation) {
-        return storeCertificationRepository.findStoreCertificationsByLocation(northWestLocation, southWestLocation, southEastLocation, northEastLocation);
+    public List<List<StoreCertificationsByLocationResponse>> findStoreCertificationsByLocation(Location northWestLocation, Location southWestLocation, Location southEastLocation, Location northEastLocation) {
+        List<StoreCertification> storeCertificationsByLocation = storeCertificationRepository.findStoreCertificationsByLocation(northWestLocation, southWestLocation, southEastLocation, northEastLocation);
+        List<StoreCertificationsByLocationResponse> storeCertificationsByLocationResponses = new ArrayList<>(); //반환해줄 StoreCertificationsByLocationResponse들의 List
+
+        Map<Long, Boolean> isChecked = new HashMap<>(); //이미 조회한 가게인지 여부를 저장하는 HashMap
+
+        for (StoreCertification storeCertification : storeCertificationsByLocation) {
+            if (!duplicatedStoreIds.contains(storeCertification.getStore().getId())) {
+                storeCertificationsByLocationResponses.add(new StoreCertificationsByLocationResponse(storeCertification));
+            } else {
+                Boolean result = isChecked.get(storeCertification.getStore().getId());
+                if (result == null) {
+                    StoreCertificationsByLocationResponse storeCertificationsByLocationResponse = new StoreCertificationsByLocationResponse(storeCertification);
+
+                    List<StoreCertification> storeCertificationsByStoreId = storeCertificationRepository.findStoreCertificationsByStoreId(storeCertification.getStore().getId());
+                    for (StoreCertification storeCertificationByStoreId : storeCertificationsByStoreId) {
+                        storeCertificationsByLocationResponse.getCertificationName().add(storeCertificationByStoreId.getCertification().getName());
+                    }
+
+                    storeCertificationsByLocationResponses.add(storeCertificationsByLocationResponse);
+                    isChecked.put(storeCertification.getStore().getId(), true); //체크되었다고 기록
+                }
+            }
+        }
+
+        List<List<StoreCertificationsByLocationResponse>> storeCertificationsByLocationListResponses = new ArrayList<>();
+
+        List<StoreCertificationsByLocationResponse> subArray = new ArrayList<>();
+        for(int i=1; i <= storeCertificationsByLocationResponses.size(); ++i) {
+            subArray.add(storeCertificationsByLocationResponses.get(i-1));
+
+            if (i == 75 || i == storeCertificationsByLocationResponses.size()) { //요구사항에 따른 가게 최대 개수가 75개 이므로, 0부터 74까지만!
+                storeCertificationsByLocationListResponses.add(subArray);
+                break;
+            }
+
+            if (i % 15 == 0) {
+                storeCertificationsByLocationListResponses.add(subArray);
+                subArray = new ArrayList<>();
+            }
+        }
+
+        return storeCertificationsByLocationListResponses;
     }
 
     public List<Long> getDuplicatedStoreIds() {
