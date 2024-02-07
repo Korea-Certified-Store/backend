@@ -33,3 +33,4 @@ public class StoreCertificationsByLocationResponse {
         this.certificationName.add(storeCertification.getCertification().getName());
     }
 }
+

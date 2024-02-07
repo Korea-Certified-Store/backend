@@ -67,3 +67,4 @@ public class StoreCertificationRepository {
         return query.getResultList();
     }
 }
+

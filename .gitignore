@@ -50,3 +50,4 @@ env.yml
 
 ### 로그 파일 ###
 /src/main/resources/logs/
+/logs
