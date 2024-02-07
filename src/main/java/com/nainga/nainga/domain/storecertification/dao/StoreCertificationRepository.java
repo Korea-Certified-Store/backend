@@ -56,4 +56,14 @@ public class StoreCertificationRepository {
 
         return query.getResultList();
     }
+
+    public List<StoreCertification> findStoreCertificationsByStoreId(Long storeId) {    //storeId를 통해 관련된 모든 StoreCertification 조회
+        TypedQuery<StoreCertification> query = em.createQuery(
+                "SELECT sc FROM StoreCertification sc " +
+                        "JOIN FETCH sc.certification.name cn " +
+                        "WHERE sc.store.id = :storeId", StoreCertification.class
+        ).setParameter("storeId", storeId);
+
+        return query.getResultList();
+    }
 }
