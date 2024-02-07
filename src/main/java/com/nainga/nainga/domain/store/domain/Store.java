@@ -34,3 +34,4 @@ public class Store {
     @ElementCollection
     private List<String> googlePhotos;  //나중에 Google Map API에서 더 가져와야하는 사진들
 }
+

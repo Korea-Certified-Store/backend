@@ -488,3 +488,4 @@ public class SafeGoogleMapStoreService {
         return storeRegularOpeningHoursList;
     }
 }
+
