@@ -55,8 +55,9 @@ public class StoreCertificationService {
                     StoreCertificationsByLocationResponse storeCertificationsByLocationResponse = new StoreCertificationsByLocationResponse(storeCertification);
 
                     List<StoreCertification> storeCertificationsByStoreId = storeCertificationRepository.findStoreCertificationsByStoreId(storeCertification.getStore().getId());
-                    for (StoreCertification storeCertificationByStoreId : storeCertificationsByStoreId) {
-                        storeCertificationsByLocationResponse.getCertificationName().add(storeCertificationByStoreId.getCertification().getName());
+                    for (StoreCertification storeCertificationByStoreId : storeCertificationsByStoreId) {   //위에서 이미 추가해준 인증제 이름일 경우 제외
+                        if(!storeCertificationByStoreId.getCertification().getName().equals(storeCertification.getCertification().getName()))
+                            storeCertificationsByLocationResponse.getCertificationName().add(storeCertificationByStoreId.getCertification().getName());
                     }
 
                     storeCertificationsByLocationResponses.add(storeCertificationsByLocationResponse);
@@ -76,7 +77,7 @@ public class StoreCertificationService {
                 break;
             }
 
-            if (i % 15 == 0) {
+            if (i % 15 == 0) {  //15개씩 1회차를 나눠주기 위해
                 storeCertificationsByLocationListResponses.add(subArray);
                 subArray = new ArrayList<>();
             }
