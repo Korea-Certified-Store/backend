@@ -21,7 +21,7 @@ public class LogAspect {
     private void allService() {
     }
 
-    @Pointcut("bean(*Controller)")
+    @Pointcut("bean(*Api)")
     private void allRequest() {
     }
 
