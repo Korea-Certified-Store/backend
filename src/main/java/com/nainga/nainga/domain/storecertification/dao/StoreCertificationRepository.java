@@ -80,7 +80,7 @@ public class StoreCertificationRepository {
     }
 
     //검색어를 이용해 가게 이름, 업종, 주소에 대해 검색하고 나온 검색 결과 중 사용자로부터 가까운 순으로 최대 75개의 가게 정보를 리턴
-    public List<StoreCertification> searchStoreCertificationsByLocation(Location currentLocation, String searchKeyword) { //사용자의 현재 (경도, 위도) 좌표와 검색 키워드를 전달 받기
+    public List<StoreCertification> searchStoreCertificationsByLocationAndKeyword(Location currentLocation, String searchKeyword) { //사용자의 현재 (경도, 위도) 좌표와 검색 키워드를 전달 받기
         TypedQuery<StoreCertification> query = em.createQuery(
                 "SELECT sc FROM StoreCertification sc " +
                         "JOIN FETCH sc.store s " +
