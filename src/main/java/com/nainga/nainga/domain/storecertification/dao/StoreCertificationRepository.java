@@ -81,7 +81,6 @@ public class StoreCertificationRepository {
 
     //검색어를 이용해 가게 이름, 업종, 주소에 대해 검색하고 나온 검색 결과 중 사용자로부터 가까운 순으로 최대 75개의 가게 정보를 리턴
     public List<StoreCertification> searchStoreCertificationsByLocationAndKeyword(Double currLong, Double currLat, String searchKeyword) {
-        System.out.println("searchKeyword = " + searchKeyword);
         String nativeQuery = "SELECT sc.* FROM store_certification sc " +
                 "JOIN store AS s ON sc.store_id = s.store_id " +
                 "JOIN certification AS c ON sc.certification_id = c.certification_id " +

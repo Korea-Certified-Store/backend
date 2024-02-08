@@ -94,7 +94,6 @@ public class StoreCertificationService {
     //단 이 로직은 UX를 고려해서 총 75개의 가게를 15개씩 쪼개서 5회차로 나누어 보내는 로직은 구현하지 않기로 결정
     public List<StoreCertificationsByLocationResponse> searchStoreCertificationsByLocationAndKeyword(Double currLong, Double currLat, String searchKeyword) {
         List<StoreCertification> storeCertificationsByLocation = storeCertificationRepository.searchStoreCertificationsByLocationAndKeyword(currLong, currLat, searchKeyword);
-        System.out.println("storeCertificationsByLocation.size() = " + storeCertificationsByLocation.size());
         List<StoreCertificationsByLocationResponse> storeCertificationsByLocationResponses = new ArrayList<>(); //반환해줄 StoreCertificationsByLocationResponse들의 List
 
         Map<Long, Boolean> isChecked = new HashMap<>(); //이미 조회한 가게인지 여부를 저장하는 HashMap
@@ -119,7 +118,16 @@ public class StoreCertificationService {
             }
         }
 
-        return storeCertificationsByLocationResponses;
+        List<StoreCertificationsByLocationResponse> storeCertificationsByLocationListResponses = new ArrayList<>();
+
+        for(int i=1; i <= storeCertificationsByLocationResponses.size(); ++i) {
+            storeCertificationsByLocationListResponses.add(storeCertificationsByLocationResponses.get(i-1));
+            if (i == 75 || i == storeCertificationsByLocationResponses.size()) { //요구사항에 따른 가게 최대 개수가 75개 이므로, 0부터 74까지만!
+                break;
+            }
+        }
+
+        return storeCertificationsByLocationListResponses;
     }
 
     public List<Long> getDuplicatedStoreIds() {
