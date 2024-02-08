@@ -90,6 +90,46 @@ public class StoreCertificationService {
         return storeCertificationsByLocationListResponses;
     }
 
+    //검색어를 이용해 가게 이름, 업종, 주소에 대해 검색하고 나온 검색 결과 중 사용자로부터 가까운 순으로 최대 30개의 가게 정보를 리턴
+    //단 이 로직은 UX를 고려해서 총 30개의 가게를 15개씩 쪼개서 5회차로 나누어 보내는 로직은 구현하지 않기로 결정
+    public List<StoreCertificationsByLocationResponse> searchStoreCertificationsByLocationAndKeyword(Double currLong, Double currLat, String searchKeyword) {
+        List<StoreCertification> storeCertificationsByLocation = storeCertificationRepository.searchStoreCertificationsByLocationAndKeyword(currLong, currLat, searchKeyword);
+        List<StoreCertificationsByLocationResponse> storeCertificationsByLocationResponses = new ArrayList<>(); //반환해줄 StoreCertificationsByLocationResponse들의 List
+
+        Map<Long, Boolean> isChecked = new HashMap<>(); //이미 조회한 가게인지 여부를 저장하는 HashMap
+
+        for (StoreCertification storeCertification : storeCertificationsByLocation) {
+            if (!duplicatedStoreIds.contains(storeCertification.getStore().getId())) {
+                storeCertificationsByLocationResponses.add(new StoreCertificationsByLocationResponse(storeCertification));
+            } else {
+                Boolean result = isChecked.get(storeCertification.getStore().getId());
+                if (result == null) {
+                    StoreCertificationsByLocationResponse storeCertificationsByLocationResponse = new StoreCertificationsByLocationResponse(storeCertification);
+
+                    List<StoreCertification> storeCertificationsByStoreId = storeCertificationRepository.findStoreCertificationsByStoreId(storeCertification.getStore().getId());
+                    for (StoreCertification storeCertificationByStoreId : storeCertificationsByStoreId) {   //위에서 이미 추가해준 인증제 이름일 경우 제외
+                        if(!storeCertificationByStoreId.getCertification().getName().equals(storeCertification.getCertification().getName()))
+                            storeCertificationsByLocationResponse.getCertificationName().add(storeCertificationByStoreId.getCertification().getName());
+                    }
+
+                    storeCertificationsByLocationResponses.add(storeCertificationsByLocationResponse);
+                    isChecked.put(storeCertification.getStore().getId(), true); //체크되었다고 기록
+                }
+            }
+        }
+
+        List<StoreCertificationsByLocationResponse> storeCertificationsByLocationListResponses = new ArrayList<>();
+
+        for(int i=1; i <= storeCertificationsByLocationResponses.size(); ++i) {
+            storeCertificationsByLocationListResponses.add(storeCertificationsByLocationResponses.get(i-1));
+            if (i == 30 || i == storeCertificationsByLocationResponses.size()) { //요구사항에 따른 가게 최대 개수가 30개 이므로, 1부터 30까지만!
+                break;
+            }
+        }
+
+        return storeCertificationsByLocationListResponses;
+    }
+
     public List<Long> getDuplicatedStoreIds() {
         return duplicatedStoreIds;
     }
