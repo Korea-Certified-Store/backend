@@ -96,9 +96,9 @@ public class StoreCertificationApi {
         return new Result<>(Result.CODE_SUCCESS, Result.MESSAGE_OK, storeCertificationsByLocationRandomly);
     }
 
-    //검색어를 이용해 가게 이름, 업종, 주소에 대해 검색하고 나온 검색 결과 중 사용자로부터 가까운 순으로 최대 75개의 가게 정보를 리턴
+    //검색어를 이용해 가게 이름, 업종, 주소에 대해 검색하고 나온 검색 결과 중 사용자로부터 가까운 순으로 최대 30개의 가게 정보를 리턴
     @Tag(name = "가게 상세 정보")
-    @Operation(summary = "사용자 위치 및 검색어 기반 가게 상세 정보 제공", description = "현재 사용자의 위치 좌표와 검색 키워드를 전달받아 가게 DB에서 검색한 뒤, 사용자와 가까운 순으로 최대 75개의 가게 상세 정보를 반환해줍니다.<br><br>" +
+    @Operation(summary = "사용자 위치 및 검색어 기반 가게 상세 정보 제공", description = "현재 사용자의 위치 좌표와 검색 키워드를 전달받아 가게 DB에서 검색한 뒤, 사용자와 가까운 순으로 최대 30개의 가게 상세 정보를 반환해줍니다.<br><br>" +
             "[Request Body]<br>" +
             "currLong: 현재 사용자의 위치 좌표 경도값<br>" +
             "currLat: 현재 사용자의 위치 좌표 위도값<br>" +

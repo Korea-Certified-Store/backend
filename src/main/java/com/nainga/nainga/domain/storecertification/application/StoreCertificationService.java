@@ -90,8 +90,8 @@ public class StoreCertificationService {
         return storeCertificationsByLocationListResponses;
     }
 
-    //검색어를 이용해 가게 이름, 업종, 주소에 대해 검색하고 나온 검색 결과 중 사용자로부터 가까운 순으로 최대 75개의 가게 정보를 리턴
-    //단 이 로직은 UX를 고려해서 총 75개의 가게를 15개씩 쪼개서 5회차로 나누어 보내는 로직은 구현하지 않기로 결정
+    //검색어를 이용해 가게 이름, 업종, 주소에 대해 검색하고 나온 검색 결과 중 사용자로부터 가까운 순으로 최대 30개의 가게 정보를 리턴
+    //단 이 로직은 UX를 고려해서 총 30개의 가게를 15개씩 쪼개서 5회차로 나누어 보내는 로직은 구현하지 않기로 결정
     public List<StoreCertificationsByLocationResponse> searchStoreCertificationsByLocationAndKeyword(Double currLong, Double currLat, String searchKeyword) {
         List<StoreCertification> storeCertificationsByLocation = storeCertificationRepository.searchStoreCertificationsByLocationAndKeyword(currLong, currLat, searchKeyword);
         List<StoreCertificationsByLocationResponse> storeCertificationsByLocationResponses = new ArrayList<>(); //반환해줄 StoreCertificationsByLocationResponse들의 List
@@ -122,7 +122,7 @@ public class StoreCertificationService {
 
         for(int i=1; i <= storeCertificationsByLocationResponses.size(); ++i) {
             storeCertificationsByLocationListResponses.add(storeCertificationsByLocationResponses.get(i-1));
-            if (i == 75 || i == storeCertificationsByLocationResponses.size()) { //요구사항에 따른 가게 최대 개수가 75개 이므로, 0부터 74까지만!
+            if (i == 30 || i == storeCertificationsByLocationResponses.size()) { //요구사항에 따른 가게 최대 개수가 30개 이므로, 1부터 30까지만!
                 break;
             }
         }
