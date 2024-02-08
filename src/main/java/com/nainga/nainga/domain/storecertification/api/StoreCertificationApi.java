@@ -117,7 +117,8 @@ public class StoreCertificationApi {
             "=> 각 인증제별 순서는 보장되지 않습니다.")
     @GetMapping("api/v1/storecertification/byLocationAndKeyword")
     public Result<List<StoreCertificationsByLocationResponse>> searchStoreCertificationsByLocationAndKeyword(@RequestParam("currLong") double currLong, @RequestParam("currLat") double currLat, @RequestParam("searchKeyword") String searchKeyword) {
-        List<StoreCertificationsByLocationResponse> storeCertificationsByLocationAndKeyword = storeCertificationService.searchStoreCertificationsByLocationAndKeyword(new Location(currLong, currLat), searchKeyword);
+        System.out.println("API searchKeyword = " + searchKeyword);
+        List<StoreCertificationsByLocationResponse> storeCertificationsByLocationAndKeyword = storeCertificationService.searchStoreCertificationsByLocationAndKeyword(currLong, currLat, searchKeyword);
         return new Result<>(Result.CODE_SUCCESS, Result.MESSAGE_OK, storeCertificationsByLocationAndKeyword);
     }
 }

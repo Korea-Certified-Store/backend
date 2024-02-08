@@ -80,19 +80,23 @@ public class StoreCertificationRepository {
     }
 
     //검색어를 이용해 가게 이름, 업종, 주소에 대해 검색하고 나온 검색 결과 중 사용자로부터 가까운 순으로 최대 75개의 가게 정보를 리턴
-    public List<StoreCertification> searchStoreCertificationsByLocationAndKeyword(Location currentLocation, String searchKeyword) { //사용자의 현재 (경도, 위도) 좌표와 검색 키워드를 전달 받기
-        TypedQuery<StoreCertification> query = em.createQuery(
-                "SELECT sc FROM StoreCertification sc " +
-                        "JOIN FETCH sc.store s " +
-                        "JOIN FETCH sc.certification c " +
-                        "WHERE sc.store.displayName LIKE CONCAT('%', :searchKeyword, '%') " +   //가게 이름에 대한 검색
-                        "OR sc.store.primaryTypeDisplayName LIKE CONCAT('%', :searchKeyword, '%') " +   //업종에 대한 검색
-                        "OR sc.store.formattedAddress LIKE CONCAT('%', :searchKeyword, '%') " + //주소에 대한 검색
-                        "ORDER BY (6371 * acos(cos(radians(36.628486474734)) * cos(radians(ST_Y(:currentLocation))) * cos(radians(ST_X(:currentLocation)) - radians(127.4574415007155)) + sin(radians(36.628486474734)) * sin(radians(ST_Y(:currentLocation))))) LIMIT 75", //하버사인 공식을 이용해 두 좌표상 거리 구하기
-                StoreCertification.class).setParameter("currentLocation", currentLocation)
-                .setParameter("searchKeyword", searchKeyword);
+    public List<StoreCertification> searchStoreCertificationsByLocationAndKeyword(Double currLong, Double currLat, String searchKeyword) {
+        System.out.println("searchKeyword = " + searchKeyword);
+        String nativeQuery = "SELECT sc.* FROM store_certification sc " +
+                "JOIN store AS s ON sc.store_id = s.store_id " +
+                "JOIN certification AS c ON sc.certification_id = c.certification_id " +
+                "WHERE s.display_name LIKE :searchKeyword " +
+                "OR s.primary_type_display_name LIKE :searchKeyword " +
+                "OR s.formatted_address LIKE :searchKeyword " +
+                "ORDER BY (6371 * acos(cos(radians(:currLat)) * cos(radians(ST_Y(s.location))) * cos(radians(ST_X(s.location)) - radians(:currLong)) + sin(radians(:currLat)) * sin(radians(ST_Y(s.location))))) limit 225";    //세 인증제를 모두 가지고 있는 가게가 있으므로 3 * 75 = 225
+
+        Query query = em.createNativeQuery(nativeQuery, StoreCertification.class)
+                .setParameter("currLong", currLong)
+                .setParameter("currLat", currLat)
+                .setParameter("searchKeyword", "%" + searchKeyword + "%");
 
         return query.getResultList();
     }
+
 }
 
