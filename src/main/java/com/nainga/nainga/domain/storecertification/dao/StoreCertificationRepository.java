@@ -78,5 +78,21 @@ public class StoreCertificationRepository {
 
         return query.getResultList();
     }
+
+    //검색어를 이용해 가게 이름, 업종, 주소에 대해 검색하고 나온 검색 결과 중 사용자로부터 가까운 순으로 최대 75개의 가게 정보를 리턴
+    public List<StoreCertification> searchStoreCertificationsByLocation(Location currentLocation, String searchKeyword) { //사용자의 현재 (경도, 위도) 좌표와 검색 키워드를 전달 받기
+        TypedQuery<StoreCertification> query = em.createQuery(
+                "SELECT sc FROM StoreCertification sc " +
+                        "JOIN FETCH sc.store s " +
+                        "JOIN FETCH sc.certification c " +
+                        "WHERE sc.store.displayName LIKE CONCAT('%', :searchKeyword, '%') " +   //가게 이름에 대한 검색
+                        "OR sc.store.primaryTypeDisplayName LIKE CONCAT('%', :searchKeyword, '%') " +   //업종에 대한 검색
+                        "OR sc.store.formattedAddress LIKE CONCAT('%', :searchKeyword, '%') " + //주소에 대한 검색
+                        "ORDER BY (6371 * acos(cos(radians(36.628486474734)) * cos(radians(ST_Y(:currentLocation))) * cos(radians(ST_X(:currentLocation)) - radians(127.4574415007155)) + sin(radians(36.628486474734)) * sin(radians(ST_Y(:currentLocation))))) LIMIT 75", //하버사인 공식을 이용해 두 좌표상 거리 구하기
+                StoreCertification.class).setParameter("currentLocation", currentLocation)
+                .setParameter("searchKeyword", searchKeyword);
+
+        return query.getResultList();
+    }
 }
 
