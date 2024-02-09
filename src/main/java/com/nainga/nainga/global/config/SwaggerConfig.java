@@ -32,7 +32,7 @@ public class SwaggerConfig {
                                                 "참고로 Swagger 상에서는 Base URL이 달라 테스트가 불가능합니다.<br>" +
                                                 "만약 테스트를 원하신다면 브라우저 상에서 직접 URL을 입력해주시면 됩니다.<br>" +
                                                 "예) https://storage.googleapis.com/kcs-dev-bucket1/ad06294c-d4ed-42bd-9839-82af8714bd1e")
-                                .tags(List.of("가게 상세 정보"))
+                                .tags(List.of("[New] 가게 상세 정보"))
                                 .responses(new ApiResponses().addApiResponse("200",
                                         new ApiResponse().description("OK")
                                                 .content(new Content().addMediaType("image/jpeg", new MediaType()
