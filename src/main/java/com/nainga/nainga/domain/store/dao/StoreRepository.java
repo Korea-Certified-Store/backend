@@ -43,4 +43,9 @@ public class StoreRepository {
         return em.createQuery("select s from Store s", Store.class)
                 .getResultList();
     }
+
+    public List<Store> findAllDisplayName() {
+        return em.createQuery("select s.displayName from Store s", Store.class)
+                .getResultList();
+    }
 }
