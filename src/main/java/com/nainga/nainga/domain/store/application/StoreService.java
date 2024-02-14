@@ -29,12 +29,12 @@ public class StoreService {
         saveAllSubstring(storeRepository.findAllDisplayName()); //MySQL DB에 저장된 모든 가게명을 음절 단위로 잘라 모든 Substring을 Redis에 저장해주는 로직
     }
 
-    private void saveAllSubstring(List<Store> allDisplayName) { //MySQL DB에 저장된 모든 가게명을 음절 단위로 잘라 모든 Substring을 Redis에 저장해주는 로직
-        for (Store displayName : allDisplayName) {
-            redisSortedSetService.addToSortedSet(displayName.getDisplayName() + suffix);   //완벽한 형태의 단어일 경우에는 *을 붙여 구분
+    private void saveAllSubstring(List<String> allDisplayName) { //MySQL DB에 저장된 모든 가게명을 음절 단위로 잘라 모든 Substring을 Redis에 저장해주는 로직
+        for (String displayName : allDisplayName) {
+            redisSortedSetService.addToSortedSet(displayName + suffix);   //완벽한 형태의 단어일 경우에는 *을 붙여 구분
 
-            for (int i = displayName.getDisplayName().length()-1; i > 0; --i) { //음절 단위로 잘라서 모든 Substring 구하기
-                redisSortedSetService.addToSortedSet(displayName.getDisplayName().substring(0, i)); //곧바로 redis에 저장
+            for (int i = displayName.length()-1; i > 0; --i) { //음절 단위로 잘라서 모든 Substring 구하기
+                redisSortedSetService.addToSortedSet(displayName.substring(0, i)); //곧바로 redis에 저장
             }
         }
     }
