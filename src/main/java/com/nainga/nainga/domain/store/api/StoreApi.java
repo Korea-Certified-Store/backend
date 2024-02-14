@@ -3,9 +3,11 @@ package com.nainga.nainga.domain.store.api;
 import com.nainga.nainga.domain.store.application.GoodPriceGoogleMapStoreService;
 import com.nainga.nainga.domain.store.application.MobeomGoogleMapStoreService;
 import com.nainga.nainga.domain.store.application.SafeGoogleMapStoreService;
+import com.nainga.nainga.domain.store.application.StoreService;
 import com.nainga.nainga.domain.store.dto.CreateDividedGoodPriceStoresResponse;
 import com.nainga.nainga.domain.store.dto.CreateDividedMobeomStoresResponse;
 import com.nainga.nainga.domain.store.dto.CreateDividedSafeStoresResponse;
+import com.nainga.nainga.domain.storecertification.dto.StoreCertificationsByLocationResponse;
 import com.nainga.nainga.global.util.Result;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,12 +17,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 public class StoreApi {
     private final MobeomGoogleMapStoreService mobeomGoogleMapStoreService;
     private final SafeGoogleMapStoreService safeGoogleMapStoreService;
     private final GoodPriceGoogleMapStoreService goodPriceGoogleMapStoreService;
+    private final StoreService storeService;
 
     @Hidden
     @Tag(name = "초기 Data 생성")
@@ -77,6 +82,19 @@ public class StoreApi {
         CreateDividedGoodPriceStoresResponse response = goodPriceGoogleMapStoreService.createDividedGoodPriceStores(fileName, dollars, startIndex);
         System.out.println("response = " + response);   //편하게 콘솔 로그에서 확인하기 위한 용도
         return new Result<>(Result.CODE_SUCCESS, Result.MESSAGE_OK, response);
+    }
+
+    //검색어를 이용해 가게 이름에 대해 검색하여 나온 검색 결과를 바탕으로 검색어를 자동 완성해서 최대 5개의 자동 완성된 검색어를 리턴
+    @Tag(name = "[New] 검색어 자동 완성")
+    @Operation(summary = "사용자의 검색 키워드를 바탕으로 검색어 자동 완성", description = "사용자의 검색 키워드를 바탕으로 DB에서 매칭되는 가게 이름을 조회하여 최대 5개까지 검색어를 자동으로 완성하여 반환해줍니다.<br><br>" +
+            "[Request Body]<br>" +
+            "searchKeyword: 사용자의 검색 키워드<br>" +
+            "[Response Body]<br>" +
+            "자동으로 완성된 최대 5개의 검색어<br>")
+    @GetMapping("api/store/autocorrect/v1")
+    public Result<List<String>> autocorrect(String searchKeyword) {
+        List<String> autocorrectResult = storeService.autocorrect(searchKeyword);
+        return new Result<>(Result.CODE_SUCCESS, Result.MESSAGE_OK, autocorrectResult);
     }
 }
 
