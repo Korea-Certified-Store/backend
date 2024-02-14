@@ -22,7 +22,7 @@ public class StoreService {
     private final StoreRepository storeRepository;
     private final RedisSortedSetService redisSortedSetService;
     private String suffix = "*";    //검색어 자동 완성 기능에서 실제 노출될 수 있는 완벽한 형태의 단어를 구분하기 위한 접미사
-    private int maxSize = 5;    //검색어 자동 완성 기능 최대 개수
+    private int maxSize = 10;    //검색어 자동 완성 기능 최대 개수
 
     @PostConstruct
     public void init() {    //이 Service Bean이 생성된 이후에 검색어 자동 완성 기능을 위한 데이터들을 Redis에 저장 (Redis는 인메모리 DB라 휘발성을 띄기 때문)

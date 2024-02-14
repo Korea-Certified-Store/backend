@@ -84,9 +84,9 @@ public class StoreApi {
         return new Result<>(Result.CODE_SUCCESS, Result.MESSAGE_OK, response);
     }
 
-    //검색어를 이용해 가게 이름에 대해 검색하여 나온 검색 결과를 바탕으로 검색어를 자동 완성해서 최대 5개의 자동 완성된 검색어를 리턴
+    //검색어를 이용해 가게 이름에 대해 검색하여 나온 검색 결과를 바탕으로 검색어를 자동 완성해서 최대 10개의 자동 완성된 검색어를 리턴
     @Tag(name = "[New] 검색어 자동 완성")
-    @Operation(summary = "사용자의 검색 키워드를 바탕으로 검색어 자동 완성", description = "사용자의 검색 키워드를 바탕으로 DB에서 매칭되는 가게 이름을 조회하여 최대 5개까지 검색어를 자동으로 완성하여 반환해줍니다.<br><br>" +
+    @Operation(summary = "사용자의 검색 키워드를 바탕으로 검색어 자동 완성", description = "사용자의 검색 키워드를 바탕으로 DB에서 매칭되는 가게 이름을 조회하여 최대 10개까지 검색어를 자동으로 완성하여 반환해줍니다.<br><br>" +
             "[Request Body]<br>" +
             "searchKeyword: 사용자의 검색 키워드<br>" +
             "[Response Body]<br>" +
