@@ -34,4 +34,14 @@ public class StoreService {
             }
         }
     }
+
+    public List<String> autocorrect(String keyword) { //검색어 자동 완성 기능 관련 로직
+        Long index = redisSortedSetService.findFromSortedSet(keyword);  //사용자가 입력한 검색어를 바탕으로 Redis에서 조회한 결과 매칭되는 index
+
+        if (index == null) {
+            return new ArrayList<>();   //만약 사용자 검색어 바탕으로 자동 완성 검색어를 만들 수 없으면 Empty Array 리턴
+        }
+
+
+    }
 }
