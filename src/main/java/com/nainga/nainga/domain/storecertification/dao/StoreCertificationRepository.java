@@ -78,5 +78,24 @@ public class StoreCertificationRepository {
 
         return query.getResultList();
     }
+
+    //검색어를 이용해 가게 이름, 업종, 주소에 대해 검색하고 나온 검색 결과 중 사용자로부터 가까운 순으로 최대 30개의 가게 정보를 리턴
+    public List<StoreCertification> searchStoreCertificationsByLocationAndKeyword(Double currLong, Double currLat, String searchKeyword) {
+        String nativeQuery = "SELECT sc.* FROM store_certification sc " +
+                "JOIN store AS s ON sc.store_id = s.store_id " +
+                "JOIN certification AS c ON sc.certification_id = c.certification_id " +
+                "WHERE s.display_name LIKE :searchKeyword " +
+                "OR s.primary_type_display_name LIKE :searchKeyword " +
+                "OR s.formatted_address LIKE :searchKeyword " +
+                "ORDER BY (6371 * acos(cos(radians(:currLat)) * cos(radians(ST_Y(s.location))) * cos(radians(ST_X(s.location)) - radians(:currLong)) + sin(radians(:currLat)) * sin(radians(ST_Y(s.location))))) limit 90";    //세 인증제를 모두 가지고 있는 가게가 있으므로 3 * 30 = 90
+
+        Query query = em.createNativeQuery(nativeQuery, StoreCertification.class)
+                .setParameter("currLong", currLong)
+                .setParameter("currLat", currLat)
+                .setParameter("searchKeyword", "%" + searchKeyword + "%");
+
+        return query.getResultList();
+    }
+
 }
 
