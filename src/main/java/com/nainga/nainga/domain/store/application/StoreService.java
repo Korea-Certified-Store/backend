@@ -1,8 +1,6 @@
 package com.nainga.nainga.domain.store.application;
 
 import com.nainga.nainga.domain.store.dao.StoreRepository;
-import com.nainga.nainga.domain.store.domain.Store;
-import com.nainga.nainga.domain.storecertification.domain.StoreCertification;
 import com.nainga.nainga.global.application.RedisSortedSetService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
