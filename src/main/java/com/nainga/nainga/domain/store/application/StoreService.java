@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Service
 @Transactional(readOnly = true)
@@ -29,14 +31,19 @@ public class StoreService {
         saveAllSubstring(storeRepository.findAllDisplayName()); //MySQL DB에 저장된 모든 가게명을 음절 단위로 잘라 모든 Substring을 Redis에 저장해주는 로직
     }
 
-    private void saveAllSubstring(List<String> allDisplayName) { //MySQL DB에 저장된 모든 가게명을 음절 단위로 잘라 모든 Substring을 Redis에 저장해주는 로직
-        for (String displayName : allDisplayName) {
-            redisSortedSetService.addToSortedSet(displayName + suffix);   //완벽한 형태의 단어일 경우에는 *을 붙여 구분
+    private void saveAllSubstring(List<String> allDisplayName) {
+        ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()); //병렬 처리를 위한 스레드풀을 생성하는 과정
 
-            for (int i = displayName.length()-1; i > 0; --i) { //음절 단위로 잘라서 모든 Substring 구하기
-                redisSortedSetService.addToSortedSet(displayName.substring(0, i)); //곧바로 redis에 저장
-            }
+        for (String displayName : allDisplayName) {
+            executorService.submit(() -> {  //submit 메서드를 사용해서 병렬 처리할 작업 추가
+                redisSortedSetService.addToSortedSet(displayName + suffix);
+
+                for (int i = displayName.length(); i > 0; --i) {
+                    redisSortedSetService.addToSortedSet(displayName.substring(0, i));
+                }
+            });
         }
+        executorService.shutdown(); //작업이 모두 완료되면 스레드풀을 종료
     }
 
     public List<String> autocorrect(String keyword) { //검색어 자동 완성 기능 관련 로직
@@ -48,12 +55,10 @@ public class StoreService {
 
         Set<String> allValuesAfterIndexFromSortedSet = redisSortedSetService.findAllValuesAfterIndexFromSortedSet(index);   //사용자 검색어 이후로 정렬된 Redis 데이터들 가져오기
 
-        List<String> autocorrectKeywords = allValuesAfterIndexFromSortedSet.stream()
+        return allValuesAfterIndexFromSortedSet.stream()
                 .filter(value -> value.endsWith(suffix) && value.startsWith(keyword))
                 .map(value -> StringUtils.removeEnd(value, suffix))
                 .limit(maxSize)
                 .toList();  //자동 완성을 통해 만들어진 최대 maxSize개의 키워드들
-
-        return autocorrectKeywords;
     }
 }

@@ -90,9 +90,9 @@ public class StoreApi {
             "[Request Body]<br>" +
             "searchKeyword: 사용자의 검색 키워드<br>" +
             "[Response Body]<br>" +
-            "자동으로 완성된 최대 5개의 검색어<br>")
+            "자동으로 완성된 최대 10개의 검색어<br>")
     @GetMapping("api/store/autocorrect/v1")
-    public Result<List<String>> autocorrect(String searchKeyword) {
+    public Result<List<String>> autocorrect(@RequestParam(value = "searchKeyword") String searchKeyword) {
         List<String> autocorrectResult = storeService.autocorrect(searchKeyword);
         return new Result<>(Result.CODE_SUCCESS, Result.MESSAGE_OK, autocorrectResult);
     }
