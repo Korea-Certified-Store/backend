@@ -28,9 +28,8 @@ class StoreServiceTest {
         //given
         //테스트를 실행시키는 환경에 따라 잘못된 결과가 나올 수 있으므로 테스트용 가게 이름 제일 앞에는 실제 Production DB에 존재하지 않는 이름인 *을 붙여 사용
         List<String> allDisplayName = List.of("*김밥천국", "*김밥나라", "*김빱월드", "*김밥천지"); //List의 팩토리 메서드 사용
-        System.out.println("allDisplayName = " + allDisplayName);
         storeService.saveAllSubstring(allDisplayName);  //검색어 자동 완성 기능을 위해 필요한 Substring들을 뽑아 Redis에 저장
-        Thread.sleep(1000); //직전에 실행시킨 saveAllSubstring이 멀티 스레드 기반 병렬 처리로 구현되어 있어서 바로 다음 검증 로직으로 넘어가버리면 아직 데이터가 전부 안들어가서 간헐적으로 실패하는 오류가 있음
+        Thread.sleep(2000); //직전에 실행시킨 saveAllSubstring이 멀티 스레드 기반 병렬 처리로 구현되어 있어서 바로 다음 검증 로직으로 넘어가버리면 아직 데이터가 전부 안들어가서 간헐적으로 실패하는 오류가 있음
 
         //when
         List<String> resultByKim = storeService.autocorrect("*김");   //Redis 상에 사전순 정렬되어 있으므로 *김밥나라, *김밥천국, *김밥천지, *김빱월드 순으로 나옴

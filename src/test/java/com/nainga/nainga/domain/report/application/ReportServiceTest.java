@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -85,6 +86,24 @@ class ReportServiceTest {
         assertThat(report1.getStoreName()).isEqualTo(saveNewStoreReportRequest1.getStoreName());
         assertThat(report2.getContents()).isEqualTo(saveSpecificStoreReportRequest1.getContents());
         assertThat(report2.getStoreId()).isEqualTo(saveSpecificStoreReportRequest1.getStoreId());
+    }
+
+    @Test
+    public void findAll() throws Exception {
+        //given
+        SaveNewStoreReportRequest saveNewStoreReportRequest1 = new SaveNewStoreReportRequest("가게1", "주소1", List.of("착한가격업소", "모범음식점")); //정상적인 테스트 케이스
+        SaveSpecificStoreReportRequest saveSpecificStoreReportRequest1 = new SaveSpecificStoreReportRequest("del", 123L, "내용1");    //정상적인 테스트 케이스
+
+        //when
+        Long report1Id = reportService.saveNewStoreReport(saveNewStoreReportRequest1);
+        Long report2Id = reportService.saveSpecificStoreReport(saveSpecificStoreReportRequest1);
+
+        List<Report> reports = reportService.findAll();
+        List<Long> reportIds = reports.stream().map(Report::getId).toList();
+
+        //then
+        assertArrayEquals(reportIds.toArray(), List.of(report1Id, report2Id).toArray());
+
     }
 
 }
