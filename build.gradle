@@ -59,6 +59,9 @@ dependencies {
 		implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
 	}
 
+	//Redis를 사용하기 위해 추가
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
 }
 
 test {
