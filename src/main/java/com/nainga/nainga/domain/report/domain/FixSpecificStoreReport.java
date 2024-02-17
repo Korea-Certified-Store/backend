@@ -7,10 +7,10 @@ import lombok.*;
 @Entity
 @Getter
 @Builder
-@DiscriminatorValue("del")
+@DiscriminatorValue("fix")
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class DelStoreReport extends Report {
+public class FixSpecificStoreReport extends Report {
     private Long storeId;   //가게 id
     private String contents;    //신고 내용
 }
