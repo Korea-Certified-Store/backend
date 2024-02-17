@@ -16,10 +16,13 @@ public class RedisConfig {  //Redis 연결을 위한 기본 설정
     @Value("${spring.data.redis.port}")
     private int port;
 
+    @Value("${spring.data.redis.password}")
+    private String password;
+
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
-        return new LettuceConnectionFactory(
-                new RedisStandaloneConfiguration(host, port)
-        );
+        RedisStandaloneConfiguration config = new RedisStandaloneConfiguration(host, port);
+        config.setPassword(password);
+        return new LettuceConnectionFactory(config);
     }
 }
