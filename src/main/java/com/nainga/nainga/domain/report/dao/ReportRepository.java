@@ -14,8 +14,9 @@ public class ReportRepository {
 
     private final EntityManager em;
 
-    public void save(Report report) {
+    public Long save(Report report) {
         em.persist(report);
+        return report.getId();
     }
 
     public Optional<Report> findById(Long id) {

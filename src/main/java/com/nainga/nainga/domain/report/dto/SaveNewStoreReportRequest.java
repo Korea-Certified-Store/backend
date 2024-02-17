@@ -8,8 +8,6 @@ import java.util.List;
 @Data
 public class SaveNewStoreReportRequest {
     @NotNull
-    private String dtype;   //Report 종류를 구분하기 위한 type
-    @NotNull
     private String storeName;   //가게 이름
     @NotNull
     private String formattedAddress;    //가게 주소
