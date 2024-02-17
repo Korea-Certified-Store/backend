@@ -28,7 +28,7 @@ public class StoreService {
         saveAllSubstring(storeRepository.findAllDisplayName()); //MySQL DB에 저장된 모든 가게명을 음절 단위로 잘라 모든 Substring을 Redis에 저장해주는 로직
     }
 
-    private void saveAllSubstring(List<String> allDisplayName) {
+    public void saveAllSubstring(List<String> allDisplayName) {
         ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()); //병렬 처리를 위한 스레드풀을 생성하는 과정
 
         for (String displayName : allDisplayName) {
