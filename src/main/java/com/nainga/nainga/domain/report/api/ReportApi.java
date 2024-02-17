@@ -6,6 +6,7 @@ import com.nainga.nainga.domain.report.dto.SaveSpecificStoreReportRequest;
 import com.nainga.nainga.global.util.Result;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,7 +27,7 @@ public class ReportApi {
             "[Response Body]<br>" +
             "등록된 reportId<br>")
     @PostMapping("api/report/newStore/v1")
-    public Result<Long> saveNewStoreReport(@RequestBody SaveNewStoreReportRequest saveNewStoreReportRequest) {
+    public Result<Long> saveNewStoreReport(@Valid @RequestBody SaveNewStoreReportRequest saveNewStoreReportRequest) {
         Long reportId = reportService.saveNewStoreReport(saveNewStoreReportRequest);
         return new Result<>(Result.CODE_SUCCESS, Result.MESSAGE_OK, reportId);
     }
@@ -41,7 +42,7 @@ public class ReportApi {
             "[Response Body]<br>" +
             "등록된 reportId<br>")
     @PostMapping("api/report/specificStore/v1")
-    public Result<Long> saveSpecificStoreReport(@RequestBody SaveSpecificStoreReportRequest saveSpecificStoreReportRequest) {
+    public Result<Long> saveSpecificStoreReport(@Valid @RequestBody SaveSpecificStoreReportRequest saveSpecificStoreReportRequest) {
         Long reportId = reportService.saveSpecificStoreReport(saveSpecificStoreReportRequest);
         return new Result<>(Result.CODE_SUCCESS, Result.MESSAGE_OK, reportId);
     }
