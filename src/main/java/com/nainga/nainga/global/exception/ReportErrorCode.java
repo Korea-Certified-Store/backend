@@ -10,7 +10,8 @@ import org.springframework.http.HttpStatus;
 @Getter
 @RequiredArgsConstructor
 public enum ReportErrorCode implements ErrorCode {
-    INVALID_DTYPE(HttpStatus.NOT_FOUND, "There is a wrong dtype. You can only use a dtype such as fix or del.");
+    INVALID_DTYPE(HttpStatus.NOT_FOUND, "There is a wrong dtype. You can only use a dtype such as fix or del."),
+    INVALID_CERTIFICATION(HttpStatus.NOT_FOUND, "There is a wrong certification. You can only use certifications such as 착한가격업소, 모범음식점, 안심식당.");
 
     private final HttpStatus httpStatus;
     private final String message;

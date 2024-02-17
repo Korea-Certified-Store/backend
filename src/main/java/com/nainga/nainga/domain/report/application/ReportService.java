@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -19,7 +21,14 @@ public class ReportService {
     private final ReportRepository reportRepository;
 
     @Transactional
-    public Long saveNewStoreReport(SaveNewStoreReportRequest saveNewStoreReportRequest) {   //사용자의 신규 가게 등록 요청
+    public Long saveNewStoreReport(SaveNewStoreReportRequest saveNewStoreReportRequest) throws GlobalException {   //사용자의 신규 가게 등록 요청
+        List<String> certificationList = List.of("착한가격업소", "모범음식점", "안심식당");    //현재 App에서 사용중인 Certification 목록
+        for (String certification : saveNewStoreReportRequest.getCertifications()) {
+            if (!certificationList.contains(certification)) {
+                throw new GlobalException(ReportErrorCode.INVALID_CERTIFICATION);   //잘못된 인증제 값이 들어온 것이므로 예외 발생
+            }
+        }
+
         NewStoreReport newStoreReport = NewStoreReport.builder()
                 .storeName(saveNewStoreReportRequest.getStoreName())
                 .formattedAddress(saveNewStoreReportRequest.getFormattedAddress())
