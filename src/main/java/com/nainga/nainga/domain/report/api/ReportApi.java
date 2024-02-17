@@ -12,6 +12,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 public class ReportApi {
@@ -58,5 +60,16 @@ public class ReportApi {
     public Result<Report> findById(@NotNull @RequestParam(value = "reportId") Long reportId) {
         Report report = reportService.findById(reportId);
         return new Result<>(Result.CODE_SUCCESS, Result.MESSAGE_OK, report);
+    }
+
+    //DB에 있는 모든 사용자 제보 내용 조회
+    @Tag(name = "[New] 사용자 제보")
+    @Operation(summary = "DB에 있는 모든 사용자 제보 내용 조회", description = "DB에 있는 모든 사용자 제보 내용을 조회합니다.<br><br>" +
+            "[Response Body]<br>" +
+            "DB에 있는 모든 사용자 제보 내용<br>")
+    @GetMapping("api/report/all/v1")
+    public Result<List<Report>> findAll() {
+        List<Report> reports = reportService.findAll();
+        return new Result<>(Result.CODE_SUCCESS, Result.MESSAGE_OK, reports);
     }
 }
