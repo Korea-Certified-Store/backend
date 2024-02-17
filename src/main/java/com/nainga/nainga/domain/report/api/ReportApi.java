@@ -1,16 +1,16 @@
 package com.nainga.nainga.domain.report.api;
 
 import com.nainga.nainga.domain.report.application.ReportService;
+import com.nainga.nainga.domain.report.domain.Report;
 import com.nainga.nainga.domain.report.dto.SaveNewStoreReportRequest;
 import com.nainga.nainga.domain.report.dto.SaveSpecificStoreReportRequest;
 import com.nainga.nainga.global.util.Result;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -45,5 +45,18 @@ public class ReportApi {
     public Result<Long> saveSpecificStoreReport(@Valid @RequestBody SaveSpecificStoreReportRequest saveSpecificStoreReportRequest) {
         Long reportId = reportService.saveSpecificStoreReport(saveSpecificStoreReportRequest);
         return new Result<>(Result.CODE_SUCCESS, Result.MESSAGE_OK, reportId);
+    }
+
+    //reportId를 가지고 사용자 제보 내용 조회
+    @Tag(name = "[New] 사용자 제보")
+    @Operation(summary = "reportId를 가지고 사용자 제보 내용 조회", description = "reportId를 가지고 사용자 제보 내용을 조회합니다.<br><br>" +
+            "[Request Body]<br>" +
+            "reportId: 검색할 사용자 제보의 reportId. 유효하지 않은 reportId의 경우 예외 발생<br>" +
+            "[Response Body]<br>" +
+            "해당 reportId로 검색된 사용자 제보 내용<br>")
+    @GetMapping("api/report/byId/v1")
+    public Result<Report> findById(@NotNull @RequestParam(value = "reportId") Long reportId) {
+        Report report = reportService.findById(reportId);
+        return new Result<>(Result.CODE_SUCCESS, Result.MESSAGE_OK, report);
     }
 }
