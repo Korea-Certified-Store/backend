@@ -18,4 +18,10 @@ public class SaveNewStoreReportRequest {
     @NotEmpty
     @Schema(defaultValue = "[\"착한가격업소\", \"모범음식점\", \"안심식당\"]", description = "새로 등록할 가게가 가지고 있는 인증제들의 이름을 담은 리스트. 착한가격업소, 모범음식점, 안심식당이 아닌 경우 예외 발생")
     private List<String> certifications;    //가게가 가지고 있는 인증제 이름 리스트
+
+    public SaveNewStoreReportRequest(String storeName, String formattedAddress, List<String> certifications) {
+        this.storeName = storeName;
+        this.formattedAddress = formattedAddress;
+        this.certifications = certifications;
+    }
 }

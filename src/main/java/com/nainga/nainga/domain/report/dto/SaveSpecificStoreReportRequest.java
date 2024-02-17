@@ -16,4 +16,10 @@ public class SaveSpecificStoreReportRequest {
     @NotEmpty
     @Schema(defaultValue = "제보 내용", description = "제보 내용")
     private String contents;    //신고 내용
+
+    public SaveSpecificStoreReportRequest(String dtype, Long storeId, String contents) {
+        this.dtype = dtype;
+        this.storeId = storeId;
+        this.contents = contents;
+    }
 }
