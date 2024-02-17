@@ -30,6 +30,7 @@ class StoreServiceTest {
         List<String> allDisplayName = List.of("*김밥천국", "*김밥나라", "*김빱월드", "*김밥천지"); //List의 팩토리 메서드 사용
         System.out.println("allDisplayName = " + allDisplayName);
         storeService.saveAllSubstring(allDisplayName);  //검색어 자동 완성 기능을 위해 필요한 Substring들을 뽑아 Redis에 저장
+        Thread.sleep(1000); //직전에 실행시킨 saveAllSubstring이 멀티 스레드 기반 병렬 처리로 구현되어 있어서 바로 다음 검증 로직으로 넘어가버리면 아직 데이터가 전부 안들어가서 간헐적으로 실패하는 오류가 있음
 
         //when
         List<String> resultByKim = storeService.autocorrect("*김");   //Redis 상에 사전순 정렬되어 있으므로 *김밥나라, *김밥천국, *김밥천지, *김빱월드 순으로 나옴
@@ -42,5 +43,7 @@ class StoreServiceTest {
         assertThat(resultByKimBap).containsExactly("*김밥나라", "*김밥천국", "*김밥천지");
         assertThat(resultByKimBapCheon).containsExactly("*김밥천국", "*김밥천지");
         assertThat(resultByKimBapCheonGuk).containsExactly("*김밥천국");
+
+        redisSortedSetService.removeAllOfSortedSet();   //Test 이후 Redis가 Roll back 될 수 있도록 모든 데이터를 제거
     }
 }
