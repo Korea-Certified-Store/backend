@@ -4,6 +4,7 @@ import com.nainga.nainga.domain.report.dao.ReportRepository;
 import com.nainga.nainga.domain.report.domain.DelSpecificStoreReport;
 import com.nainga.nainga.domain.report.domain.FixSpecificStoreReport;
 import com.nainga.nainga.domain.report.domain.NewStoreReport;
+import com.nainga.nainga.domain.report.domain.Report;
 import com.nainga.nainga.domain.report.dto.SaveNewStoreReportRequest;
 import com.nainga.nainga.domain.report.dto.SaveSpecificStoreReportRequest;
 import com.nainga.nainga.global.exception.GlobalException;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
@@ -56,6 +58,15 @@ public class ReportService {
             return reportRepository.save(delSpecificStoreReport);
         } else {
             throw new GlobalException(ReportErrorCode.INVALID_DTYPE);   //잘못된 DTYPE이 들어왔을 경우에 Custom GlobalException 처리
+        }
+    }
+
+    public Report findById(Long id) throws GlobalException {    //reportId를 가지고 report를 DB에서 조회하는 로직
+        Optional<Report> report = reportRepository.findById(id);
+        if (report.isEmpty()) {
+            throw new GlobalException(ReportErrorCode.INVALID_REPORT_ID);   //잘못된 reportId로 검색하는 경우에 Custom GlobalException 처리
+        } else {
+            return report.get();
         }
     }
 }
