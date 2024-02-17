@@ -69,4 +69,8 @@ public class ReportService {
             return report.get();
         }
     }
+
+    public List<Report> findAll() { //DB에 있는 모든 Report 조회
+        return reportRepository.findAll();
+    }
 }
