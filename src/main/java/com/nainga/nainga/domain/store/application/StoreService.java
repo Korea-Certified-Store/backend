@@ -46,6 +46,14 @@ public class StoreService {
         executorService.shutdown(); //작업이 모두 완료되면 스레드풀을 종료
     }
 
+    public List<String> autocorrect(String keyword) {   //검색어 자동 완성 로직
+        Set<String> allValuesContainingSearchKeyword = redisHashService.findAllValuesContainingSearchKeyword(keyword);  //case insensitive하게 serachKeyword를 포함하는 가게 이름 최대 10개 반환
+        if(allValuesContainingSearchKeyword.isEmpty())
+            return new ArrayList<>();
+        else
+            return new ArrayList<>(allValuesContainingSearchKeyword);   //자동 완성 결과가 존재하면 ArrayList로 변환하여 리턴
+    }
+
     /*
         아래 주석처리 된 코드는 초기 검색어 자동 완성 로직입니다.
         검색어 자동 완성에 대한 요구 사항이 앞에서부터 매칭되는 글자가 아닌 Contains 개념으로 바뀌어서 주석 처리하여 임시로 남겨놓았습니다.
