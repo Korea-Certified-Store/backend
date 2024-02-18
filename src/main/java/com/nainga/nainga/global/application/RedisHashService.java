@@ -23,7 +23,7 @@ public class RedisHashService {
     private String key = "autocorrect"; //검색어 자동 완성을 위한 Redis 데이터
 
     //Hash에 field-value 쌍을 추가하는 메서드
-    public void addToHash(String key, String field, String value) {
+    public void addToHash(String field, String value) {
         hashOperations.put(key, field, value);
     }
 
