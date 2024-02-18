@@ -59,9 +59,6 @@ dependencies {
 		implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
 	}
 
-	//Redis를 사용하기 위해 추가
-	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-
 	//Validation을 위해 추가! Spring Boot 2.3버전 이후부터는 web 의존성안에 있던 validation 관련 package가 아예 모듈로 빠짐
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 

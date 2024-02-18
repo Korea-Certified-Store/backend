@@ -46,9 +46,6 @@ jobs:
           mysql user: 'test'
           mysql password: ${{ secrets.DB_PASSWORD }}
 
-      - name: Set up Redis
-        uses: shogo82148/actions-setup-redis@v1.33.0
-
       # github action 에서 Gradle dependency 캐시 사용
       - name: Cache Gradle packages
         uses: actions/cache@v3
