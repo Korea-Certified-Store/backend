@@ -28,6 +28,11 @@ public class StoreService {
         아래 로직은 Case insensitive하게 검색될 수 있도록 구현하였습니다.
      */
 
+    @PostConstruct
+    public void init() {    //이 Service Bean이 생성된 이후에 검색어 자동 완성 기능을 위한 데이터들을 Redis에 저장 (Redis는 인메모리 DB라 휘발성을 띄기 때문)
+
+    }
+
     public void saveAllDisplayName(List<String> allDisplayName) {
         ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors()); //병렬 처리를 위한 스레드풀을 생성하는 과정
 

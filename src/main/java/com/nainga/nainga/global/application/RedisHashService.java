@@ -46,4 +46,8 @@ public class RedisHashService {
         cursor.close();
         return result;
     }
+
+    public void removeAllOfHash() {
+        hashOperations.delete(key);
+    }
 }
