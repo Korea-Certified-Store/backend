@@ -43,4 +43,16 @@ public class StoreRepository {
         return em.createQuery("select s from Store s", Store.class)
                 .getResultList();
     }
+
+    public List<String> findAllDisplayName() {
+        return em.createQuery("select s.displayName from Store s", String.class)
+                .getResultList();
+    }
+
+    public List<String> findAllBySearchKeyword(String searchKeyword) {
+        return em.createQuery("select s.displayName from Store s where s.displayName like concat('%', :searchKeyword, '%')", String.class)
+                .setParameter("searchKeyword", searchKeyword)
+                .setMaxResults(10)
+                .getResultList();
+    }
 }
