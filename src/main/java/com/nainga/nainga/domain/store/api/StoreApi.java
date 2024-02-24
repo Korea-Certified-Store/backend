@@ -27,18 +27,46 @@ public class StoreApi {
     private final GoodPriceGoogleMapStoreService goodPriceGoogleMapStoreService;
     private final StoreService storeService;
 
-    @Hidden
+//    @Hidden
     @Tag(name = "초기 Data 생성")
-    @Operation(summary = "모범음식점 데이터 생성", description = "[WARNING] DB에 처음으로 모든 모범음식점 데이터를 주입해주는 API입니다. DB에 엄청난 부하가 가는 작업으로, 합의 없이 실행시켜선 안됩니다!")
+    @Operation(summary = "모범음식점 데이터 생성", description = "[WARNING] DB에 처음으로 모든 모범음식점 데이터를 주입해주는 API입니다. DB에 엄청난 부하가 가는 작업으로, 합의 없이 실행시켜선 안됩니다!<br><br>" +
+            "[Request Param]<br>" +
+            "fileName: 파싱할 모범음식점 데이터 엑셀 파일명<br>" +
+            "[Response Body]<br>" +
+            "성공했다면, 200 http status value<br>" +
+            "[Exceptions]<br>" +
+            "- Excel 파일 이외의 확장자가 들어왔을 경우<br>" +
+            "httpStatusValue: 404<br>" +
+            "httpStatusCode: INVALID_FILE_EXTENSION<br>" +
+            "message: There are incorrect files. Only the extension of Excel file is allowed.<br>" +
+            "- Google Map API 연동 과정 중 오류가 발생했을 경우<br>" +
+            "httpStatusValue: 500<br>" +
+            "httpStatusCode: GOOGLE_MAP_SERVER_ERROR<br>" +
+            "message: There are internal server errors related to Google Map API.<br>")
     @GetMapping("api/store/mobeom/v1")
     public Result<String> createAllMobeomStores(@RequestParam(value = "fileName") String fileName) {
         mobeomGoogleMapStoreService.createAllMobeomStores(fileName);
         return new Result<>(Result.CODE_SUCCESS, Result.MESSAGE_OK, null);
     }
 
-    @Hidden
+//    @Hidden
     @Tag(name = "초기 Data 생성")
-    @Operation(summary = "지정한 Credit까지만 사용하여 모범음식점 데이터 생성", description = "[WARNING] 지정한 Credit까지만 사용하여 그동안 DB에 모범음식점 데이터를 주입해주는 API입니다. DB에 엄청난 부하가 가는 작업으로, 합의 없이 실행시켜선 안됩니다!")
+    @Operation(summary = "지정한 Credit까지만 사용하여 모범음식점 데이터 생성", description = "[WARNING] 지정한 Credit까지만 사용하여 그동안 DB에 모범음식점 데이터를 주입해주는 API입니다. DB에 엄청난 부하가 가는 작업으로, 합의 없이 실행시켜선 안됩니다!<br><br>" +
+            "[Request Param]<br>" +
+            "fileName: 파싱할 모범음식점 데이터 엑셀 파일명<br>" +
+            "dollars: 현재 API 호출에 사용할 수 있는 남은 달러<br>" +
+            "startIndex: 엑셀 데이터로부터 추출한 가게 리스트 Index number를 기준으로 조회를 시작할 Index number<br>" +
+            "[Response Body]<br>" +
+            "성공했다면, 200 http status value<br>" +
+            "[Exceptions]<br>" +
+            "- Excel 파일 이외의 확장자가 들어왔을 경우<br>" +
+            "httpStatusValue: 404<br>" +
+            "httpStatusCode: INVALID_FILE_EXTENSION<br>" +
+            "message: There are incorrect files. Only the extension of Excel file is allowed.<br>" +
+            "- Google Map API 연동 과정 중 오류가 발생했을 경우<br>" +
+            "httpStatusValue: 500<br>" +
+            "httpStatusCode: GOOGLE_MAP_SERVER_ERROR<br>" +
+            "message: There are internal server errors related to Google Map API.<br>")
     @GetMapping("api/store/dividedMobeom/v1")
     public Result<CreateDividedMobeomStoresResponse> createDividedMobeomStores(@RequestParam(value = "fileName") String fileName, @RequestParam(value = "dollars") double dollars, @RequestParam(value = "startIndex") int startIndex) {
         CreateDividedMobeomStoresResponse response = mobeomGoogleMapStoreService.createDividedMobeomStores(fileName, dollars, startIndex);
@@ -48,7 +76,20 @@ public class StoreApi {
 
     @Hidden
     @Tag(name = "초기 Data 생성")
-    @Operation(summary = "안심식당 데이터 생성", description = "[WARNING] DB에 처음으로 모든 안심식당 데이터를 주입해주는 API입니다. DB에 엄청난 부하가 가는 작업으로, 합의 없이 실행시켜선 안됩니다!")
+    @Operation(summary = "안심식당 데이터 생성", description = "[WARNING] DB에 처음으로 모든 안심식당 데이터를 주입해주는 API입니다. DB에 엄청난 부하가 가는 작업으로, 합의 없이 실행시켜선 안됩니다!<br><br>" +
+            "[Request Param]<br>" +
+            "fileName: 파싱할 안심식당 데이터 엑셀 파일명<br>" +
+            "[Response Body]<br>" +
+            "성공했다면, 200 http status value<br>" +
+            "[Exceptions]<br>" +
+            "- Excel 파일 이외의 확장자가 들어왔을 경우<br>" +
+            "httpStatusValue: 404<br>" +
+            "httpStatusCode: INVALID_FILE_EXTENSION<br>" +
+            "message: There are incorrect files. Only the extension of Excel file is allowed.<br>" +
+            "- Google Map API 연동 과정 중 오류가 발생했을 경우<br>" +
+            "httpStatusValue: 500<br>" +
+            "httpStatusCode: GOOGLE_MAP_SERVER_ERROR<br>" +
+            "message: There are internal server errors related to Google Map API.<br>")
     @GetMapping("api/store/safe/v1")
     public Result<String> createAllSafeStores(@RequestParam(value = "fileName") String fileName) {
         safeGoogleMapStoreService.createAllSafeStores(fileName);
@@ -57,7 +98,22 @@ public class StoreApi {
 
     @Hidden
     @Tag(name = "초기 Data 생성")
-    @Operation(summary = "지정한 Credit까지만 사용하여 안심식당 데이터 생성", description = "[WARNING] 지정한 Credit까지만 사용하여 그동안 DB에 안심식당 데이터를 주입해주는 API입니다. DB에 엄청난 부하가 가는 작업으로, 합의 없이 실행시켜선 안됩니다!")
+    @Operation(summary = "지정한 Credit까지만 사용하여 안심식당 데이터 생성", description = "[WARNING] 지정한 Credit까지만 사용하여 그동안 DB에 안심식당 데이터를 주입해주는 API입니다. DB에 엄청난 부하가 가는 작업으로, 합의 없이 실행시켜선 안됩니다!<br><br>" +
+            "[Request Param]<br>" +
+            "fileName: 파싱할 안심식당 데이터 엑셀 파일명<br>" +
+            "dollars: 현재 API 호출에 사용할 수 있는 남은 달러<br>" +
+            "startIndex: 엑셀 데이터로부터 추출한 가게 리스트 Index number를 기준으로 조회를 시작할 Index number<br>" +
+            "[Response Body]<br>" +
+            "성공했다면, 200 http status value<br>" +
+            "[Exceptions]<br>" +
+            "- Excel 파일 이외의 확장자가 들어왔을 경우<br>" +
+            "httpStatusValue: 404<br>" +
+            "httpStatusCode: INVALID_FILE_EXTENSION<br>" +
+            "message: There are incorrect files. Only the extension of Excel file is allowed.<br>" +
+            "- Google Map API 연동 과정 중 오류가 발생했을 경우<br>" +
+            "httpStatusValue: 500<br>" +
+            "httpStatusCode: GOOGLE_MAP_SERVER_ERROR<br>" +
+            "message: There are internal server errors related to Google Map API.<br>")
     @GetMapping("api/store/dividedSafe/v1")
     public Result<CreateDividedSafeStoresResponse> createDividedSafeStores(@RequestParam(value = "fileName") String fileName, @RequestParam(value = "dollars") double dollars, @RequestParam(value = "startIndex") int startIndex) {
         CreateDividedSafeStoresResponse response = safeGoogleMapStoreService.createDividedSafeStores(fileName, dollars, startIndex);
@@ -67,7 +123,20 @@ public class StoreApi {
 
     @Hidden
     @Tag(name = "초기 Data 생성")
-    @Operation(summary = "착한가격업소 데이터 생성", description = "[WARNING] DB에 처음으로 모든 착한가격업소 데이터를 주입해주는 API입니다. DB에 엄청난 부하가 가는 작업으로, 합의 없이 실행시켜선 안됩니다!")
+    @Operation(summary = "착한가격업소 데이터 생성", description = "[WARNING] DB에 처음으로 모든 착한가격업소 데이터를 주입해주는 API입니다. DB에 엄청난 부하가 가는 작업으로, 합의 없이 실행시켜선 안됩니다!<br><br>" +
+            "[Request Param]<br>" +
+            "fileName: 파싱할 착한가격업소 데이터 엑셀 파일명<br>" +
+            "[Response Body]<br>" +
+            "성공했다면, 200 http status value<br>" +
+            "[Exceptions]<br>" +
+            "- Excel 파일 이외의 확장자가 들어왔을 경우<br>" +
+            "httpStatusValue: 404<br>" +
+            "httpStatusCode: INVALID_FILE_EXTENSION<br>" +
+            "message: There are incorrect files. Only the extension of Excel file is allowed.<br>" +
+            "- Google Map API 연동 과정 중 오류가 발생했을 경우<br>" +
+            "httpStatusValue: 500<br>" +
+            "httpStatusCode: GOOGLE_MAP_SERVER_ERROR<br>" +
+            "message: There are internal server errors related to Google Map API.<br>")
     @GetMapping("api/store/goodPrice/v1")
     public Result<String> createAllGoodPriceStores(@RequestParam(value = "fileName") String fileName) {
         goodPriceGoogleMapStoreService.createAllGoodPriceStores(fileName);
@@ -76,7 +145,22 @@ public class StoreApi {
 
     @Hidden
     @Tag(name = "초기 Data 생성")
-    @Operation(summary = "지정한 Credit까지만 사용하여 착한가격업소 데이터 생성", description = "[WARNING] 지정한 Credit까지만 사용하여 그동안 DB에 착한가격업소 데이터를 주입해주는 API입니다. DB에 엄청난 부하가 가는 작업으로, 합의 없이 실행시켜선 안됩니다!")
+    @Operation(summary = "지정한 Credit까지만 사용하여 착한가격업소 데이터 생성", description = "[WARNING] 지정한 Credit까지만 사용하여 그동안 DB에 착한가격업소 데이터를 주입해주는 API입니다. DB에 엄청난 부하가 가는 작업으로, 합의 없이 실행시켜선 안됩니다!<br><br>" +
+            "[Request Param]<br>" +
+            "fileName: 파싱할 착한가격업소 데이터 엑셀 파일명<br>" +
+            "dollars: 현재 API 호출에 사용할 수 있는 남은 달러<br>" +
+            "startIndex: 엑셀 데이터로부터 추출한 가게 리스트 Index number를 기준으로 조회를 시작할 Index number<br>" +
+            "[Response Body]<br>" +
+            "성공했다면, 200 http status value<br>" +
+            "[Exceptions]<br>" +
+            "- Excel 파일 이외의 확장자가 들어왔을 경우<br>" +
+            "httpStatusValue: 404<br>" +
+            "httpStatusCode: INVALID_FILE_EXTENSION<br>" +
+            "message: There are incorrect files. Only the extension of Excel file is allowed.<br>" +
+            "- Google Map API 연동 과정 중 오류가 발생했을 경우<br>" +
+            "httpStatusValue: 500<br>" +
+            "httpStatusCode: GOOGLE_MAP_SERVER_ERROR<br>" +
+            "message: There are internal server errors related to Google Map API.<br>")
     @GetMapping("api/store/dividedGoodPrice/v1")
     public Result<CreateDividedGoodPriceStoresResponse> createDividedGoodPriceStores(@RequestParam(value = "fileName") String fileName, @RequestParam(value = "dollars") double dollars, @RequestParam(value = "startIndex") int startIndex) {
         CreateDividedGoodPriceStoresResponse response = goodPriceGoogleMapStoreService.createDividedGoodPriceStores(fileName, dollars, startIndex);
