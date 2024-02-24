@@ -27,7 +27,12 @@ public class ReportApi {
             "formattedAddress: 등록 요청하는 가게 주소<br>" +
             "certifications: 가게가 가지고 있는 인증제들의 이름을 담은 리스트. 착한가격업소, 모범음식점, 안심식당이 아닌 경우 예외 발생<br>" +
             "[Response Body]<br>" +
-            "등록된 reportId<br>")
+            "등록된 reportId<br>" +
+            "[Exceptions]<br>" +
+            "- 잘못된 인증제 이름이 들어온 경우<br>" +
+            "httpStatusValue: 404<br>" +
+            "httpStatusCode: INVALID_CERTIFICATION<br>" +
+            "message: There is a wrong certification. You can only use certifications such as 착한가격업소, 모범음식점, 안심식당.<br>")
     @PostMapping("api/report/newStore/v1")
     public Result<Long> saveNewStoreReport(@Valid @RequestBody SaveNewStoreReportRequest saveNewStoreReportRequest) {
         Long reportId = reportService.saveNewStoreReport(saveNewStoreReportRequest);
@@ -42,7 +47,12 @@ public class ReportApi {
             "storeId: 수정 혹은 삭제를 요청하는 가게 id<br>" +
             "contents: 제보 내용<br>" +
             "[Response Body]<br>" +
-            "등록된 reportId<br>")
+            "등록된 reportId<br>" +
+            "[Exceptions]<br>" +
+            "- 잘못된 dtype이 들어온 경우<br>" +
+            "httpStatusValue: 404<br>" +
+            "httpStatusCode: INVALID_DTYPE<br>" +
+            "message: There is a wrong dtype. You can only use a dtype such as fix or del.<br>")
     @PostMapping("api/report/specificStore/v1")
     public Result<Long> saveSpecificStoreReport(@Valid @RequestBody SaveSpecificStoreReportRequest saveSpecificStoreReportRequest) {
         Long reportId = reportService.saveSpecificStoreReport(saveSpecificStoreReportRequest);
@@ -55,7 +65,12 @@ public class ReportApi {
             "[Request Body]<br>" +
             "reportId: 검색할 사용자 제보의 reportId. 유효하지 않은 reportId의 경우 예외 발생<br>" +
             "[Response Body]<br>" +
-            "해당 reportId로 검색된 사용자 제보 내용<br>")
+            "해당 reportId로 검색된 사용자 제보 내용<br>" +
+            "[Exceptions]<br>" +
+            "- 잘못된 reportId가 들어온 경우<br>" +
+            "httpStatusValue: 404<br>" +
+            "httpStatusCode: INVALID_REPORT_ID<br>" +
+            "message: There is a wrong reportId.<br>")
     @GetMapping("api/report/byId/v1")
     public Result<Report> findById(@NotNull @RequestParam(value = "reportId") Long reportId) {
         Report report = reportService.findById(reportId);
