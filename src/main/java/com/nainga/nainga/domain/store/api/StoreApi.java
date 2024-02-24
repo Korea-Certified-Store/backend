@@ -27,7 +27,7 @@ public class StoreApi {
     private final GoodPriceGoogleMapStoreService goodPriceGoogleMapStoreService;
     private final StoreService storeService;
 
-//    @Hidden
+    @Hidden
     @Tag(name = "초기 Data 생성")
     @Operation(summary = "모범음식점 데이터 생성", description = "[WARNING] DB에 처음으로 모든 모범음식점 데이터를 주입해주는 API입니다. DB에 엄청난 부하가 가는 작업으로, 합의 없이 실행시켜선 안됩니다!<br><br>" +
             "[Request Param]<br>" +
@@ -49,7 +49,7 @@ public class StoreApi {
         return new Result<>(Result.CODE_SUCCESS, Result.MESSAGE_OK, null);
     }
 
-//    @Hidden
+    @Hidden
     @Tag(name = "초기 Data 생성")
     @Operation(summary = "지정한 Credit까지만 사용하여 모범음식점 데이터 생성", description = "[WARNING] 지정한 Credit까지만 사용하여 그동안 DB에 모범음식점 데이터를 주입해주는 API입니다. DB에 엄청난 부하가 가는 작업으로, 합의 없이 실행시켜선 안됩니다!<br><br>" +
             "[Request Param]<br>" +
